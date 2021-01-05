@@ -47,10 +47,19 @@ object CallNotificationHelper: CoroutineScope {
 
         // Create an intent which triggers your fullscreen incoming call user interface.
         val intent = Intent(Intent.ACTION_MAIN, null)
+        val fullIntent = Intent(Intent.ACTION_MAIN, null)
+
         intent.flags = Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        fullIntent.flags = Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+
         intent.setClass(ctx, CallActivity::class.java)
+        fullIntent.setClass(ctx, CallActivity::class.java)
+
         intent.putExtra("notificationId", notificationId)
+        intent.putExtra("autoAnswer", 1)
         val pendingIntent = PendingIntent.getActivity(ctx, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val pendingFullScreenIntent = PendingIntent.getActivity(ctx, 2, fullIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         //Create an Intent for the BroadcastReceiver
         val cancelIntent = Intent(ctx, CancelCallReceiver::class.java)
@@ -89,7 +98,7 @@ object CallNotificationHelper: CoroutineScope {
         builder.setContentIntent(pendingIntent)
         // Set full screen intent to trigger display of the fullscreen UI when the notification
         // manager deems it appropriate.
-        builder.setFullScreenIntent(pendingIntent, true)
+        builder.setFullScreenIntent(pendingFullScreenIntent, true)
 
         // Setup notification content.
 

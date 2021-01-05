@@ -13,8 +13,12 @@ class CallService: InCallService() {
 
     override fun onCallAdded(call: Call) {
         CallStateManager.call = call
-        CallNotificationHelper.sendNotification(this )
-        //CallActivity.start(this, call)
+        // Its a outgoing call
+        if(call.state == Call.STATE_CONNECTING)
+            CallActivity.start(this, call)
+        //Its a incoming call
+        else if(call.state == Call.STATE_RINGING)
+            CallNotificationHelper.sendNotification(this )
     }
 
     override fun onCallRemoved(call: Call) {

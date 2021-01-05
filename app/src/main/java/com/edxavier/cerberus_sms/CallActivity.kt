@@ -13,6 +13,8 @@ import android.view.View
 import android.view.WindowManager
 import com.edxavier.cerberus_sms.databinding.ActivityCallBinding
 import com.edxavier.cerberus_sms.helpers.CallStateManager
+import com.edxavier.cerberus_sms.helpers.stateToString
+import com.edxavier.cerberus_sms.helpers.timeFormat
 import com.nicrosoft.consumoelectrico.ScopeActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -32,6 +34,8 @@ class CallActivity : ScopeActivity() {
 
     companion object {
         fun start(context: Context, call: Call) {
+
+
             Intent(context, CallActivity::class.java)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .setData(call.details.handle)
@@ -58,8 +62,14 @@ class CallActivity : ScopeActivity() {
         setContentView(binding.root)
 
         val notificationId = intent.getIntExtra("notificationId", 0)
-        val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mgr.cancel(notificationId)
+        val autoAnswer = intent.getIntExtra("autoAnswer", 0)
+        Log.e("EDER", autoAnswer.toString())
+        if(notificationId != 0) {
+            val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            mgr.cancel(notificationId)
+        }
+        if(autoAnswer == 1)
+            CallStateManager.answer()
 
         binding.fabAnswer.setOnClickListener {
             CallStateManager.answer()
@@ -81,34 +91,29 @@ class CallActivity : ScopeActivity() {
     private fun collectCallEvents(){
         launch {
             CallStateManager.callState.collect { state ->
-                Log.e("EDER", "collectCallEvents")
+                binding.callStatus.text = state.stateToString()
+
                 when (state) {
                     Call.STATE_DISCONNECTED -> {
                         currentStatus = state
                         delay(1000)
-                        binding.callStatus.text = "LLamada finalizada"
                         finish()
                     }
                     Call.STATE_ACTIVE -> {
-                        binding.callStatus.text = "Activa"
                         binding.containerAnswer.visibility = View.GONE
                         currentStatus = state
-                        Log.e("EDER", "Conectado")
                         starTimer()
                     }
                     Call.STATE_CONNECTING -> {
-                        binding.callStatus.text = "Conectando"
                         binding.containerAnswer.visibility = View.GONE
                     }
                     Call.STATE_DIALING -> {
-                        binding.callStatus.text = "Marcando"
                         binding.containerAnswer.visibility = View.GONE
                     }
                     Call.STATE_RINGING -> {
-                        binding.callStatus.text = "LLamada entrante"
+                        //binding.callStatus.text = "LLamada entrante"
                     }
                     Call.STATE_HOLDING -> {
-                        binding.callStatus.text = "En espera"
                         currentStatus = state
                     }
                 }
@@ -118,12 +123,12 @@ class CallActivity : ScopeActivity() {
 
     private fun starTimer(){
         launch {
-            binding.callStatus.text = seconds.toString()
+            binding.callStatus.text = seconds.timeFormat()
             while (true){
                 delay(1000)
                 if (currentStatus == Call.STATE_ACTIVE){
                     seconds += 1
-                    binding.callStatus.text = seconds.toString()
+                    binding.callStatus.text = seconds.timeFormat()
                 }else{
                     break
                 }
