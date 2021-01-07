@@ -44,6 +44,7 @@
                     android:layout_height="84dp"/>
 
                 <TextView
+                    android:id="@+id/displayContact"
                     android:textSize="20sp"
                     android:layout_gravity="center"
                     style="@style/TextAppearance.AppCompat.Title.Inverse"
@@ -83,48 +84,201 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline">
+            app:layout_constraintTop_toTopOf="@+id/guideline"
+            app:layout_constraintVertical_bias="0.65999997">
 
                 <LinearLayout
-                    android:id="@+id/container_hangup"
-                    android:gravity="center"
-                    android:layout_width="0dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_marginBottom="32dp"
                     android:orientation="horizontal">
 
-                        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                            app:elevation="4dp"
-                            android:id="@+id/fab_hangup"
-                            android:layout_gravity="center"
-                            app:tint="@color/md_text_white"
-                            app:backgroundTint="@color/md_red_700"
-                            android:src="@drawable/ic_call_end_24"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                        <LinearLayout
+                            android:id="@+id/container_mic"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_mic"
+                                    app:rippleColor="@color/md_blue_500_25"
+                                    android:clickable="true"
+                                    app:cardCornerRadius="25dp"
+                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
+                                    app:strokeColor="@color/md_white_1000_25"
+                                    app:strokeWidth="1dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:focusable="true">
+
+                                        <androidx.appcompat.widget.AppCompatImageView
+                                            android:id="@+id/icon_mic"
+                                            android:layout_gravity="center"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:src="@drawable/ic_baseline_mic_off"
+                                            android:tint="@color/md_white_1000_50" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/container_hold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_hold"
+                                    app:rippleColor="@color/md_blue_500_25"
+                                    android:clickable="true"
+                                    app:cardCornerRadius="25dp"
+                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
+                                    app:strokeColor="@color/md_white_1000_25"
+                                    app:strokeWidth="1dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:focusable="true">
+
+                                        <androidx.appcompat.widget.AppCompatImageView
+                                            android:id="@+id/icon_hold"
+                                            android:layout_gravity="center"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:src="@drawable/ic_baseline_pause"
+                                            android:tint="@color/md_white_1000_50" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                        </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/container_answer"
-                    android:gravity="center"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_marginTop="12dp"
                     android:orientation="horizontal">
 
-                        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                            android:id="@+id/fab_answer"
-                            app:backgroundTint="@color/md_green_700"
-                            app:tint="@color/white"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/container_dialpad"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_call_24" />
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_dialpad"
+                                    app:rippleColor="@color/md_blue_500_25"
+                                    android:clickable="true"
+                                    app:cardCornerRadius="25dp"
+                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
+                                    app:strokeColor="@color/md_white_1000_25"
+                                    app:strokeWidth="1dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:focusable="true">
+
+                                        <androidx.appcompat.widget.AppCompatImageView
+                                            android:layout_gravity="center"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:src="@drawable/ic_baseline_dialpad"
+                                            android:tint="@color/md_white_1000_50" />
+                                </com.google.android.material.card.MaterialCardView>
+
+
+                        </LinearLayout>
+
+
+
+                        <LinearLayout
+                            android:id="@+id/container_hangup"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                                    android:id="@+id/fab_hangup"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_call_end_24"
+                                    app:backgroundTint="@color/md_red_700"
+                                    app:elevation="4dp"
+                                    app:tint="@color/md_text_white" />
+
+                        </LinearLayout>
+
+
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/container_answer"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                                    android:id="@+id/fab_answer"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/ic_call_24"
+                                    app:backgroundTint="@color/md_green_700"
+                                    app:tint="@color/white" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/container_speaker"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_speaker"
+                                    app:rippleColor="@color/md_blue_500_25"
+                                    android:clickable="true"
+                                    app:cardCornerRadius="25dp"
+                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
+                                    app:strokeColor="@color/md_white_1000_25"
+                                    app:strokeWidth="1dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:focusable="true">
+
+                                        <androidx.appcompat.widget.AppCompatImageView
+                                            android:id="@+id/icon_speaker"
+                                            android:layout_gravity="center"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:src="@drawable/ic_outline_speaker"
+                                            android:tint="@color/md_white_1000_50" />
+                                </com.google.android.material.card.MaterialCardView>
+
+
+                        </LinearLayout>
+
+
                 </LinearLayout>
 
 

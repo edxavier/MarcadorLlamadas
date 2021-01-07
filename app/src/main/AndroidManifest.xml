@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:allowBackup="true"
@@ -14,7 +15,6 @@
         android:theme="@style/Theme.MarcadorLlamadas">
 
         <activity
-            android:excludeFromRecents="true"
             android:theme="@style/Fullscreen"
             android:name=".CallActivity"
             android:label="@string/title_activity_call" />

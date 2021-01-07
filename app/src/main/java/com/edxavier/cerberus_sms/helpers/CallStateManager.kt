@@ -3,6 +3,8 @@ package com.edxavier.cerberus_sms.helpers
 import android.app.NotificationManager
 import android.content.Context
 import android.telecom.Call
+import android.telecom.CallAudioState
+import android.telecom.InCallService
 import android.telecom.VideoProfile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -21,6 +23,8 @@ object CallStateManager {
         }
     }
 
+    var callService:InCallService? = null
+
     var call: Call? = null
         set(value) {
             field?.unregisterCallback(callback)
@@ -37,5 +41,23 @@ object CallStateManager {
 
     fun hangup() {
         call?.disconnect()
+    }
+
+    fun muteMicrophone(mute:Boolean) {
+        callService?.setMuted(mute)
+    }
+
+    fun setSpeakerOn() {
+        callService?.setAudioRoute(CallAudioState.ROUTE_SPEAKER)
+    }
+    fun setSpeakerOff() {
+        callService?.setAudioRoute(CallAudioState.ROUTE_WIRED_OR_EARPIECE)
+    }
+
+    fun hold() {
+        call?.hold()
+    }
+    fun unHold() {
+        call?.unhold()
     }
 }
