@@ -28,76 +28,78 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/price_ranges">
 
                 <ImageView
-                    android:src="@drawable/ic_user"
-                    android:layout_marginBottom="12dp"
-                    android:layout_gravity="center"
                     android:layout_width="84dp"
-                    android:layout_height="84dp"/>
+                    android:layout_height="84dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="12dp"
+                    android:src="@drawable/ic_user" />
 
                 <TextView
                     android:id="@+id/displayContact"
-                    android:textSize="20sp"
-                    android:layout_gravity="center"
                     style="@style/TextAppearance.AppCompat.Title.Inverse"
-                    android:text="Eder Rojas"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Eder Rojas"
+                    android:textSize="20sp" />
 
                 <TextView
-                    android:textColor="@color/white"
-                    android:layout_gravity="center"
                     style="@style/TextAppearance.MaterialComponents.Caption"
-                    android:text="Claro"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Claro"
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:id="@+id/call_status"
-                    android:layout_marginTop="16dp"
-                    android:textColor="@color/white"
-                    android:layout_gravity="center"
                     style="@style/TextAppearance.MaterialComponents.Caption"
-                    android:text="Llamada entrante"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:text="Llamada entrante"
+                    android:textColor="@color/white" />
 
 
         </LinearLayout>
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="365dp" />
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_session_calls"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginTop="32dp"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/call_list1" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="36dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline"
-            app:layout_constraintVertical_bias="0.65999997">
+            app:layout_constraintStart_toStartOf="parent">
 
                 <LinearLayout
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="32dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp">
 
                         <LinearLayout
                             android:id="@+id/container_mic"
@@ -109,21 +111,21 @@
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/card_mic"
-                                    app:rippleColor="@color/md_blue_500_25"
-                                    android:clickable="true"
-                                    app:cardCornerRadius="25dp"
-                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
-                                    app:strokeColor="@color/md_white_1000_25"
-                                    app:strokeWidth="1dp"
                                     android:layout_width="50dp"
                                     android:layout_height="50dp"
-                                    android:focusable="true">
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
+                                    app:cardCornerRadius="25dp"
+                                    app:rippleColor="@color/md_blue_500_25"
+                                    app:strokeColor="@color/md_white_1000_25"
+                                    app:strokeWidth="1dp">
 
                                         <androidx.appcompat.widget.AppCompatImageView
                                             android:id="@+id/icon_mic"
-                                            android:layout_gravity="center"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
                                             android:src="@drawable/ic_baseline_mic_off"
                                             android:tint="@color/md_white_1000_50" />
                                 </com.google.android.material.card.MaterialCardView>
@@ -140,21 +142,21 @@
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/card_hold"
-                                    app:rippleColor="@color/md_blue_500_25"
-                                    android:clickable="true"
-                                    app:cardCornerRadius="25dp"
-                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
-                                    app:strokeColor="@color/md_white_1000_25"
-                                    app:strokeWidth="1dp"
                                     android:layout_width="50dp"
                                     android:layout_height="50dp"
-                                    android:focusable="true">
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
+                                    app:cardCornerRadius="25dp"
+                                    app:rippleColor="@color/md_blue_500_25"
+                                    app:strokeColor="@color/md_white_1000_25"
+                                    app:strokeWidth="1dp">
 
                                         <androidx.appcompat.widget.AppCompatImageView
                                             android:id="@+id/icon_hold"
-                                            android:layout_gravity="center"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
                                             android:src="@drawable/ic_baseline_pause"
                                             android:tint="@color/md_white_1000_50" />
                                 </com.google.android.material.card.MaterialCardView>
@@ -170,38 +172,37 @@
                     android:orientation="horizontal">
 
                         <LinearLayout
-                            android:visibility="gone"
                             android:id="@+id/container_dialpad"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:visibility="gone">
 
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/card_dialpad"
-                                    app:rippleColor="@color/md_blue_500_25"
-                                    android:clickable="true"
-                                    app:cardCornerRadius="25dp"
-                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
-                                    app:strokeColor="@color/md_white_1000_25"
-                                    app:strokeWidth="1dp"
                                     android:layout_width="50dp"
                                     android:layout_height="50dp"
-                                    android:focusable="true">
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
+                                    app:cardCornerRadius="25dp"
+                                    app:rippleColor="@color/md_blue_500_25"
+                                    app:strokeColor="@color/md_white_1000_25"
+                                    app:strokeWidth="1dp">
 
                                         <androidx.appcompat.widget.AppCompatImageView
-                                            android:layout_gravity="center"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
                                             android:src="@drawable/ic_baseline_dialpad"
                                             android:tint="@color/md_white_1000_50" />
                                 </com.google.android.material.card.MaterialCardView>
 
 
                         </LinearLayout>
-
 
 
                         <LinearLayout
@@ -225,15 +226,14 @@
                         </LinearLayout>
 
 
-
                         <LinearLayout
-                            android:visibility="gone"
                             android:id="@+id/container_answer"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:visibility="gone">
 
                                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                                     android:id="@+id/fab_answer"
@@ -245,32 +245,32 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:visibility="gone"
                             android:id="@+id/container_speaker"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:visibility="gone">
 
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/card_speaker"
-                                    app:rippleColor="@color/md_blue_500_25"
-                                    android:clickable="true"
-                                    app:cardCornerRadius="25dp"
-                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
-                                    app:strokeColor="@color/md_white_1000_25"
-                                    app:strokeWidth="1dp"
                                     android:layout_width="50dp"
                                     android:layout_height="50dp"
-                                    android:focusable="true">
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    app:cardBackgroundColor="@color/md_statusbar_translucent"
+                                    app:cardCornerRadius="25dp"
+                                    app:rippleColor="@color/md_blue_500_25"
+                                    app:strokeColor="@color/md_white_1000_25"
+                                    app:strokeWidth="1dp">
 
                                         <androidx.appcompat.widget.AppCompatImageView
                                             android:id="@+id/icon_speaker"
-                                            android:layout_gravity="center"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
                                             android:src="@drawable/ic_outline_speaker"
                                             android:tint="@color/md_white_1000_50" />
                                 </com.google.android.material.card.MaterialCardView>

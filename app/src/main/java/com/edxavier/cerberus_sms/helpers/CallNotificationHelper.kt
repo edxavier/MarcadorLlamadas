@@ -115,8 +115,9 @@ object CallNotificationHelper: CoroutineScope {
         mgr.notify(notificationId, builder.build())
 
         launch {
-            CallStateManager.callState.collect { state ->
-                if(state == Call.STATE_DISCONNECTED) {
+            CallStateManager.callState.collect { callState ->
+                //Log.e("EDER_NOTF", "${CallStateManager.callList[index].call!!.state}")
+                if(callState.state == Call.STATE_DISCONNECTED) {
                     //Log.e("EDER", "LLAMADA PERDIDA")
                     mgr.cancel(notificationId)
                     job.cancel()

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/md_black_1000_50"
+    android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="12dp"
+            android:src="@drawable/ic_user" />
+
+        <TextView
+            android:id="@+id/displayContact"
+            style="@style/TextAppearance.AppCompat.Title.Inverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Eder Rojas"
+            android:textSize="20sp" />
+
+        <TextView
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Claro"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/call_status"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:text="Llamada entrante"
+            android:textColor="@color/white" />
+
+
+</LinearLayout>

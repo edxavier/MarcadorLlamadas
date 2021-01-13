@@ -13,8 +13,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 class CancelCallReceiver: BroadcastReceiver() {
     override fun onReceive(ctx: Context, intent: Intent) {
         val notificationId = intent.getIntExtra("notificationId", 0)
+
         val mgr = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         mgr.cancel(notificationId)
-        CallStateManager.hangup()
+        //CallStateManager.hangup()
+        CallStateManager.callList[CallStateManager.getCallIndex(CallStateManager.newCall!!)].hangup()
+
     }
 }

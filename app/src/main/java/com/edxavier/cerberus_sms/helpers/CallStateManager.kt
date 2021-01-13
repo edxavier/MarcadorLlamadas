@@ -1,46 +1,69 @@
 package com.edxavier.cerberus_sms.helpers
 
-import android.app.NotificationManager
-import android.content.Context
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.telecom.InCallService
 import android.telecom.VideoProfile
+import android.util.Log
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.random.Random
 
 @ExperimentalCoroutinesApi
 object CallStateManager {
 
-    private  val _callState = MutableStateFlow(0)
-    val callState: StateFlow<Int> = _callState
+    private  val _callState = MutableStateFlow(CallState())
+    val updateUi = MutableStateFlow(false)
 
-    private val callback = object : Call.Callback() {
-        override fun onStateChanged(call: Call, newState: Int) {
-            _callState.value = newState
-        }
+    val callState: StateFlow<CallState> = _callState
+
+    val callList:MutableList<CallHandle> = ArrayList()
+
+    fun pushStateChange(callState:CallState){
+        Log.e("EDER", "pushStateChange")
+        _callState.value = callState
     }
 
     var callService:InCallService? = null
 
-    var call: Call? = null
+    var newCall: Call? = null
         set(value) {
-            field?.unregisterCallback(callback)
             value?.let {
-                it.registerCallback(callback)
-                _callState.value = it.state
+
+                val handle = CallHandle()
+                //it.registerCallback(handle.callback)
+                handle.call = it
+                handle.seconds = Random(0).nextInt()
+                _callState.value = CallState(it, it.state)
+                callList.add(handle)
+                updateUi.value = true
+                //adapter.submitList(callList)
             }
             field = value
         }
 
-    fun answer() {
-        call?.answer(VideoProfile.STATE_AUDIO_ONLY)
+
+    fun getCallIndex(call:Call):Int{
+        var callIndex = -1
+        callList.forEachIndexed { index, handle ->
+            handle.call?.let {
+                if (it == call)
+                    callIndex = index
+            }
+        }
+        return callIndex
     }
 
-    fun hangup() {
-        call?.disconnect()
+    fun getActiveCallIndex():Int{
+        var callIndex = -1
+        callList.forEachIndexed { index, handle ->
+            handle.call?.let {
+                if (it.state == Call.STATE_ACTIVE)
+                    callIndex = index
+            }
+        }
+        return callIndex
     }
 
     fun muteMicrophone(mute:Boolean) {
@@ -55,9 +78,9 @@ object CallStateManager {
     }
 
     fun hold() {
-        call?.hold()
+        newCall?.hold()
     }
     fun unHold() {
-        call?.unhold()
+        newCall?.unhold()
     }
 }
