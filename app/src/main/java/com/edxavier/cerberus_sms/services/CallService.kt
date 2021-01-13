@@ -39,7 +39,7 @@ class CallService: InCallService() {
             val ch = CallStateManager.callList[callIndex]
             ch.call?.unregisterCallback(callback)
             CallStateManager.callList.removeAt(callIndex)
-            CallStateManager.updateUi.value = true
+            CallStateManager.updateUi.value = CallStateManager.callList.size
 
             Log.e("EDER ","Calls: ${CallStateManager.callList.size}")
         }else

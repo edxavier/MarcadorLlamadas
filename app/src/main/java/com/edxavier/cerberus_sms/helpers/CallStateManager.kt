@@ -14,7 +14,7 @@ import kotlin.random.Random
 object CallStateManager {
 
     private  val _callState = MutableStateFlow(CallState())
-    val updateUi = MutableStateFlow(false)
+    val updateUi = MutableStateFlow(0)
 
     val callState: StateFlow<CallState> = _callState
 
@@ -37,7 +37,7 @@ object CallStateManager {
                 handle.seconds = Random(0).nextInt()
                 _callState.value = CallState(it, it.state)
                 callList.add(handle)
-                updateUi.value = true
+                updateUi.value = callList.size
                 //adapter.submitList(callList)
             }
             field = value

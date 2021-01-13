@@ -96,8 +96,9 @@ class CallActivity : ScopeActivity() {
         binding.recyclerSessionCalls.setHasFixedSize(true)
         launch {
             CallStateManager.updateUi.collect {
-                Log.e("EDER", "UPDATE UI")
+                Log.e("EDER", "UPDATE UI $it")
                 adapter.submitList(CallStateManager.callList)
+                binding.recyclerSessionCalls.adapter = adapter
             }
         }
     }
