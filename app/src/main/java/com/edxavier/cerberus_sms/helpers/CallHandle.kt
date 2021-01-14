@@ -16,19 +16,11 @@ class CallHandle(
         var call: Call? = null,
         var seconds:Int = 0
 ){
-    val context: CoroutineContext = Job() + Dispatchers.Default
+    private val context: CoroutineContext = Job() + Dispatchers.Default
 
-    fun getNumber():String{
-        var number = ""
-        call?.let{
-            number = it.details.handle.schemeSpecificPart.toString()
-        }
-        return number
-    }
 
     fun startTimer(){
         //Log.e("EDER", getNumber())
-        //Log.e("EDER", "OBJ startTimer")
         val scope = CoroutineScope(context)
         scope.launch {
             while (true){
@@ -37,7 +29,7 @@ class CallHandle(
                     break
                 if (call!!.state == Call.STATE_ACTIVE || call!!.state == Call.STATE_HOLDING){
                     seconds += 1
-                    //Log.e("EDER", "${getNumber()}: $seconds")
+                    CallStateManager.callHandleSeconds.value = CallHandle(call, seconds)
                 }else{
                     break
                 }

@@ -33,17 +33,15 @@ class CallService: InCallService() {
         Log.e("EDER", "onCallRemoved")
         //Buscar la llamada dentro de la lista y eliminarla
         //CallStateManager.newCall = null
-        Log.e("EDER ","Calls: ${CallStateManager.callList.size}")
+        //Log.e("EDER ","Calls: ${CallStateManager.callList.size}")
         val callIndex = CallStateManager.getCallIndex(call)
         if(callIndex>=0) {
             val ch = CallStateManager.callList[callIndex]
             ch.call?.unregisterCallback(callback)
             CallStateManager.callList.removeAt(callIndex)
             CallStateManager.updateUi.value = CallStateManager.callList.size
-
-            Log.e("EDER ","Calls: ${CallStateManager.callList.size}")
-        }else
-            Log.e("EDER ","onCallRemoved call not found")
+            //Log.e("EDER ","Calls: ${CallStateManager.callList.size}")
+        }
     }
 
     private val callback = object : Call.Callback() {

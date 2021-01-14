@@ -40,7 +40,7 @@ class CallActivity : ScopeActivity() {
     private var speakerOn = false
     private var holdCall = false
 
-    var adapter: SessionCallsAdapter = SessionCallsAdapter()
+    lateinit var adapter: SessionCallsAdapter
 
     companion object {
         fun start(context: Context, call: Call) {
@@ -66,7 +66,7 @@ class CallActivity : ScopeActivity() {
                     WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
         }
-
+        adapter = SessionCallsAdapter(this)
         //setContentView(R.layout.activity_call)
         binding = ActivityCallBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -96,7 +96,7 @@ class CallActivity : ScopeActivity() {
         binding.recyclerSessionCalls.setHasFixedSize(true)
         launch {
             CallStateManager.updateUi.collect {
-                Log.e("EDER", "UPDATE UI $it")
+                //Log.e("EDER", "UPDATE UI $it")
                 adapter.submitList(CallStateManager.callList)
                 binding.recyclerSessionCalls.adapter = adapter
             }
@@ -206,8 +206,10 @@ class CallActivity : ScopeActivity() {
                                 currentStatus = state
                                 if(seconds == 0)
                                     starTimer()
-                                if(CallStateManager.callList[index].seconds == 0)
+                                if(CallStateManager.callList[index].seconds == 0) {
+                                    Log.e("EDER", "Start obj timer")
                                     CallStateManager.callList[index].startTimer()
+                                }
                             }
                             Call.STATE_CONNECTING -> {
                                 binding.containerAnswer.visibility = View.GONE

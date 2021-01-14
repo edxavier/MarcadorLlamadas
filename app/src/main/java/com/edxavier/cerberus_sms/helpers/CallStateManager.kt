@@ -15,13 +15,13 @@ object CallStateManager {
 
     private  val _callState = MutableStateFlow(CallState())
     val updateUi = MutableStateFlow(0)
+    val callHandleSeconds = MutableStateFlow(CallHandle())
 
     val callState: StateFlow<CallState> = _callState
 
     val callList:MutableList<CallHandle> = ArrayList()
 
     fun pushStateChange(callState:CallState){
-        Log.e("EDER", "pushStateChange")
         _callState.value = callState
     }
 
@@ -34,7 +34,7 @@ object CallStateManager {
                 val handle = CallHandle()
                 //it.registerCallback(handle.callback)
                 handle.call = it
-                handle.seconds = Random(0).nextInt()
+                //handle.seconds = Random(0).nextInt()
                 _callState.value = CallState(it, it.state)
                 callList.add(handle)
                 updateUi.value = callList.size
