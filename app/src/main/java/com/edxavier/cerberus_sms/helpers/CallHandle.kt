@@ -3,13 +3,8 @@ package com.edxavier.cerberus_sms.helpers
 import android.content.Context
 import android.telecom.Call
 import android.telecom.VideoProfile
-import android.util.Log
-import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import com.xwray.groupie.kotlinandroidextensions.Item
-import com.xwray.groupie.viewbinding.BindableItem
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 @ExperimentalCoroutinesApi
 class CallHandle(

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_height="wrap_content">
 
@@ -21,14 +22,26 @@
             android:text="Eder Rojas"
             android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/callOperator"
-            style="@style/TextAppearance.MaterialComponents.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:padding="8dp"
             android:layout_gravity="center"
-            android:text="Claro"
-            android:textColor="@color/white" />
+            app:cardBackgroundColor="@color/md_red_500"
+            app:cardCornerRadius="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+                <TextView
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:id="@+id/callOperator"
+                    style="@style/TextAppearance.MaterialComponents.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Claro"
+                    android:textColor="@color/md_white_1000" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/callStatus"
@@ -36,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:text="-----"
             android:textColor="@color/white" />
 

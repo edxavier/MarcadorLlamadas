@@ -53,9 +53,10 @@ class SessionCallsAdapter(
                                     if(it.call?.state == Call.STATE_ACTIVE)
                                         callStatus.text = callHandle.seconds.timeFormat()
                                     try {
-                                        if (it.call?.state == Call.STATE_HOLDING)
+                                        if (it.call?.state == Call.STATE_HOLDING) {
                                             callHangupBtn.visibility = View.VISIBLE
-                                        else
+                                            callStatus.text = it.call?.state?.stateToString()
+                                        }else
                                             callHangupBtn.visibility = View.GONE
                                     }catch (e:Exception){}
 

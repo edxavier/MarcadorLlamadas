@@ -6,6 +6,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.telecom.Call
 import android.util.Log
@@ -39,11 +42,18 @@ object CallNotificationHelper: CoroutineScope {
 
         val mgr = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+        val ringtoneUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.e("EDER", "CANAL CREADO")
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
             channel.setShowBadge(true)
+            channel.setSound(ringtoneUri, AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build())
             mgr.createNotificationChannel(channel)
-        }
+        }else
+            Log.e("EDER", "CANAL NO CREADO")
 
         // Create an intent which triggers your fullscreen incoming call user interface.
         val intent = Intent(Intent.ACTION_MAIN, null)
@@ -65,7 +75,7 @@ object CallNotificationHelper: CoroutineScope {
         val cancelIntent = Intent(ctx, CancelCallReceiver::class.java)
         cancelIntent.putExtra("notificationId", notificationId)
         //Create the PendingIntent
-        val cancelPendingIntent = PendingIntent.getBroadcast(ctx, 0, cancelIntent,  PendingIntent.FLAG_UPDATE_CURRENT)
+        val cancelPendingIntent = PendingIntent.getBroadcast(ctx, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
 
         // Build the notification as an ongoing high priority item; this ensures it will show as
@@ -75,9 +85,11 @@ object CallNotificationHelper: CoroutineScope {
         builder.priority = NotificationCompat.PRIORITY_HIGH
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         builder.setAutoCancel(true)
+        builder.setColorized(true)
+        builder.setSound(null)
         builder.setChannelId(CHANNEL_ID)
         builder.setCategory(NotificationCompat.CATEGORY_CALL)
-        builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+        builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE)
         builder.addAction(
                 NotificationCompat.Action.Builder(
                         R.drawable.ic_call_end_24,
@@ -106,7 +118,7 @@ object CallNotificationHelper: CoroutineScope {
         builder.setSmallIcon(R.drawable.ic_ring_volume_24)
         builder.setContentTitle(
                 HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(ctx, R.color.md_indigo_700) + "\">$number</font>",
-                HtmlCompat.FROM_HTML_MODE_LEGACY))
+                        HtmlCompat.FROM_HTML_MODE_LEGACY))
         builder.setSubText("")
         builder.setContentText("LLamada entrante")
 

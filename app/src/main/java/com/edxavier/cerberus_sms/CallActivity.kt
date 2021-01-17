@@ -103,21 +103,36 @@ class CallActivity : ScopeActivity() {
 
     private fun setupClickListeners() {
         binding.fabAnswer.setOnClickListener {
-            CallStateManager.callList[CallStateManager.getCallIndex(CallStateManager.newCall!!)].answer()
+            when (CallStateManager.callList.size) {
+                2 -> {
+                    Log.e("EDER", "RESPONDER 2da LLAMADA ${CallStateManager.callList[1].call?.getPhoneNumber()}")
+                    Log.e("EDER", "RETENER 1era LLAMADA ${CallStateManager.callList[0].call?.getPhoneNumber()}")
+                    CallStateManager.callList[1].answer()
+                    CallStateManager.callList[0].hold()
+                }
+                1 -> {
+                    Log.e("EDER", "RESPONDER UNICA LLAMADA ")
+                    CallStateManager.callList[0].answer()
+                }
+                else -> CallStateManager.callList[CallStateManager.getCallIndex(CallStateManager.newCall!!)].answer()
+            }
+
         }
         binding.fabHangup.setOnClickListener {
             //CallStateManager.hangup()
             if(currentStatus == Call.STATE_RINGING) {
-                CallStateManager.newCall?.disconnect()
-                Log.e("EDER", "COLGAR LLAMADA ENTRANTE EN PANTALLA")
+                if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    CallStateManager.newCall?.reject(Call.REJECT_REASON_DECLINED)
+                }else {
+                    CallStateManager.newCall?.disconnect()
+                }
+
             }else {
-                Log.e("EDER", "COLGAR")
                 if (CallStateManager.callList.size > 1) {
                     Log.e("EDER", "COLGAR LLAMADA ACTIVA EN MAS DE 1")
                     CallStateManager.callList[CallStateManager.getActiveCallIndex()].call?.getPhoneNumber()?.let { it1 -> Log.e("EDER", it1) }
                     CallStateManager.callList[CallStateManager.getActiveCallIndex()].hangup()
                 }else if (CallStateManager.callList.size == 1) {
-                    Log.e("EDER", "COLGAR UNICA LLAMADA ACTIVA")
                     CallStateManager.callList[0].hangup()
                 }
             }
@@ -205,30 +220,30 @@ class CallActivity : ScopeActivity() {
                     Log.e("EDER_STATE", it.getPhoneNumber())
                     when (state) {
                         Call.STATE_DISCONNECTED -> {
-                            delay(500)
+                            currentStatus = state
                             //Comparar con 0 ya que antes de llegar aqui la llamada es removida
-                            if(CallStateManager.callList.size==0)
-                                finishAndRemoveTask()
-                            else{
-                                binding.containerAnswer.visibility = View.GONE
-                                binding.containerMic.visibility = View.VISIBLE
-                                binding.containerHold.visibility = View.VISIBLE
-                                binding.containerSpeaker.visibility = View.VISIBLE
-                                binding.containerDialpad.visibility = View.VISIBLE
+                            if(CallStateManager.callList.size==1) {
+                                if(CallStateManager.callList[0].call?.state == Call.STATE_DISCONNECTED) {
+                                    delay(1000)
+                                    CallStateManager.callList.removeAt(0)
+                                    finishAndRemoveTask()
+                                }else{
+                                    showActiveCallButtons()
+                                }
+                            }else{
+                                showActiveCallButtons()
                             }
                         }
                         Call.STATE_ACTIVE -> {
-                            binding.containerAnswer.visibility = View.GONE
-                            binding.containerMic.visibility = View.VISIBLE
-                            binding.containerHold.visibility = View.VISIBLE
-                            binding.containerSpeaker.visibility = View.VISIBLE
-                            binding.containerDialpad.visibility = View.VISIBLE
+                            currentStatus = state
+                            showActiveCallButtons()
                             if(CallStateManager.callList[index].seconds == 0 && !CallStateManager.callList[index].timerStarted) {
                                 //Log.e("EDER", "Start obj timer ${CallStateManager.callList[index].call?.getPhoneNumber()} " + "${CallStateManager.callList[index].timerStarted}")
                                 CallStateManager.callList[index].startTimer()
                             }
                         }
                         Call.STATE_CONNECTING -> {
+                            currentStatus = state
                             binding.containerAnswer.visibility = View.GONE
                             binding.containerMic.visibility = View.GONE
                             binding.containerHold.visibility = View.GONE
@@ -236,6 +251,7 @@ class CallActivity : ScopeActivity() {
                             binding.containerDialpad.visibility = View.VISIBLE
                         }
                         Call.STATE_DIALING -> {
+                            currentStatus = state
                             binding.containerAnswer.visibility = View.GONE
                             binding.containerMic.visibility = View.GONE
                             binding.containerHold.visibility = View.GONE
@@ -262,5 +278,13 @@ class CallActivity : ScopeActivity() {
     override fun onDestroy() {
         super.onDestroy()
         CallStateManager.callActivityShown = false
+    }
+
+    private fun showActiveCallButtons(){
+        binding.containerAnswer.visibility = View.GONE
+        binding.containerMic.visibility = View.VISIBLE
+        binding.containerHold.visibility = View.VISIBLE
+        binding.containerSpeaker.visibility = View.VISIBLE
+        binding.containerDialpad.visibility = View.VISIBLE
     }
 }
