@@ -13,6 +13,8 @@ import kotlin.random.Random
 @ExperimentalCoroutinesApi
 object CallStateManager {
 
+    var callActivityShown = false
+
     private  val _callState = MutableStateFlow(CallState())
     val updateUi = MutableStateFlow(0)
     val callHandleSeconds = MutableStateFlow(CallHandle())
@@ -31,13 +33,15 @@ object CallStateManager {
         set(value) {
             value?.let {
 
+                Log.e("EDER_callAdded", it.getPhoneNumber())
                 val handle = CallHandle()
                 //it.registerCallback(handle.callback)
                 handle.call = it
-                //handle.seconds = Random(0).nextInt()
-                _callState.value = CallState(it, it.state)
                 callList.add(handle)
+
+                _callState.value = CallState(it, it.state)
                 updateUi.value = callList.size
+                callHandleSeconds.value = handle
                 //adapter.submitList(callList)
             }
             field = value
@@ -78,9 +82,15 @@ object CallStateManager {
     }
 
     fun hold() {
-        newCall?.hold()
+        if(callList.size>1) {
+            val i = getActiveCallIndex()
+            if (i >= 0)
+                callList[i].call?.hold()
+        }else if (callList.size == 1)
+            callList[0].call?.hold()
     }
     fun unHold() {
-        newCall?.unhold()
+        if (callList.size == 1)
+            callList[0].call?.unhold()
     }
 }

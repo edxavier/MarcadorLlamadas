@@ -14,23 +14,28 @@ import kotlin.coroutines.coroutineContext
 @ExperimentalCoroutinesApi
 class CallHandle(
         var call: Call? = null,
-        var seconds:Int = 0
+        var seconds:Int = 0,
+        var timerStarted:Boolean = false
 ){
     private val context: CoroutineContext = Job() + Dispatchers.Default
 
 
     fun startTimer(){
+        timerStarted = true
         //Log.e("EDER", getNumber())
         val scope = CoroutineScope(context)
         scope.launch {
             while (true){
                 delay(1000)
-                if(call==null)
+                if(call==null) {
+                    timerStarted = false
                     break
-                if (call!!.state == Call.STATE_ACTIVE || call!!.state == Call.STATE_HOLDING){
+                }
+                if (call?.state == Call.STATE_ACTIVE || call?.state == Call.STATE_HOLDING){
                     seconds += 1
                     CallStateManager.callHandleSeconds.value = CallHandle(call, seconds)
                 }else{
+                    timerStarted = false
                     break
                 }
             }

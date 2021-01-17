@@ -16,15 +16,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.edxavier.cerberus_sms.databinding.ActivityCallBinding
-import com.edxavier.cerberus_sms.helpers.CallStateManager
-import com.edxavier.cerberus_sms.helpers.SessionCallsAdapter
-import com.edxavier.cerberus_sms.helpers.stateToString
-import com.edxavier.cerberus_sms.helpers.timeFormat
+import com.edxavier.cerberus_sms.helpers.*
 import com.nicrosoft.consumoelectrico.ScopeActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 
@@ -32,7 +31,6 @@ import kotlinx.coroutines.launch
 class CallActivity : ScopeActivity() {
 
     private lateinit var binding: ActivityCallBinding
-    private lateinit var number: String
 
     private var seconds = 0
     private var currentStatus = 0
@@ -55,6 +53,8 @@ class CallActivity : ScopeActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        CallStateManager.callActivityShown = true
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -86,10 +86,6 @@ class CallActivity : ScopeActivity() {
             //CallStateManager.answer()
         }
         setupClickListeners()
-        CallStateManager.newCall?.let { newCall->
-            binding.displayContact.text = newCall.details.handle.schemeSpecificPart
-        }
-
 
         binding.recyclerSessionCalls.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerSessionCalls.adapter = adapter
@@ -97,8 +93,10 @@ class CallActivity : ScopeActivity() {
         launch {
             CallStateManager.updateUi.collect {
                 //Log.e("EDER", "UPDATE UI $it")
-                adapter.submitList(CallStateManager.callList)
-                binding.recyclerSessionCalls.adapter = adapter
+                if (it>0) {
+                    adapter.submitList(CallStateManager.callList)
+                    binding.recyclerSessionCalls.adapter = adapter
+                }
             }
         }
     }
@@ -109,15 +107,25 @@ class CallActivity : ScopeActivity() {
         }
         binding.fabHangup.setOnClickListener {
             //CallStateManager.hangup()
-            if(CallStateManager.callList.size>1)
-                CallStateManager.callList[CallStateManager.getActiveCallIndex()].hangup()
-            else
-                CallStateManager.callList[0].hangup()
+            if(currentStatus == Call.STATE_RINGING) {
+                CallStateManager.newCall?.disconnect()
+                Log.e("EDER", "COLGAR LLAMADA ENTRANTE EN PANTALLA")
+            }else {
+                Log.e("EDER", "COLGAR")
+                if (CallStateManager.callList.size > 1) {
+                    Log.e("EDER", "COLGAR LLAMADA ACTIVA EN MAS DE 1")
+                    CallStateManager.callList[CallStateManager.getActiveCallIndex()].call?.getPhoneNumber()?.let { it1 -> Log.e("EDER", it1) }
+                    CallStateManager.callList[CallStateManager.getActiveCallIndex()].hangup()
+                }else if (CallStateManager.callList.size == 1) {
+                    Log.e("EDER", "COLGAR UNICA LLAMADA ACTIVA")
+                    CallStateManager.callList[0].hangup()
+                }
+            }
         }
 
         binding.cardMic.setOnClickListener {
-            CallStateManager.newCall?.playDtmfTone('1')
-            CallStateManager.newCall?.stopDtmfTone()
+            //CallStateManager.newCall?.playDtmfTone('1')
+            //CallStateManager.newCall?.stopDtmfTone()
             muteMic = !muteMic
             CallStateManager.muteMicrophone(muteMic)
             if(muteMic) {
@@ -133,13 +141,16 @@ class CallActivity : ScopeActivity() {
         binding.cardHold.setOnClickListener {
             holdCall = !holdCall
             if(holdCall) {
-                ImageViewCompat.setImageTintList(binding.iconHold,
-                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_blue_500)))
+                if(CallStateManager.callList.size==1)
+                    ImageViewCompat.setImageTintList(binding.iconHold, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_blue_500)))
                 CallStateManager.hold()
             }else {
                 ImageViewCompat.setImageTintList(binding.iconHold,
                         ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_white_1000_60)))
-                CallStateManager.unHold()
+                if (CallStateManager.callList.size>1)
+                    CallStateManager.hold()
+                else
+                    CallStateManager.unHold()
             }
         }
 
@@ -181,81 +192,75 @@ class CallActivity : ScopeActivity() {
 
     private fun collectCallEvents(){
         launch {
-                CallStateManager.callState.collect { callState ->
-                    Log.e("EDER_STATE", "----------collect--------------------")
-                    val state = callState.state
-                    callState.call?.let {
-                        val index = CallStateManager.getCallIndex(callState.call)
-                        Log.e("EDER_STATE", "${state.stateToString()} ${callState.call.details.handle.schemeSpecificPart}")
-                        binding.callStatus.text = state.stateToString()
-                        when (state) {
-                            Call.STATE_DISCONNECTED -> {
-                                currentStatus = state
-                                delay(1000)
-                                //Comparar con 0 ya que antes de llegar aqui la llamada es removida
-                                if(CallStateManager.callList.size==0)
-                                    finishAndRemoveTask()
-                            }
-                            Call.STATE_ACTIVE -> {
-                                binding.displayContact.text = callState.call.details.handle.schemeSpecificPart
+            CallStateManager.callState.filter { it.call!=null }.collect { callState ->
+                Log.e("EDER_STATE", "----------collect--------------------")
+                val state = callState.state
+                Log.e("EDER_STATE", state.stateToString())
+                callState.call?.let {
+                    val index = CallStateManager.getCallIndex(callState.call)
+                    if(CallStateManager.callList.size>1)
+                        binding.iconHold.setImageDrawable(ContextCompat.getDrawable(this@CallActivity, R.drawable.ic_baseline_swap_calls))
+                    else
+                        binding.iconHold.setImageDrawable(ContextCompat.getDrawable(this@CallActivity, R.drawable.ic_baseline_pause))
+                    Log.e("EDER_STATE", it.getPhoneNumber())
+                    when (state) {
+                        Call.STATE_DISCONNECTED -> {
+                            delay(500)
+                            //Comparar con 0 ya que antes de llegar aqui la llamada es removida
+                            if(CallStateManager.callList.size==0)
+                                finishAndRemoveTask()
+                            else{
                                 binding.containerAnswer.visibility = View.GONE
                                 binding.containerMic.visibility = View.VISIBLE
                                 binding.containerHold.visibility = View.VISIBLE
                                 binding.containerSpeaker.visibility = View.VISIBLE
                                 binding.containerDialpad.visibility = View.VISIBLE
-                                currentStatus = state
-                                if(seconds == 0)
-                                    starTimer()
-                                if(CallStateManager.callList[index].seconds == 0) {
-                                    Log.e("EDER", "Start obj timer")
-                                    CallStateManager.callList[index].startTimer()
-                                }
                             }
-                            Call.STATE_CONNECTING -> {
-                                binding.containerAnswer.visibility = View.GONE
-                                binding.containerMic.visibility = View.GONE
-                                binding.containerHold.visibility = View.GONE
-                                binding.containerSpeaker.visibility = View.VISIBLE
-                                binding.containerDialpad.visibility = View.VISIBLE
+                        }
+                        Call.STATE_ACTIVE -> {
+                            binding.containerAnswer.visibility = View.GONE
+                            binding.containerMic.visibility = View.VISIBLE
+                            binding.containerHold.visibility = View.VISIBLE
+                            binding.containerSpeaker.visibility = View.VISIBLE
+                            binding.containerDialpad.visibility = View.VISIBLE
+                            if(CallStateManager.callList[index].seconds == 0 && !CallStateManager.callList[index].timerStarted) {
+                                //Log.e("EDER", "Start obj timer ${CallStateManager.callList[index].call?.getPhoneNumber()} " + "${CallStateManager.callList[index].timerStarted}")
+                                CallStateManager.callList[index].startTimer()
                             }
-                            Call.STATE_DIALING -> {
-                                binding.containerAnswer.visibility = View.GONE
-                                binding.containerMic.visibility = View.GONE
-                                binding.containerHold.visibility = View.GONE
-                                binding.containerSpeaker.visibility = View.VISIBLE
-                                binding.containerDialpad.visibility = View.VISIBLE
-                            }
-                            Call.STATE_RINGING -> {
-                                binding.containerAnswer.visibility = View.VISIBLE
-                                binding.containerMic.visibility = View.GONE
-                                binding.containerHold.visibility = View.GONE
-                                binding.containerSpeaker.visibility = View.GONE
-                                binding.containerDialpad.visibility = View.GONE
-                            }
-                            Call.STATE_HOLDING -> {
-                                currentStatus = state
-                            }
+                        }
+                        Call.STATE_CONNECTING -> {
+                            binding.containerAnswer.visibility = View.GONE
+                            binding.containerMic.visibility = View.GONE
+                            binding.containerHold.visibility = View.GONE
+                            binding.containerSpeaker.visibility = View.VISIBLE
+                            binding.containerDialpad.visibility = View.VISIBLE
+                        }
+                        Call.STATE_DIALING -> {
+                            binding.containerAnswer.visibility = View.GONE
+                            binding.containerMic.visibility = View.GONE
+                            binding.containerHold.visibility = View.GONE
+                            binding.containerSpeaker.visibility = View.VISIBLE
+                            binding.containerDialpad.visibility = View.VISIBLE
+                        }
+                        Call.STATE_RINGING -> {
+                            binding.containerAnswer.visibility = View.VISIBLE
+                            binding.containerMic.visibility = View.GONE
+                            binding.containerHold.visibility = View.GONE
+                            binding.containerSpeaker.visibility = View.GONE
+                            binding.containerDialpad.visibility = View.GONE
+                            currentStatus = state
+                        }
+                        Call.STATE_HOLDING -> {
+                            currentStatus = state
                         }
                     }
                 }
+            }
         }
     }
 
-    private fun starTimer(){
-
-        launch {
-            binding.callStatus.text = seconds.timeFormat()
-            while (true){
-                delay(1000)
-                if (currentStatus == Call.STATE_ACTIVE || currentStatus == Call.STATE_HOLDING){
-                    seconds += 1
-                    if( currentStatus == Call.STATE_ACTIVE )
-                        binding.callStatus.text = seconds.timeFormat()
-                }else{
-                    break
-                }
-            }
-            //Log.e("EDER", "FIN LAUNCH")
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        CallStateManager.callActivityShown = false
     }
 }

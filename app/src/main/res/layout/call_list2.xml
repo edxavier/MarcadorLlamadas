@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/md_black_1000_50"
     android:layout_height="wrap_content">
 
     <LinearLayout
@@ -34,10 +33,11 @@
             android:layout_gravity="end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Claro"
+            android:text="---"
             android:textColor="@color/white" />
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/callHangupBtn"
             app:tint="@color/md_red_500"
             android:src="@drawable/ic_call_end_24"

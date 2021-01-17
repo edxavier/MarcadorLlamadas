@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.edxavier.cerberus_sms.R
 import kotlinx.android.synthetic.main.call_list1.view.*
+import kotlinx.android.synthetic.main.call_list1.view.callDisplayContact
+import kotlinx.android.synthetic.main.call_list1.view.callStatus
+import kotlinx.android.synthetic.main.call_list2.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -47,17 +50,31 @@ class SessionCallsAdapter(
                                     ch.call?.getPhoneNumber() == callHandle.call?.getPhoneNumber()
                                 }
                                 .collect {
-                                    if(it.call?.state == Call.STATE_ACTIVE) {
+                                    if(it.call?.state == Call.STATE_ACTIVE)
                                         callStatus.text = callHandle.seconds.timeFormat()
-                                    }else {
-                                        it.call?.let { c ->
-                                            callStatus.text = c.state.stateToString()
-                                        }
-                                    }
+                                    try {
+                                        if (it.call?.state == Call.STATE_HOLDING)
+                                            callHangupBtn.visibility = View.VISIBLE
+                                        else
+                                            callHangupBtn.visibility = View.GONE
+                                    }catch (e:Exception){}
 
                                 }
                     }
+                    cScope.launch {
+                        CallStateManager.callState
+                                .filter { ch ->
+                                    ch.call?.getPhoneNumber() == callHandle.call?.getPhoneNumber()
+                                }
+                                .collect {
+                                    //Log.e("EDER:OBJ_STAT", it.state.stateToString())
+                                    //it.call?.let { c-> Log.e("EDER:OBJ_STAT2", c.getPhoneNumber()) }
+                                    if(it.state != Call.STATE_ACTIVE)
+                                        callStatus.text = it.state.stateToString()
+                                }
+                    }
                     callDisplayContact.text = callHandle.call?.getPhoneNumber()
+                    callStatus.text = callHandle.call?.state?.stateToString()
                 }
             }
         }

@@ -25,8 +25,10 @@ class CallService: InCallService() {
         if(call.state == Call.STATE_CONNECTING || call.state == Call.STATE_DIALING)
             CallActivity.start(this, call)
         //Its a incoming call
-        else if(call.state == Call.STATE_RINGING)
+        else if(call.state == Call.STATE_RINGING && !CallStateManager.callActivityShown)
             CallNotificationHelper.sendNotification(this )
+        //else if(call.state == Call.STATE_RINGING && CallStateManager.callActivityShown)
+        //    CallActivity.start(this, call)
     }
 
     override fun onCallRemoved(call: Call) {

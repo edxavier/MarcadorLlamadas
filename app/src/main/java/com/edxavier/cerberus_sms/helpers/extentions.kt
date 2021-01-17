@@ -30,6 +30,11 @@ fun Int.timeFormat (): String{
     return "$hh:$mm:$ss"
 }
 
-fun Call.getPhoneNumber():String = this.details.handle.schemeSpecificPart.toString()
+fun Call.getPhoneNumber():String {
+    return if (this.details.handle!=null)
+        this.details.handle.schemeSpecificPart.toString()
+    else
+        "?????????"
+}
 
 fun Call.getFormattedPhoneNumber():String { return "" }

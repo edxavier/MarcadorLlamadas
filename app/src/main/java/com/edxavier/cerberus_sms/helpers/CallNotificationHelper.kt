@@ -101,11 +101,11 @@ object CallNotificationHelper: CoroutineScope {
         builder.setFullScreenIntent(pendingFullScreenIntent, true)
 
         // Setup notification content.
-
+        val number = CallStateManager.newCall?.getPhoneNumber()
         // Setup notification content.
         builder.setSmallIcon(R.drawable.ic_ring_volume_24)
         builder.setContentTitle(
-                HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(ctx, R.color.md_indigo_700) + "\">Eder Rojas</font>",
+                HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(ctx, R.color.md_indigo_700) + "\">$number</font>",
                 HtmlCompat.FROM_HTML_MODE_LEGACY))
         builder.setSubText("")
         builder.setContentText("LLamada entrante")
