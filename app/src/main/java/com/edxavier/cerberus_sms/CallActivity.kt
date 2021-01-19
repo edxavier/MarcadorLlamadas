@@ -37,6 +37,7 @@ class CallActivity : ScopeActivity() {
     private var muteMic = false
     private var speakerOn = false
     private var holdCall = false
+    private var showDial = false
 
     lateinit var adapter: SessionCallsAdapter
 
@@ -197,8 +198,46 @@ class CallActivity : ScopeActivity() {
              */
         }
 
+        with(binding){
+            dialPad.setOnClickListener {
+                showDial = !showDial
+                if (showDial){
+                    row1.visible()
+                    row2.visible()
+                    row3.visible()
+                    row4.visible()
+                    row5.invisible()
+                }else{
+                    row1.invisible()
+                    row2.invisible()
+                    row3.invisible()
+                    row4.invisible()
+                    row5.visible()
+                }
+            }
+            dial0.setOnClickListener { playDTMFTone('0') }
+            dial1.setOnClickListener { playDTMFTone('1') }
+            dial2.setOnClickListener { playDTMFTone('2') }
+            dial3.setOnClickListener { playDTMFTone('3') }
+            dial4.setOnClickListener { playDTMFTone('4') }
+            dial5.setOnClickListener { playDTMFTone('5') }
+            dial6.setOnClickListener { playDTMFTone('6') }
+            dial7.setOnClickListener { playDTMFTone('7') }
+            dial8.setOnClickListener { playDTMFTone('8') }
+            dial9.setOnClickListener { playDTMFTone('9') }
+            dialAsterisk.setOnClickListener { playDTMFTone('*') }
+            dialHash.setOnClickListener { playDTMFTone('#') }
+        }
+
     }
 
+    private fun playDTMFTone(digit:Char){
+        val i = CallStateManager.getActiveCallIndex()
+        if(i>=0) {
+            CallStateManager.callList[i].call?.playDtmfTone(digit)
+            CallStateManager.callList[i].call?.stopDtmfTone()
+        }
+    }
 
     override fun onStart() {
         super.onStart()
@@ -277,7 +316,13 @@ class CallActivity : ScopeActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+
+    }
+
+    override fun onStop() {
+        super.onStop()
         CallStateManager.callActivityShown = false
+        CallNotificationHelper.showInCallNotification(this)
     }
 
     private fun showActiveCallButtons(){

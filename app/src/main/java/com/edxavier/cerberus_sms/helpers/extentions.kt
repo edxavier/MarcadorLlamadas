@@ -1,6 +1,7 @@
 package com.edxavier.cerberus_sms.helpers
 
 import android.telecom.Call
+import android.view.View
 import kotlin.math.floor
 
 
@@ -38,3 +39,7 @@ fun Call.getPhoneNumber():String {
 }
 
 fun Call.getFormattedPhoneNumber():String { return "" }
+
+
+fun View.visible(){ this.visibility = View.VISIBLE }
+fun View.invisible(){ this.visibility = View.GONE }

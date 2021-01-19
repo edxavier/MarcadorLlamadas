@@ -26,8 +26,11 @@ import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi
 object CallNotificationHelper: CoroutineScope {
-    const val CHANNEL_ID = "com.edxavier.cerberus_sms"
-    const val CHANNEL_NAME = "com.edxavier.cerberus_sms"
+    const val CHANNEL_ID = "com.edxavier.cerberus_sms.incoming.call"
+    const val CHANNEL_NAME = "com.edxavier.cerberus_sms.incoming.call"
+
+    const val CHANNEL_ID_ACTIVE_CALL = "com.edxavier.cerberus_sms.active.call"
+    const val CHANNEL_ACTIVE_CALL = "com.edxavier.cerberus_sms.active.call"
 
     private lateinit var job: Job
 
@@ -44,7 +47,6 @@ object CallNotificationHelper: CoroutineScope {
 
         val ringtoneUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.e("EDER", "CANAL CREADO")
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
             channel.setShowBadge(true)
             channel.setSound(ringtoneUri, AudioAttributes.Builder()
@@ -52,9 +54,7 @@ object CallNotificationHelper: CoroutineScope {
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .build())
             mgr.createNotificationChannel(channel)
-        }else
-            Log.e("EDER", "CANAL NO CREADO")
-
+        }
         // Create an intent which triggers your fullscreen incoming call user interface.
         val intent = Intent(Intent.ACTION_MAIN, null)
         val fullIntent = Intent(Intent.ACTION_MAIN, null)
@@ -128,13 +128,52 @@ object CallNotificationHelper: CoroutineScope {
 
         launch {
             CallStateManager.callState.collect { callState ->
-                //Log.e("EDER_NOTF", "${CallStateManager.callList[index].call!!.state}")
                 if(callState.state == Call.STATE_DISCONNECTED) {
-                    //Log.e("EDER", "LLAMADA PERDIDA")
                     mgr.cancel(notificationId)
                     job.cancel()
                 }
             }
         }
     }
+
+    fun showInCallNotification(ctx: Context){
+        val notificationId = Calendar.getInstance().timeInMillis.toInt()
+        val mgr = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(CHANNEL_ID_ACTIVE_CALL, CHANNEL_ACTIVE_CALL, NotificationManager.IMPORTANCE_LOW)
+            mgr.createNotificationChannel(channel)
+        }
+        val intent = Intent(Intent.ACTION_MAIN, null)
+        intent.flags = Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        intent.putExtra("notificationId", notificationId)
+        val pendingIntent = PendingIntent.getActivity(ctx, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_ACTIVE_CALL)
+        builder.priority = NotificationCompat.PRIORITY_LOW
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        builder.setAutoCancel(true)
+        builder.setColorized(true)
+        builder.setChannelId(CHANNEL_ID_ACTIVE_CALL)
+        builder.setContentIntent(pendingIntent)
+        // Setup notification content.
+        val number = CallStateManager.newCall?.getPhoneNumber()
+        // Setup notification content.
+        builder.setSmallIcon(R.drawable.ic_call_24)
+        builder.setContentTitle("LLamada en curso...")
+        builder.setSubText("-----")
+        builder.setContentText(number)
+
+        builder.addAction(
+                NotificationCompat.Action.Builder(
+                        R.drawable.ic_call_24,
+                        HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(ctx, R.color.md_green_700) + "\">Volver a llamada</font>",
+                                HtmlCompat.FROM_HTML_MODE_LEGACY),
+                        pendingIntent).build()
+        )
+
+        mgr.notify(notificationId, builder.build())
+
+
+    }
+
 }
