@@ -5,24 +5,28 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.telecom.Call
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
+import coil.transform.BlurTransformation
+import com.edxavier.cerberus_sms.data.repositories.RepoContact
 import com.edxavier.cerberus_sms.databinding.ActivityCallBinding
 import com.edxavier.cerberus_sms.helpers.*
+import com.google.android.gms.ads.*
 import com.nicrosoft.consumoelectrico.ScopeActivity
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
@@ -67,15 +71,16 @@ class CallActivity : ScopeActivity() {
                     WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
         }
-        adapter = SessionCallsAdapter(this)
+        adapter = SessionCallsAdapter(this, this)
         //setContentView(R.layout.activity_call)
         binding = ActivityCallBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val notificationId = intent.getIntExtra("notificationId", 0)
         val autoAnswer = intent.getIntExtra("autoAnswer", 0)
+        val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        mgr.cancel(CallStateManager.activeCallNotificationId)
         if(notificationId != 0) {
-            val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             mgr.cancel(notificationId)
         }
         if(autoAnswer == 1) {
@@ -87,6 +92,7 @@ class CallActivity : ScopeActivity() {
             //CallStateManager.answer()
         }
         setupClickListeners()
+        collectCallEvents()
 
         binding.recyclerSessionCalls.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerSessionCalls.adapter = adapter
@@ -100,19 +106,25 @@ class CallActivity : ScopeActivity() {
                 }
             }
         }
+        /*binding.backgroundImage.load(R.drawable.lift){
+            placeholder(R.drawable.lift)
+            transformations(BlurTransformation(this@CallActivity))
+        }
+         */
+        setupBanner()
     }
 
     private fun setupClickListeners() {
         binding.fabAnswer.setOnClickListener {
             when (CallStateManager.callList.size) {
                 2 -> {
-                    Log.e("EDER", "RESPONDER 2da LLAMADA ${CallStateManager.callList[1].call?.getPhoneNumber()}")
-                    Log.e("EDER", "RETENER 1era LLAMADA ${CallStateManager.callList[0].call?.getPhoneNumber()}")
+                    //Log.e("EDER", "RESPONDER 2da LLAMADA ${CallStateManager.callList[1].call?.getPhoneNumber()}")
+                    //Log.e("EDER", "RETENER 1era LLAMADA ${CallStateManager.callList[0].call?.getPhoneNumber()}")
                     CallStateManager.callList[1].answer()
                     CallStateManager.callList[0].hold()
                 }
                 1 -> {
-                    Log.e("EDER", "RESPONDER UNICA LLAMADA ")
+                    //Log.e("EDER", "RESPONDER UNICA LLAMADA ")
                     CallStateManager.callList[0].answer()
                 }
                 else -> CallStateManager.callList[CallStateManager.getCallIndex(CallStateManager.newCall!!)].answer()
@@ -130,7 +142,7 @@ class CallActivity : ScopeActivity() {
 
             }else {
                 if (CallStateManager.callList.size > 1) {
-                    Log.e("EDER", "COLGAR LLAMADA ACTIVA EN MAS DE 1")
+                    //Log.e("EDER", "COLGAR LLAMADA ACTIVA EN MAS DE 1")
                     CallStateManager.callList[CallStateManager.getActiveCallIndex()].call?.getPhoneNumber()?.let { it1 -> Log.e("EDER", it1) }
                     CallStateManager.callList[CallStateManager.getActiveCallIndex()].hangup()
                 }else if (CallStateManager.callList.size == 1) {
@@ -239,24 +251,27 @@ class CallActivity : ScopeActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        collectCallEvents()
-    }
-
     private fun collectCallEvents(){
         launch {
             CallStateManager.callState.filter { it.call!=null }.collect { callState ->
-                Log.e("EDER_STATE", "----------collect--------------------")
+                //Log.e("EDER_STATE", "----------collect--------------------")
                 val state = callState.state
-                Log.e("EDER_STATE", state.stateToString())
+                //Log.e("EDER_STATE", state.stateToString())
                 callState.call?.let {
                     val index = CallStateManager.getCallIndex(callState.call)
+                    val repoC = RepoContact.getInstance(this@CallActivity)
                     if(CallStateManager.callList.size>1)
                         binding.iconHold.setImageDrawable(ContextCompat.getDrawable(this@CallActivity, R.drawable.ic_baseline_swap_calls))
-                    else
+                    else {
                         binding.iconHold.setImageDrawable(ContextCompat.getDrawable(this@CallActivity, R.drawable.ic_baseline_pause))
-                    Log.e("EDER_STATE", it.getPhoneNumber())
+                        val contact = repoC.getPhoneContact(it.getPhoneNumber())
+                        if (contact.photo.isNotBlank())
+                            binding.backgroundImage.load(Uri.parse(contact.photo)){
+                                placeholder(R.drawable.diente_leon)
+                                transformations(BlurTransformation(this@CallActivity))
+                            }
+                    }
+                    //Log.e("EDER_STATE", it.getPhoneNumber())
                     when (state) {
                         Call.STATE_DISCONNECTED -> {
                             currentStatus = state
@@ -269,9 +284,12 @@ class CallActivity : ScopeActivity() {
                                 }else{
                                     showActiveCallButtons()
                                 }
-                            }else{
+                            }else if(CallStateManager.callList.size>1){
                                 showActiveCallButtons()
+                            }else{
+                                finishAndRemoveTask()
                             }
+
                         }
                         Call.STATE_ACTIVE -> {
                             currentStatus = state
@@ -314,15 +332,15 @@ class CallActivity : ScopeActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-    }
 
     override fun onStop() {
         super.onStop()
         CallStateManager.callActivityShown = false
-        CallNotificationHelper.showInCallNotification(this)
+        if(CallStateManager.callList.size>0) {
+            val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            mgr.cancel(CallStateManager.activeCallNotificationId)
+            CallNotificationHelper.showInCallNotification(this)
+        }
     }
 
     private fun showActiveCallButtons(){
@@ -332,4 +350,42 @@ class CallActivity : ScopeActivity() {
         binding.containerSpeaker.visibility = View.VISIBLE
         binding.containerDialpad.visibility = View.VISIBLE
     }
+
+    private fun setupBanner() {
+        val requestConfig = RequestConfiguration.Builder()
+                .setTestDeviceIds(arrayOf(
+                        "AC5F34885B0FE7EF03A409EB12A0F949",
+                        AdRequest.DEVICE_ID_EMULATOR
+                ).toList())
+                .build()
+        MobileAds.setRequestConfiguration(requestConfig)
+
+        val adRequest = AdRequest.Builder()
+                .build()
+
+        val adView =  AdView(this)
+        binding.adViewContainer.addView(adView)
+
+        adView.adSize = getAdSize()
+        adView.adUnitId = getString(R.string.BANNER_FLOTANTE)
+
+        adView.loadAd(adRequest)
+        //nav_view.menu.findItem(R.id.destino_ocultar_publicidad).isVisible = false
+    }
+
+    private fun getAdSize(): AdSize {
+        //Determine the screen width to use for the ad width.
+        val display = windowManager.defaultDisplay
+        val outMetrics = DisplayMetrics()
+        display.getMetrics(outMetrics)
+        val widthPixels = outMetrics.widthPixels.toFloat()
+        val density = outMetrics.density
+
+        //you can also pass your selected width here in dp
+        val adWidth = (widthPixels / density).toInt()
+
+        //return the optimal size depends on your orientation (landscape or portrait)
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
+    }
+
 }

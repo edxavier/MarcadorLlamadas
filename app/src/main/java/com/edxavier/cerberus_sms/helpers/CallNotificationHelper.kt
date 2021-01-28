@@ -17,6 +17,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.edxavier.cerberus_sms.CallActivity
 import com.edxavier.cerberus_sms.R
+import com.edxavier.cerberus_sms.data.repositories.RepoContact
+import com.edxavier.cerberus_sms.data.repositories.RepoOperator
 import com.edxavier.cerberus_sms.services.CancelCallReceiver
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
@@ -113,18 +115,25 @@ object CallNotificationHelper: CoroutineScope {
         builder.setFullScreenIntent(pendingFullScreenIntent, true)
 
         // Setup notification content.
-        val number = CallStateManager.newCall?.getPhoneNumber()
-        // Setup notification content.
-        builder.setSmallIcon(R.drawable.ic_ring_volume_24)
-        builder.setContentTitle(
-                HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(ctx, R.color.md_indigo_700) + "\">$number</font>",
-                        HtmlCompat.FROM_HTML_MODE_LEGACY))
-        builder.setSubText("")
-        builder.setContentText("LLamada entrante")
+        launch {
+            val number = CallStateManager.newCall?.getPhoneNumber()?.toPhoneFormat()
+            val repo = RepoContact.getInstance(ctx)
+            val repo2 = RepoOperator.getInstance(ctx)
+            val contact = repo.getPhoneContact(number!!)
+            val op = repo2.getOperator(number)
+
+            // Setup notification content.
+            builder.setSmallIcon(R.drawable.ic_ring_volume_24)
+            builder.setContentTitle(contact.name)
+            op?.let {
+                builder.setSubText(it.operator.getOperatorString())
+            }
+            builder.setContentText("LLamada entrante")
 
 
-        // Use builder.addAction(..) to add buttons to answer or reject the call.
-        mgr.notify(notificationId, builder.build())
+            // Use builder.addAction(..) to add buttons to answer or reject the call.
+            mgr.notify(notificationId, builder.build())
+        }
 
         launch {
             CallStateManager.callState.collect { callState ->
@@ -137,16 +146,20 @@ object CallNotificationHelper: CoroutineScope {
     }
 
     fun showInCallNotification(ctx: Context){
+        job = Job()
         val notificationId = Calendar.getInstance().timeInMillis.toInt()
+        CallStateManager.activeCallNotificationId = notificationId
         val mgr = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(CHANNEL_ID_ACTIVE_CALL, CHANNEL_ACTIVE_CALL, NotificationManager.IMPORTANCE_LOW)
+            val channel = NotificationChannel(CHANNEL_ID_ACTIVE_CALL, CHANNEL_ACTIVE_CALL,
+                    NotificationManager.IMPORTANCE_LOW)
             mgr.createNotificationChannel(channel)
         }
         val intent = Intent(Intent.ACTION_MAIN, null)
+        intent.setClass(ctx, CallActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         intent.putExtra("notificationId", notificationId)
-        val pendingIntent = PendingIntent.getActivity(ctx, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(ctx, 3, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_ACTIVE_CALL)
         builder.priority = NotificationCompat.PRIORITY_LOW
@@ -155,24 +168,16 @@ object CallNotificationHelper: CoroutineScope {
         builder.setColorized(true)
         builder.setChannelId(CHANNEL_ID_ACTIVE_CALL)
         builder.setContentIntent(pendingIntent)
+        builder.setCategory(NotificationCompat.CATEGORY_CALL)
         // Setup notification content.
-        val number = CallStateManager.newCall?.getPhoneNumber()
+        val number = CallStateManager.newCall?.getPhoneNumber()?.toPhoneFormat()
         // Setup notification content.
         builder.setSmallIcon(R.drawable.ic_call_24)
         builder.setContentTitle("LLamada en curso...")
-        builder.setSubText("-----")
+        builder.setSubText("Claro")
         builder.setContentText(number)
 
-        builder.addAction(
-                NotificationCompat.Action.Builder(
-                        R.drawable.ic_call_24,
-                        HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(ctx, R.color.md_green_700) + "\">Volver a llamada</font>",
-                                HtmlCompat.FROM_HTML_MODE_LEGACY),
-                        pendingIntent).build()
-        )
-
         mgr.notify(notificationId, builder.build())
-
 
     }
 

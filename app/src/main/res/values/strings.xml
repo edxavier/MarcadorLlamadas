@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">MarcadorLlamadas</string>
+    <string name="admob_id_aplicacion">ca-app-pub-9964109306515647~3887839019</string>
+    <string name="app_name">Marcador Verifica Operadora</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -9,4 +10,7 @@
     values-round/strings.xml for round devices.
     -->
     <string name="hello_world">Hello Square World!</string>
+    <string name="calls">Llamadas</string>
+    <string name="contacts">Contactos</string>
+    <string name="preferences">Preferencias</string>
 </resources>

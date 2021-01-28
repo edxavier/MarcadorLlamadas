@@ -1,5 +1,7 @@
 package com.edxavier.cerberus_sms.services
 
+import android.app.NotificationManager
+import android.content.Context
 import android.telecom.Call
 import android.telecom.InCallService
 import android.util.Log
@@ -37,6 +39,7 @@ class CallService: InCallService() {
         //CallStateManager.newCall = null
         //Log.e("EDER ","Calls: ${CallStateManager.callList.size}")
         val callIndex = CallStateManager.getCallIndex(call)
+        val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if(callIndex>=0) {
             val ch = CallStateManager.callList[callIndex]
             ch.call?.unregisterCallback(callback)
@@ -45,6 +48,7 @@ class CallService: InCallService() {
                 CallStateManager.updateUi.value = CallStateManager.callList.size
             }else if(!CallStateManager.callActivityShown){
                 CallStateManager.callList.removeAt(callIndex)
+                mgr.cancel(CallStateManager.activeCallNotificationId)
             }
             //Log.e("EDER ","Calls: ${CallStateManager.callList.size}")
         }
@@ -52,7 +56,6 @@ class CallService: InCallService() {
 
     private val callback = object : Call.Callback() {
         override fun onStateChanged(call: Call?, newState: Int) {
-            //Log.e("EDER", "callHandle INDX ${CallStateManager.getCallIndex(call)} ${newState.stateToString()}")
             call?.let {
                 CallStateManager.pushStateChange(CallState(call, newState))
             }

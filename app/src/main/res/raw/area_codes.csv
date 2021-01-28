@@ -1,0 +1,204 @@
+Cuba,Havana,+53,7
+Cuba,Santiago de Cuba,+53,226
+Cuba,Camaguey,+53,322
+Cuba,Cienfuegos,+53,432
+Cuba,Bayamo,+53,23
+Cuba,Ciego de Avila,+53,33
+Cuba,Guantanamo,+53,21
+Cuba,Guantanamo Bay,+53,99
+Cuba,Holguin,+53,24
+Cuba,Las Tunas,+53,31
+Cuba,Manzanillo,+53,23
+Cuba,Matanzas,+53,45
+Cuba,Pinar del Rio,+53,82
+Cuba,Sancti Spiritus,+53,41
+Cuba,Santa Clara,+53,42
+Mexico,Acapulco,+52,744
+Mexico,Aguascalientes,+52,449
+Mexico,Campeche,+52,981
+Mexico,Cancun,+52,998
+Mexico,Celaya,+52,461
+Mexico,Celestun,+52,988
+Mexico,Cihuatlan,+52,315
+Mexico,Ciudad Jimenez,+52,629
+Mexico,Ciudad Juarez,+52,656
+Mexico,Colima,+52,312
+Mexico,Comitan,+52,963
+Mexico,Cordoba,+52,271
+Mexico,Cuernavaca,+52,777
+Mexico,Culiacan,+52,667
+Mexico,Durango,+52,618
+Mexico,Ensenada,+52,646
+Mexico,Guadalajara,+52,33
+Mexico,Guanajuato,+52,473
+Mexico,La Paz,+52,612
+Mexico,Lagunas,+52,972
+Mexico,Leon,+52,477
+Mexico,Manzanillo,+52,314
+Mexico,Merida,+52,999
+Mexico,Mexicali,+52,686
+Mexico,Mexico City,+52,55
+Mexico,Monterrey,+52,81
+Mexico,Morelia,+52,443
+Mexico,Oaxaca,+52,951
+Mexico,Pachuca,+52,771
+Mexico,Puebla,+52,222
+Mexico,Puerto Vallarta,+52,322
+Mexico,Rosarito,+52,661
+Mexico,Salamanca,+52,464
+Mexico,Saltillo,+52,844
+Mexico,San Cristobal de Las Casas,+52,967
+Mexico,San Luis Potosi,+52,444
+Mexico,Santa Rosalia,+52,615
+Mexico,Tecate,+52,665
+Mexico,Tijuana,+52,664
+Mexico,Tlaxcala,+52,246
+Mexico,Todos Santos,+52,612
+Mexico,Toluca,+52,722
+Mexico,Torreon,+52,871
+Mexico,Tulum,+52,984
+Mexico,Tuxtla Gutierrez,+52,961
+Mexico,Uruapan,+52,452
+Mexico,Valladolid,+52,985
+Mexico,Valparaiso,+52,457
+Mexico,Veracruz,+52,229
+Mexico,Villahermosa,+52,993
+Mexico,Zacatecas,+52,492
+Mexico,Zamora,+52,351
+Mexico,Zitacuaro,+52,715
+Panama,Bocas del Toro,+507,7
+Panama,Cocle,+507,9
+Panama,Colon,+507,4
+Panama,Herrera,+507,9
+Panama,Chiriqui,+507,7
+Panama,Los Santos,+507,9
+Panama,Panama City,+507,2
+Panama,Veraguas,+507,9
+Belice,Belize,+501,2
+Belice,Cayo,+501,8
+Belice,Corozal,+501,4
+Belice,Orange Walk,+501,3
+Belice,Stann Creek,+501,5
+Belice,Toledo,+501,7
+Colombia,Bogota,+57,1
+Colombia,Cali|Palmira,+57,2
+Colombia,Medellin,+57,4
+Colombia,Cartagena|Barranquilla|Santa Marta,+57,5
+Colombia,Manizales|Armenia|Pereira,+57,6
+Colombia,Cucuta|Bucaramanga,+57,7
+Colombia,Neiva|Ibague|Villavicencio,+57,8
+Peru,Lima|Callao|Huacho,+51,1
+Peru,Arequipa,+51,54
+Peru,Ayacucho,+51,66
+Peru,Cajamarca,+51,76
+Peru,Cusco,+51,84
+Peru,Huancayo,+51,64
+Peru,Huanuco,+51,62
+Peru,Chiclayo,+51,74
+Peru,Chimbote,+51,43
+Peru,Ica|Pisco,+51,56
+Peru,Iquitos,+51,65
+Peru,Juliaca|Puno,+51,51
+Peru,Pasco,+51,63
+Peru,Piura|Sullana|Talara,+51,73
+Peru,Pucallpa,+51,61
+Peru,Tacna,+51,52
+Peru,Trujillo,+51,44
+Brasil,Sao Paulo | Sao Bernardo Campo,+55,11
+Brasil,Taubate|Sao Jose Campos,+55,12
+Brasil,Sao Vicente,Santos,+55,13
+Brasil,Bauru,+55,14
+Brasil,Sorocaba,+55,15
+Brasil,Franca|Ribeirao Preto,+55,16
+Brasil,Sao Jose de Rio Preto,+55,17
+Brasil,Campinas,+55,19
+Brasil,Rio de Janeiro,+55,21
+Brasil,Volta Redonda|Petropolis,+55,24
+Brasil,Belo Horizonte,+55,31
+Brasil,Juiz de Fora,+55,32
+Brasil,Uberlandia|Uberaba,+55,34
+Brasil,Montes Claros,+55,38
+Brasil,Curitiba,+55,41
+Brasil,Londrina,+55,43
+Brasil,Maringa,+55,44
+Brasil,Foz do Iguacu,+55,45
+Brasil,Joinville,+55,47
+Brasil,Florianopolis,+55,48
+Brasil,Porto Alegre,+55,51
+Brasil,Pelotas,+55,53
+Brasil,Caxias do Soul,+55,54
+Brasil,Santa Maria,+55,55
+Brasil,Brasilia,+55,61
+Brasil,Anapolis|Goiania,+55,62
+Brasil,Cuiaba,+55,65
+Brasil,Campo Grande,+55,67
+Brasil,Rio Branco,+55,68
+Brasil,Porto Velho,+55,69
+Brasil,Salvador,+55,71
+Brasil,Ilheus,+55,73
+Brasil,Feira de Santana,+55,75
+Brasil,Vitoria da Conquista,+55,77
+Brasil,Aracaju,+55,79
+Brasil,Recife|Paulista|Olinda,+55,81
+Brasil,Maceio,+55,82
+Brasil,Joao Pessoa,+55,83
+Brasil,Natal,+55,84
+Brasil,Fortaleza,+55,85
+Brasil,Teresina,+55,86
+Brasil,Ananindeua,+55,91
+Brasil,Belem|Santarem,+55,91
+Brasil,Manaus,+55,92
+Brasil,Boa Vista,+55,95
+Brasil,Macapa,+55,96
+Brasil,Sao Luis,+55,98
+Chile,Santiago,+56,2
+Chile,Valparaiso,+56,32
+Chile,Quillota,+56,33
+Chile,Los Andes,+56,34
+Chile,San Antonio,+56,35
+Chile,Concepcion,+56,41
+Chile,Chillan,+56,42
+Chile,Los Angeles,+56,43
+Chile,Temuco,+56,45
+Chile,La Serena,+56,51
+Chile,Copiapo,+56,52
+Chile,Ovalle,+56,53
+Chile,Antofagasta,+56,55
+Chile,Iquique,+56,57
+Chile,Arica,+56,58
+Chile,Punta Arenas,+56,61
+Chile,Valdivia,+56,63
+Chile,Osorno,+56,64
+Chile,Puerto Montt,+56,65
+Chile,Cohyaique,+56,67
+Chile,Talca,+56,71
+Chile,Rancagua,+56,72
+Chile,Linares,+56,73
+Chile,Curico,+56,75
+Venezuela,Caracas,+58,212
+Venezuela,Los Teques,+58,232
+Venezuela,Guatire|Guarenas,+58,236
+Venezuela,Santa Teresa|Charallave|Cua|Ocumare,+58,239
+Venezuela,Valencia,+58,241
+Venezuela,Maracay|Palo Negro,+58,243
+Venezuela,Turmero,+58,244
+Venezuela,Valencia|Guacara,+58,245
+Venezuela,Calabozo,+58,246
+Venezuela,Barquisimeto,+58,251
+Venezuela,Acarigua,+58,255
+Venezuela,Puerto Cabello,+58,259
+Venezuela,Maracaibo,+58,261
+Venezuela,Coro,+58,268
+Venezuela,Punto Fijo,+58,269
+Venezuela,Guanare,+58,272
+Venezuela,Merida|Barinas,+58,274
+Venezuela,San Cristobal,+58,276
+Venezuela,Cabimas,+58,279
+Venezuela,Puerto La Cruz|Barcelona,+58,281
+Venezuela,Anaco,+58,282
+Venezuela,El Tigre,+58,283
+Venezuela,Ciudad Bolivar,+58,285
+Venezuela,El Roble|Ciudad Guayana,+58,286
+Venezuela,Maturin,+58,291
+Venezuela,Cumana,+58,293
+Venezuela,Carupano,+58,294

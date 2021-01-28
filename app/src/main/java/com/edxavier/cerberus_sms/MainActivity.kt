@@ -1,40 +1,65 @@
 package com.edxavier.cerberus_sms
 
+import android.Manifest
 import android.app.role.RoleManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.telecom.TelecomManager
+import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.edxavier.cerberus_sms.data.models.Operator
+import com.edxavier.cerberus_sms.data.repositories.RepoContact
+import com.edxavier.cerberus_sms.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nicrosoft.consumoelectrico.ScopeActivity
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ScopeActivity() {
+    private val PERMISO_CONTACTOS = 2
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
-
+        //setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications))
+                R.id.nav_calls, R.id.nav_contacts, R.id.nav_preferences))
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        binding.bottomNavView.setupWithNavController(navController)
         requestRole()
+        launch {
+            Operator.initializeOperators(this@MainActivity)
+        }
+        if(!hasReadContactsPermission())
+            requestReadContactPermission()
+
     }
     private val REQUEST_ID = 1
 
-    fun requestRole() {
+    private fun requestRole() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             val roleManager = getSystemService(ROLE_SERVICE) as RoleManager
             val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
             startActivityForResult(intent, REQUEST_ID)
+        }else if (getSystemService(TelecomManager::class.java).defaultDialerPackage !== packageName) {
+            val changeDialer = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+            changeDialer.putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+            startActivity(changeDialer)
         }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -46,5 +71,25 @@ class MainActivity : ScopeActivity() {
                 // Your app is not the default dialer app
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            this.PERMISO_CONTACTOS -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "PERMISO DENEGADO", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "PERMISO CONCEDIDO", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun hasReadContactsPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+    }
+    private fun requestReadContactPermission() {
+        requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), this.PERMISO_CONTACTOS)
     }
 }

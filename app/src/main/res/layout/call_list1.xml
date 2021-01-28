@@ -7,8 +7,8 @@
 
         <ImageView
             android:id="@+id/callAvatar"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
             android:layout_gravity="center"
             android:layout_marginBottom="8dp"
             android:src="@drawable/ic_user" />
@@ -19,17 +19,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Eder Rojas"
-            android:textSize="18sp" />
+            android:fontFamily="@font/source_sans_pro_semibold"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/callCountry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/source_sans_pro_light"
+            android:textColor="@color/md_white_1000"
+            android:textSize="13sp" />
 
         <com.google.android.material.card.MaterialCardView
+            android:layout_marginTop="2dp"
+            android:id="@+id/operatorCard"
             android:padding="8dp"
             android:layout_gravity="center"
-            app:cardBackgroundColor="@color/md_red_500"
+            app:cardBackgroundColor="@color/md_white_1000_10"
             app:cardCornerRadius="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
                 <TextView
+                    android:fontFamily="@font/ubuntu"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="1dp"
@@ -38,20 +51,18 @@
                     style="@style/TextAppearance.MaterialComponents.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Claro"
                     android:textColor="@color/md_white_1000" />
 
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/callStatus"
+            android:fontFamily="@font/ubuntu"
             style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="6dp"
-            android:text="-----"
             android:textColor="@color/white" />
-
 
 </LinearLayout>

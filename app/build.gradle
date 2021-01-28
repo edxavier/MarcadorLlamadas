@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
 }
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
@@ -19,6 +20,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            resValue "string", "BANNER_FLOTANTE", project.property('ID_BANNER_FLOTANTE')
+            resValue "string", "BANNER_PRINCIPAL", project.property('ID_BANNER_PRINCIPAL')
+        }
+        debug{
+            resValue "string", "BANNER_FLOTANTE", project.property('ID_BANNER_PRUEBA')
+            resValue "string", "BANNER_PRINCIPAL", project.property('ID_BANNER_PRUEBA')
         }
     }
     compileOptions {
@@ -51,10 +58,24 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.2'
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2"
 
     implementation "com.xwray:groupie:2.8.1"
     implementation "com.xwray:groupie-kotlin-android-extensions:2.8.1"
     implementation "com.xwray:groupie-viewbinding:2.8.1"
+
+    implementation 'androidx.room:room-runtime:2.2.6'
+    kapt 'androidx.room:room-compiler:2.2.6'
+
+    implementation 'com.opencsv:opencsv:5.1'
+
+    implementation("io.coil-kt:coil:1.1.1")
+
+    implementation 'com.google.firebase:firebase-core:18.0.1'
+    implementation 'com.google.firebase:firebase-ads:19.7.0'
+
+    //ANIMATIONS
+    implementation 'com.airbnb.android:lottie:3.4.1'
+
 }

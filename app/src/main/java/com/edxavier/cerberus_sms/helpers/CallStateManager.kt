@@ -14,6 +14,7 @@ import kotlin.random.Random
 object CallStateManager {
 
     var callActivityShown = false
+    var activeCallNotificationId = -1
 
     private  val _callState = MutableStateFlow(CallState())
     val updateUi = MutableStateFlow(0)

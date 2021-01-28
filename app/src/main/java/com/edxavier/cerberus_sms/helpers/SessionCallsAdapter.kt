@@ -1,6 +1,8 @@
 package com.edxavier.cerberus_sms.helpers
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.Uri
 import android.telecom.Call
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,8 +11,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.edxavier.cerberus_sms.R
-import kotlinx.android.synthetic.main.call_list1.view.*
+import com.edxavier.cerberus_sms.data.models.Operator
+import com.edxavier.cerberus_sms.data.repositories.RepoContact
+import com.edxavier.cerberus_sms.data.repositories.RepoOperator
 import kotlinx.android.synthetic.main.call_list1.view.callDisplayContact
 import kotlinx.android.synthetic.main.call_list1.view.callStatus
 import kotlinx.android.synthetic.main.call_list2.view.*
@@ -18,14 +24,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 @ExperimentalCoroutinesApi
 class SessionCallsAdapter(
-        private val coroutineScope: CoroutineScope
+        private val coroutineScope: CoroutineScope,
+        private val context:Context
 ): ListAdapter<CallHandle, SessionCallsAdapter.ViewHolder>(DiffCallback()) {
 
     class DiffCallback: DiffUtil.ItemCallback<CallHandle>() {
@@ -41,7 +45,7 @@ class SessionCallsAdapter(
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         @SuppressLint("SetTextI18n")
-        fun bind(callHandle: CallHandle, cScope: CoroutineScope){
+        fun bind(callHandle: CallHandle, cScope: CoroutineScope, context: Context){
             itemView.apply {
                 with(this){
                     cScope.launch {
@@ -74,8 +78,46 @@ class SessionCallsAdapter(
                                         callStatus.text = it.state.stateToString()
                                 }
                     }
-                    callDisplayContact.text = callHandle.call?.getPhoneNumber()
+
                     callStatus.text = callHandle.call?.state?.stateToString()
+                    callHandle.call?.getPhoneNumber()?.let {
+                        val repo = RepoOperator.getInstance(context)
+                        val repoContact = RepoContact.getInstance(context)
+                        cScope.launch {
+                            callDisplayContact.text = callHandle.call?.getPhoneNumber()?.toPhoneFormat()
+                            val op = repo.getOperator(it)
+                            if(op!=null){
+                                callCountry.visible()
+                                if(op.operator!= Operator.INTERNATIONAL)
+                                    operatorCard.visible()
+                                else
+                                    operatorCard.invisible()
+                                callOperator.text = op.operator.getOperatorString()
+                                operatorCard.setCardBackgroundColor(op.operator.getOperatorColor(context))
+                                var tmp = ""
+                                tmp = if(op.area.isNotBlank())
+                                    "${op.area}, ${op.country}"
+                                else
+                                    op.country
+                                callCountry.text = tmp
+                            }else{
+                                callCountry.text = ""
+                                callCountry.invisible()
+                                operatorCard.visible()
+                                callOperator.text = Operator.UNKNOWN.getOperatorString()
+                                operatorCard.setCardBackgroundColor(Operator.UNKNOWN.getOperatorColor(context))
+                            }
+
+                            if(repoContact.hasReadContactsPermission()){
+                                val contact = repoContact.getPhoneContact(callHandle.call?.getPhoneNumber()!!)
+                                callDisplayContact.text = contact.name
+                                if (contact.photo.isNotBlank())
+                                    callAvatar.load(Uri.parse(contact.photo)){
+                                        transformations(CircleCropTransformation())
+                                    }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -90,7 +132,7 @@ class SessionCallsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), coroutineScope)
+        holder.bind(getItem(position), coroutineScope, context)
     }
 
 }

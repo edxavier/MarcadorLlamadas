@@ -6,20 +6,32 @@
     android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:visibility="gone"
+            android:id="@+id/backgroundImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@string/app_name"
             android:scaleType="centerCrop"
-            android:src="@drawable/lift"
+            android:src="@drawable/diente_leon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <com.airbnb.lottie.LottieAnimationView
+            android:scaleType="centerCrop"
+            android:id="@+id/animation_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/scrimgray"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/background_full_screen" />
+
+        <ImageView
+            android:contentDescription="@string/app_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/traslucent_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -27,62 +39,26 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <LinearLayout
-            android:visibility="gone"
-            android:layout_width="match_parent"
+        <FrameLayout
+            android:id="@+id/adViewContainer"
+            android:layout_marginTop="24dp"
+            android:layout_width="wrap_content"
+            android:minHeight="50dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recycler_session_calls">
-
-                <ImageView
-                    android:layout_width="84dp"
-                    android:layout_height="84dp"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="12dp"
-                    android:src="@drawable/ic_user" />
-
-                <TextView
-                    android:id="@+id/displayContact"
-                    style="@style/TextAppearance.AppCompat.Title.Inverse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Eder Rojas"
-                    android:textSize="20sp" />
-
-                <TextView
-                    style="@style/TextAppearance.MaterialComponents.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Claro"
-                    android:textColor="@color/white" />
-
-                <TextView
-                    android:id="@+id/call_status"
-                    style="@style/TextAppearance.MaterialComponents.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:text="Llamada entrante"
-                    android:textColor="@color/white" />
-
-
-        </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_session_calls"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:layout_marginTop="64dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="24dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/call_list2" />
+            app:layout_constraintTop_toBottomOf="@id/adViewContainer"
+            tools:listitem="@layout/call_list1" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -112,7 +88,8 @@
                                 <com.google.android.material.card.MaterialCardView
                                     app:rippleColor="@color/md_white_1000"
                                     android:id="@+id/dial_1"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardPreventCornerOverlap="true"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -137,7 +114,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_2"
                                     app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -162,7 +139,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_3"
                                     app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -199,7 +176,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_4"
                                     app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -225,7 +202,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     app:rippleColor="@color/md_white_1000"
                                     android:id="@+id/dial_5"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -250,7 +227,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     app:rippleColor="@color/md_white_1000"
                                     android:id="@+id/dial_6"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -288,7 +265,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     app:rippleColor="@color/md_white_1000"
                                     android:id="@+id/dial_7"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -313,7 +290,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     app:rippleColor="@color/md_white_1000"
                                     android:id="@+id/dial_8"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -338,7 +315,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_9"
                                     app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -375,7 +352,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_asterisk"
                                     app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -400,7 +377,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_0"
                                     app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -425,7 +402,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_hash"
                                     app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_10"
+                                    app:cardBackgroundColor="@color/md_white_1000_50"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
