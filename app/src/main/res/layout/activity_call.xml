@@ -467,7 +467,6 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:orientation="horizontal">
-
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/card_hold"
                                     android:layout_width="50dp"
