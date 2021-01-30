@@ -36,16 +36,16 @@ class CallActivity : ScopeActivity() {
 
     private lateinit var binding: ActivityCallBinding
 
-    private var seconds = 0
-    private var currentStatus = 0
-    private var muteMic = false
-    private var speakerOn = false
-    private var holdCall = false
-    private var showDial = false
 
     lateinit var adapter: SessionCallsAdapter
 
     companion object {
+        private var currentStatus = 0
+        private var muteMic = false
+        private var speakerOn = false
+        private var holdCall = false
+        private var showDial = false
+
         fun start(context: Context, call: Call) {
 
 
@@ -141,12 +141,18 @@ class CallActivity : ScopeActivity() {
                 }
 
             }else {
-                if (CallStateManager.callList.size > 1) {
-                    //Log.e("EDER", "COLGAR LLAMADA ACTIVA EN MAS DE 1")
-                    CallStateManager.callList[CallStateManager.getActiveCallIndex()].call?.getPhoneNumber()?.let { it1 -> Log.e("EDER", it1) }
-                    CallStateManager.callList[CallStateManager.getActiveCallIndex()].hangup()
-                }else if (CallStateManager.callList.size == 1) {
-                    CallStateManager.callList[0].hangup()
+                when {
+                    CallStateManager.callList.size > 1 -> {
+                        //Log.e("EDER", "COLGAR LLAMADA ACTIVA EN MAS DE 1")
+                        CallStateManager.callList[CallStateManager.getActiveCallIndex()].call?.getPhoneNumber()?.let { it1 -> Log.e("EDER", it1) }
+                        CallStateManager.callList[CallStateManager.getActiveCallIndex()].hangup()
+                    }
+                    CallStateManager.callList.size == 1 -> {
+                        CallStateManager.callList[0].hangup()
+                    }
+                    CallStateManager.callList.size == 0 -> {
+                        finishAndRemoveTask()
+                    }
                 }
             }
         }

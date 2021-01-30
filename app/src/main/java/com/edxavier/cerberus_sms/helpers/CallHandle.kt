@@ -3,7 +3,9 @@ package com.edxavier.cerberus_sms.helpers
 import android.content.Context
 import android.telecom.Call
 import android.telecom.VideoProfile
+import android.util.Log
 import kotlinx.coroutines.*
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi
@@ -21,18 +23,20 @@ class CallHandle(
         val scope = CoroutineScope(context)
         scope.launch {
             while (true){
-                delay(1000)
                 if(call==null) {
                     timerStarted = false
                     break
                 }
                 if (call?.state == Call.STATE_ACTIVE || call?.state == Call.STATE_HOLDING){
-                    seconds += 1
+                    //seconds += 1
+                    seconds = ((Date().time - call!!.details.connectTimeMillis)/1000).toInt()
+                    //Log.e("EDER", "$seconds")
                     CallStateManager.callHandleSeconds.value = CallHandle(call, seconds)
                 }else{
                     timerStarted = false
                     break
                 }
+                delay(1000)
             }
         }
     }

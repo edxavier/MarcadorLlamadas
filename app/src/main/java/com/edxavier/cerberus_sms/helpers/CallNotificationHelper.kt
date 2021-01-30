@@ -29,10 +29,10 @@ import kotlin.coroutines.CoroutineContext
 @ExperimentalCoroutinesApi
 object CallNotificationHelper: CoroutineScope {
     const val CHANNEL_ID = "com.edxavier.cerberus_sms.incoming.call"
-    const val CHANNEL_NAME = "com.edxavier.cerberus_sms.incoming.call"
+    const val CHANNEL_NAME = "Llamadas entrantes"
 
     const val CHANNEL_ID_ACTIVE_CALL = "com.edxavier.cerberus_sms.active.call"
-    const val CHANNEL_ACTIVE_CALL = "com.edxavier.cerberus_sms.active.call"
+    const val CHANNEL_ACTIVE_CALL = "Llamadas en curso"
 
     private lateinit var job: Job
 
