@@ -66,17 +66,17 @@ fun View.invisible(){ this.visibility = View.GONE }
 fun Int.getOperatorString(): String {
     var op = ""
     when {
-        this == Operator.UNKNOWN -> op = "Indefinido"
-        this == Operator.CLARO -> op ="Claro"
-        this == Operator.MOVISTAR -> op ="Movistar"
-        this == Operator.COOTEL -> op ="Cootel"
-        this == Operator.CONVENTIONAL -> op ="Línea fija"
-        this == Operator.INTERNATIONAL -> op ="Internacional"
-        this == Operator.KOLBI -> op ="Kolbi"
-        this == Operator.TIGO -> op ="Tigo"
-        this == Operator.HONDUTEL -> op ="Hondutel"
-        this == Operator.DIGICEL -> op ="Digicel"
-        this == Operator.INTELFON -> op ="Intelfon"
+        this == Operator.UNKNOWN -> op = "DESCONOCIDO"
+        this == Operator.CLARO -> op ="CLARO"
+        this == Operator.MOVISTAR -> op ="MOVISTAR"
+        this == Operator.COOTEL -> op ="COOTEL"
+        this == Operator.CONVENTIONAL -> op ="LINEA FIJA"
+        this == Operator.INTERNATIONAL -> op ="INTERNACIONAL"
+        this == Operator.KOLBI -> op ="KOLBI"
+        this == Operator.TIGO -> op ="TIGO"
+        this == Operator.HONDUTEL -> op ="HONDUTEL"
+        this == Operator.DIGICEL -> op ="DIGICEL"
+        this == Operator.INTELFON -> op ="INTELFON"
     }
     return op
 }
@@ -91,7 +91,7 @@ fun Int.getOperatorColor(context: Context): Int {
         this == Operator.COOTEL -> op = ContextCompat.getColor(context, R.color.md_deep_orange_500)
         this == Operator.CONVENTIONAL -> op = ContextCompat.getColor(context, R.color.md_blue_700)
         this == Operator.INTERNATIONAL -> op = ContextCompat.getColor(context, R.color.md_purple_700)
-        this == Operator.UNKNOWN -> op = ContextCompat.getColor(context, R.color.md_black_1000)
+        this == Operator.UNKNOWN -> op = ContextCompat.getColor(context, R.color.md_grey_700)
     }
     return op
 }

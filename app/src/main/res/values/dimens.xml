@@ -16,8 +16,8 @@
     <dimen name="inner_frame_layout_padding">5dp</dimen>
 
 
-    <dimen name="dial_button">50dp</dimen>
-    <dimen name="dial_button_radius">25dp</dimen>
+    <dimen name="dial_button">46dp</dimen>
+    <dimen name="dial_button_radius">23dp</dimen>
 
 
 </resources>

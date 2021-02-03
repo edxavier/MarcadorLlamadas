@@ -4,19 +4,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.dashboard.DashboardFragment">
+    tools:context=".ui.calls.CallsFragment">
 
-    <TextView
-        android:id="@+id/text_dashboard"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerContacts"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
+        android:scrollbars="vertical"
+        android:paddingBottom="2dp"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/notificationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <com.airbnb.lottie.LottieAnimationView
+            app:lottie_speed="0.7"
+            android:layout_gravity="center"
+            android:id="@+id/notificationAnimation"
+            android:scaleType="fitCenter"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/security" />
+
+        <TextView
+            android:fontFamily="@font/ubuntu"
+            android:textColor="@color/md_black_1000_50"
+            android:id="@+id/notificationMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:gravity="center"
+            android:text="No se pudo leer la lista de contactos" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPermissionAssign"
+            android:text="Asignar permisos"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

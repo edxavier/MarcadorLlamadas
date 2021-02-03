@@ -22,8 +22,6 @@ import kotlinx.coroutines.launch
 
 
 class MainActivity : ScopeActivity() {
-    private val PERMISO_CONTACTOS = 2
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,9 +41,6 @@ class MainActivity : ScopeActivity() {
         launch {
             Operator.initializeOperators(this@MainActivity)
         }
-        if(!hasReadContactsPermission())
-            requestReadContactPermission()
-
     }
     private val REQUEST_ID = 1
 
@@ -73,23 +68,4 @@ class MainActivity : ScopeActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            this.PERMISO_CONTACTOS -> {
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "PERMISO DENEGADO", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "PERMISO CONCEDIDO", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
-
-    private fun hasReadContactsPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
-    }
-    private fun requestReadContactPermission() {
-        requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), this.PERMISO_CONTACTOS)
-    }
 }

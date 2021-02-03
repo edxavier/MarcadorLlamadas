@@ -86,6 +86,7 @@ object CallNotificationHelper: CoroutineScope {
         builder.setOngoing(true)
         builder.priority = NotificationCompat.PRIORITY_HIGH
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        builder.color = ctx.getColor(R.color.md_green_700)
         builder.setAutoCancel(true)
         builder.setColorized(true)
         builder.setSound(null)
@@ -128,7 +129,7 @@ object CallNotificationHelper: CoroutineScope {
             op?.let {
                 builder.setSubText(it.operator.getOperatorString())
             }
-            builder.setContentText("LLamada entrante")
+            builder.setContentText("Llamada entrante")
 
 
             // Use builder.addAction(..) to add buttons to answer or reject the call.
@@ -147,12 +148,15 @@ object CallNotificationHelper: CoroutineScope {
 
     fun showInCallNotification(ctx: Context){
         job = Job()
-        val notificationId = Calendar.getInstance().timeInMillis.toInt()
+        //val notificationId = Calendar.getInstance().timeInMillis.toInt()
+        val notificationId = 5
         CallStateManager.activeCallNotificationId = notificationId
         val mgr = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(CHANNEL_ID_ACTIVE_CALL, CHANNEL_ACTIVE_CALL,
-                    NotificationManager.IMPORTANCE_LOW)
+                    NotificationManager.IMPORTANCE_DEFAULT)
+            channel.setSound(null, null)
+            channel.enableVibration(false)
             mgr.createNotificationChannel(channel)
         }
         val intent = Intent(Intent.ACTION_MAIN, null)
@@ -162,23 +166,33 @@ object CallNotificationHelper: CoroutineScope {
         val pendingIntent = PendingIntent.getActivity(ctx, 3, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_ACTIVE_CALL)
-        builder.priority = NotificationCompat.PRIORITY_LOW
+        builder.priority = NotificationCompat.PRIORITY_DEFAULT
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-        builder.setAutoCancel(true)
+        builder.setAutoCancel(false)
+        builder.setSound(null)
+        builder.setVibrate(null)
         builder.setColorized(true)
         builder.setChannelId(CHANNEL_ID_ACTIVE_CALL)
         builder.setContentIntent(pendingIntent)
         builder.setCategory(NotificationCompat.CATEGORY_CALL)
-        // Setup notification content.
-        val number = CallStateManager.newCall?.getPhoneNumber()?.toPhoneFormat()
-        // Setup notification content.
-        builder.setSmallIcon(R.drawable.ic_call_24)
-        builder.setContentTitle("LLamada en curso...")
-        builder.setSubText("Claro")
-        builder.setContentText(number)
 
-        mgr.notify(notificationId, builder.build())
+        launch {
+            val number = CallStateManager.newCall?.getPhoneNumber()?.toPhoneFormat()
+            val repo = RepoContact.getInstance(ctx)
+            val repo2 = RepoOperator.getInstance(ctx)
+            val contact = repo.getPhoneContact(number!!)
+            val op = repo2.getOperator(number)
 
+            // Setup notification content.
+            builder.setSmallIcon(R.drawable.ic_call_24)
+            builder.setContentTitle("Llamada en curso...")
+            builder.setContentText(contact.name)
+            op?.let {
+                builder.setSubText(it.operator.getOperatorString())
+            }
+            // Use builder.addAction(..) to add buttons to answer or reject the call.
+            mgr.notify(notificationId, builder.build())
+        }
     }
 
 }

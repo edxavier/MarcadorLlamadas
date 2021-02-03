@@ -1,10 +1,9 @@
-package com.edxavier.cerberus_sms.helpers
+package com.edxavier.cerberus_sms.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.telecom.Call
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +16,7 @@ import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.Operator
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
 import com.edxavier.cerberus_sms.data.repositories.RepoOperator
+import com.edxavier.cerberus_sms.helpers.*
 import kotlinx.android.synthetic.main.call_list1.view.callDisplayContact
 import kotlinx.android.synthetic.main.call_list1.view.callStatus
 import kotlinx.android.synthetic.main.call_list2.view.*
@@ -43,7 +43,6 @@ class SessionCallsAdapter(
     }
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-
         @SuppressLint("SetTextI18n")
         fun bind(callHandle: CallHandle, cScope: CoroutineScope, context: Context){
             itemView.apply {
@@ -56,14 +55,8 @@ class SessionCallsAdapter(
                                 .collect {
                                     if(it.call?.state == Call.STATE_ACTIVE)
                                         callStatus.text = callHandle.seconds.timeFormat()
-                                    try {
-                                        if (it.call?.state == Call.STATE_HOLDING) {
-                                            callHangupBtn.visibility = View.VISIBLE
-                                            callStatus.text = it.call?.state?.stateToString()
-                                        }else
-                                            callHangupBtn.visibility = View.GONE
-                                    }catch (e:Exception){}
-
+                                    if (it.call?.state == Call.STATE_HOLDING)
+                                        callStatus.text = it.call?.state?.stateToString()
                                 }
                     }
                     cScope.launch {

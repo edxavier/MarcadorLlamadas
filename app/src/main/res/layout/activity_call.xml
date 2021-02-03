@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
-            app:lottie_rawRes="@raw/background_full_screen" />
+            app:lottie_rawRes="@raw/background_night" />
 
         <ImageView
             android:contentDescription="@string/app_name"
@@ -86,10 +86,12 @@
                             android:layout_height="wrap_content">
 
                                 <com.google.android.material.card.MaterialCardView
-                                    app:rippleColor="@color/md_white_1000"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
                                     android:id="@+id/dial_1"
                                     app:cardPreventCornerOverlap="true"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -98,7 +100,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="1"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -113,8 +115,10 @@
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_2"
-                                    app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -123,7 +127,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="2"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -138,8 +142,10 @@
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_3"
-                                    app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -148,7 +154,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="3"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -175,14 +181,16 @@
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_4"
-                                    app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
 
                                         <TextView
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
@@ -200,9 +208,11 @@
                             android:layout_height="wrap_content">
 
                                 <com.google.android.material.card.MaterialCardView
-                                    app:rippleColor="@color/md_white_1000"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
                                     android:id="@+id/dial_5"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -211,7 +221,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="5"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -225,9 +235,11 @@
                             android:layout_height="wrap_content">
 
                                 <com.google.android.material.card.MaterialCardView
-                                    app:rippleColor="@color/md_white_1000"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
                                     android:id="@+id/dial_6"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -236,7 +248,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="6"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -263,9 +275,11 @@
                             android:layout_height="wrap_content">
 
                                 <com.google.android.material.card.MaterialCardView
-                                    app:rippleColor="@color/md_white_1000"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
                                     android:id="@+id/dial_7"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -274,7 +288,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="7"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -288,9 +302,11 @@
                             android:layout_height="wrap_content">
 
                                 <com.google.android.material.card.MaterialCardView
-                                    app:rippleColor="@color/md_white_1000"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
                                     android:id="@+id/dial_8"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -299,7 +315,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="8"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -314,8 +330,10 @@
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_9"
-                                    app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -324,7 +342,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="9"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -351,8 +369,10 @@
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_asterisk"
-                                    app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -361,7 +381,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="*"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -376,8 +396,10 @@
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_0"
-                                    app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -386,7 +408,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="0"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -401,8 +423,10 @@
 
                                 <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/dial_hash"
-                                    app:rippleColor="@color/md_white_1000"
-                                    app:cardBackgroundColor="@color/md_white_1000_50"
+                                    app:rippleColor="@color/md_white_1000_50"
+                                    app:strokeColor="@color/md_white_1000_50"
+                                    app:strokeWidth="2dp"
+                                    app:cardBackgroundColor="@color/md_black_1000_15"
                                     app:cardCornerRadius="@dimen/dial_button_radius"
                                     android:layout_width="@dimen/dial_button"
                                     android:layout_height="@dimen/dial_button">
@@ -411,7 +435,7 @@
                                             android:layout_gravity="center"
                                             android:textColor="@color/md_white_1000"
                                             android:text="#"
-                                            style="@style/TextAppearance.MaterialComponents.Headline5"
+                                            style="@style/TextAppearance.MaterialComponents.Headline6"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"/>
 
@@ -447,7 +471,7 @@
                                     app:cardCornerRadius="25dp"
                                     app:rippleColor="@color/md_blue_500_25"
                                     app:strokeColor="@color/md_white_1000_25"
-                                    app:strokeWidth="1dp">
+                                    app:strokeWidth="2dp">
 
                                         <androidx.appcompat.widget.AppCompatImageView
                                             android:id="@+id/icon_mic"
@@ -477,7 +501,7 @@
                                     app:cardCornerRadius="25dp"
                                     app:rippleColor="@color/md_blue_500_25"
                                     app:strokeColor="@color/md_white_1000_25"
-                                    app:strokeWidth="1dp">
+                                    app:strokeWidth="2dp">
 
                                         <androidx.appcompat.widget.AppCompatImageView
                                             android:id="@+id/icon_hold"
@@ -518,7 +542,7 @@
                                     app:cardCornerRadius="25dp"
                                     app:rippleColor="@color/md_blue_500_25"
                                     app:strokeColor="@color/md_white_1000_25"
-                                    app:strokeWidth="1dp">
+                                    app:strokeWidth="2dp">
 
                                         <androidx.appcompat.widget.AppCompatImageView
                                             android:layout_width="wrap_content"
@@ -542,6 +566,7 @@
 
                                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                                     android:id="@+id/fab_hangup"
+                                    android:keepScreenOn="true"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
@@ -591,7 +616,7 @@
                                     app:cardCornerRadius="25dp"
                                     app:rippleColor="@color/md_blue_500_25"
                                     app:strokeColor="@color/md_white_1000_25"
-                                    app:strokeWidth="1dp">
+                                    app:strokeWidth="2dp">
 
                                         <androidx.appcompat.widget.AppCompatImageView
                                             android:id="@+id/icon_speaker"

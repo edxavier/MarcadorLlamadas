@@ -6,13 +6,20 @@
         <item name="colorPrimary">@color/md_deep_orange_500</item>
         <item name="colorPrimaryDark">@color/md_deep_orange_700</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/colorAccent</item>
-        <item name="colorSecondaryVariant">@color/colorAccent</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
         <item name="android:fontFamily">@font/source_sans_pro</item>
-
+        <item name="materialButtonStyle">@style/AppButton</item>
+        <!-- enable window content transitions -->
+        <item name="android:windowActivityTransitions">true</item>
+        <!-- Customize your theme here. -->
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
-
+    <!-- Splash Screen Theme. -->
+    <style name="DetailActivity" parent="Theme.MarcadorLlamadas">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
     <!-- Splash Screen Theme. -->
     <style name="Fullscreen" parent="Theme.MarcadorLlamadas">
         <item name="android:windowNoTitle">true</item>
@@ -23,6 +30,7 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:fontFamily">@font/source_sans_pro</item>
     </style>
+
 
     <style name="App.Caption" parent="android:Widget.TextView">
         <item name="android:fontFamily">@font/source_sans_pro</item>
@@ -36,4 +44,15 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="AppButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">?attr/colorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.App.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="TextAppearance.App.CollapsingToolbar.Collapsed" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
 </resources>

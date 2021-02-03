@@ -1,13 +1,20 @@
 package com.edxavier.cerberus_sms
 
+import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.media.ToneGenerator
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.telecom.Call
 import android.util.DisplayMetrics
 import android.util.Log
@@ -18,6 +25,7 @@ import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.BlurTransformation
+import com.edxavier.cerberus_sms.adapters.SessionCallsAdapter
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
 import com.edxavier.cerberus_sms.databinding.ActivityCallBinding
 import com.edxavier.cerberus_sms.helpers.*
@@ -32,10 +40,15 @@ import kotlinx.coroutines.launch
 
 
 @ExperimentalCoroutinesApi
-class CallActivity : ScopeActivity() {
+class CallActivity : ScopeActivity(), SensorEventListener {
 
+    private var wakeLock: PowerManager.WakeLock? = null
+
+    private lateinit var powerManager: PowerManager
+    private var field: Int = 0x00000020
     private lateinit var binding: ActivityCallBinding
-
+    private var mSensorManager: SensorManager? = null
+    private var mProximity: Sensor? = null
 
     lateinit var adapter: SessionCallsAdapter
 
@@ -48,7 +61,6 @@ class CallActivity : ScopeActivity() {
 
         fun start(context: Context, call: Call) {
 
-
             Intent(context, CallActivity::class.java)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .setData(call.details.handle)
@@ -56,6 +68,7 @@ class CallActivity : ScopeActivity() {
         }
     }
 
+    @SuppressLint("InvalidWakeLockTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         CallStateManager.callActivityShown = true
@@ -71,6 +84,13 @@ class CallActivity : ScopeActivity() {
                     WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
         }
+
+        mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        mProximity = mSensorManager?.getDefaultSensor(Sensor.TYPE_PROXIMITY)
+
+        powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "com.edxavier.cerberus_sms")
+
         adapter = SessionCallsAdapter(this, this)
         //setContentView(R.layout.activity_call)
         binding = ActivityCallBinding.inflate(layoutInflater)
@@ -115,6 +135,23 @@ class CallActivity : ScopeActivity() {
     }
 
     private fun setupClickListeners() {
+
+        if(speakerOn) {
+            binding.iconSpeaker.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_speaker))
+            ImageViewCompat.setImageTintList(binding.iconSpeaker,
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_blue_500)))
+        }
+
+        if(muteMic) {
+            binding.iconMic.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_mic_off))
+            ImageViewCompat.setImageTintList(binding.iconMic,
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_blue_500)))
+        }
+        if(holdCall) {
+            if(CallStateManager.callList.size==1)
+                ImageViewCompat.setImageTintList(binding.iconHold, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_blue_500)))
+        }
+
         binding.fabAnswer.setOnClickListener {
             when (CallStateManager.callList.size) {
                 2 -> {
@@ -165,11 +202,11 @@ class CallActivity : ScopeActivity() {
             if(muteMic) {
                 binding.iconMic.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_mic_off))
                 ImageViewCompat.setImageTintList(binding.iconMic,
-                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_blue_500)))
+                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_blue_500)))
             }else {
                 binding.iconMic.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_mic_off))
                 ImageViewCompat.setImageTintList(binding.iconMic,
-                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_white_1000_60)))
+                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_white_1000_60)))
             }
         }
         binding.cardHold.setOnClickListener {
@@ -194,12 +231,12 @@ class CallActivity : ScopeActivity() {
                 CallStateManager.setSpeakerOn()
                 binding.iconSpeaker.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_speaker))
                 ImageViewCompat.setImageTintList(binding.iconSpeaker,
-                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_blue_500)))
+                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_blue_500)))
             }else{
                 CallStateManager.setSpeakerOff()
                 binding.iconSpeaker.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_speaker))
                 ImageViewCompat.setImageTintList(binding.iconSpeaker,
-                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_white_1000_60)))
+                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.md_white_1000_60)))
             }
 
             /*val audioManager = applicationContext.getSystemService(AUDIO_SERVICE) as AudioManager
@@ -219,19 +256,10 @@ class CallActivity : ScopeActivity() {
         with(binding){
             dialPad.setOnClickListener {
                 showDial = !showDial
-                if (showDial){
-                    row1.visible()
-                    row2.visible()
-                    row3.visible()
-                    row4.visible()
-                    row5.invisible()
-                }else{
-                    row1.invisible()
-                    row2.invisible()
-                    row3.invisible()
-                    row4.invisible()
-                    row5.visible()
-                }
+                if (showDial)
+                   showDialPad()
+                else
+                    hideDialPad()
             }
             dial0.setOnClickListener { playDTMFTone('0') }
             dial1.setOnClickListener { playDTMFTone('1') }
@@ -249,11 +277,24 @@ class CallActivity : ScopeActivity() {
 
     }
 
-    private fun playDTMFTone(digit:Char){
+    private fun playDTMFTone(digit: Char){
         val i = CallStateManager.getActiveCallIndex()
         if(i>=0) {
             CallStateManager.callList[i].call?.playDtmfTone(digit)
             CallStateManager.callList[i].call?.stopDtmfTone()
+        }
+    }
+
+    //Tono de aviso de llamada entrante mientras existe ya una llamada en curso
+    private fun playIncomingCallDTMFTone(){
+        launch {
+            val dtmfGenerator = ToneGenerator(0, ToneGenerator.MAX_VOLUME)
+            while(currentStatus == Call.STATE_RINGING) {
+                dtmfGenerator.startTone(ToneGenerator.TONE_SUP_CALL_WAITING, 1000) // all types of tones are available...
+                delay(1000)
+                dtmfGenerator.stopTone()
+                delay(2500)
+            }
         }
     }
 
@@ -282,25 +323,28 @@ class CallActivity : ScopeActivity() {
                         Call.STATE_DISCONNECTED -> {
                             currentStatus = state
                             //Comparar con 0 ya que antes de llegar aqui la llamada es removida
-                            if(CallStateManager.callList.size==1) {
-                                if(CallStateManager.callList[0].call?.state == Call.STATE_DISCONNECTED) {
+                            if (CallStateManager.callList.size == 1) {
+                                if (CallStateManager.callList[0].call?.state == Call.STATE_DISCONNECTED) {
                                     delay(1000)
                                     CallStateManager.callList.removeAt(0)
+                                    speakerOn = false
+                                    muteMic = false
                                     finishAndRemoveTask()
-                                }else{
+                                } else {
                                     showActiveCallButtons()
                                 }
-                            }else if(CallStateManager.callList.size>1){
+                            } else if (CallStateManager.callList.size > 1) {
                                 showActiveCallButtons()
-                            }else{
+                            } else {
+                                speakerOn = false
+                                muteMic = false
                                 finishAndRemoveTask()
                             }
-
                         }
                         Call.STATE_ACTIVE -> {
                             currentStatus = state
                             showActiveCallButtons()
-                            if(CallStateManager.callList[index].seconds == 0 && !CallStateManager.callList[index].timerStarted) {
+                            if (CallStateManager.callList[index].seconds == 0 && !CallStateManager.callList[index].timerStarted) {
                                 //Log.e("EDER", "Start obj timer ${CallStateManager.callList[index].call?.getPhoneNumber()} " + "${CallStateManager.callList[index].timerStarted}")
                                 CallStateManager.callList[index].startTimer()
                             }
@@ -322,12 +366,10 @@ class CallActivity : ScopeActivity() {
                             binding.containerDialpad.visibility = View.VISIBLE
                         }
                         Call.STATE_RINGING -> {
-                            binding.containerAnswer.visibility = View.VISIBLE
-                            binding.containerMic.visibility = View.GONE
-                            binding.containerHold.visibility = View.GONE
-                            binding.containerSpeaker.visibility = View.GONE
-                            binding.containerDialpad.visibility = View.GONE
+                            showIncomingCallButtons()
                             currentStatus = state
+                            if(CallStateManager.callList.size>0)
+                                playIncomingCallDTMFTone()
                         }
                         Call.STATE_HOLDING -> {
                             currentStatus = state
@@ -357,6 +399,29 @@ class CallActivity : ScopeActivity() {
         binding.containerDialpad.visibility = View.VISIBLE
     }
 
+    private fun showIncomingCallButtons(){
+        binding.containerAnswer.visibility = View.VISIBLE
+        binding.containerMic.visibility = View.GONE
+        binding.containerHold.visibility = View.GONE
+        binding.containerSpeaker.visibility = View.GONE
+        binding.containerDialpad.visibility = View.GONE
+        hideDialPad()
+    }
+
+    private fun showDialPad(){
+        binding.row1.visible()
+        binding.row2.visible()
+        binding.row3.visible()
+        binding.row4.visible()
+        binding.row5.invisible()
+    }
+    private fun hideDialPad(){
+        binding.row1.invisible()
+        binding.row2.invisible()
+        binding.row3.invisible()
+        binding.row4.invisible()
+        binding.row5.visible()
+    }
     private fun setupBanner() {
         val requestConfig = RequestConfiguration.Builder()
                 .setTestDeviceIds(arrayOf(
@@ -394,4 +459,37 @@ class CallActivity : ScopeActivity() {
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        mSensorManager?.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mSensorManager?.unregisterListener(this)
+    }
+
+    @SuppressLint("WakelockTimeout")
+    override fun onSensorChanged(p0: SensorEvent?) {
+        p0?.let {
+            if (it.values.isNotEmpty()){
+                if(it.values[0]<5){
+                    //Apagar pantalla
+                    wakeLock?.apply {
+                        if(!isHeld)
+                            acquire()
+                    }
+                }else{
+                    //Encender pantalla
+                    wakeLock?.apply {
+                        if(isHeld)
+                            release()
+                    }
+                }
+            }
+        }
+
+    }
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
 }

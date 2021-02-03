@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/nav_calls"
-        android:name="com.edxavier.cerberus_sms.ui.home.HomeFragment"
+        android:name="com.edxavier.cerberus_sms.ui.calls.CallsFragment"
         android:label="@string/calls"
         tools:layout="@layout/fragment_calls" />
 
     <fragment
         android:id="@+id/nav_contacts"
-        android:name="com.edxavier.cerberus_sms.ui.dashboard.DashboardFragment"
+        android:name="com.edxavier.cerberus_sms.ui.contacts.ContactsFragment"
         android:label="@string/contacts"
         tools:layout="@layout/fragment_contacts" />
 

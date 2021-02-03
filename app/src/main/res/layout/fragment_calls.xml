@@ -4,34 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".ui.calls.CallsFragment">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCallLog"
+        android:layout_width="match_parent"
+        android:scrollbars="vertical"
+        android:paddingBottom="2dp"
+        android:layout_height="match_parent"/>
 
     <LinearLayout
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/loading_indicator"
+        android:id="@+id/notificationContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="visible">
 
         <com.airbnb.lottie.LottieAnimationView
+            app:lottie_speed="0.7"
             android:layout_gravity="center"
-            android:id="@+id/animation_view"
+            android:id="@+id/notificationAnimation"
             android:scaleType="fitCenter"
             android:layout_width="160dp"
             android:layout_height="160dp"
             app:lottie_autoPlay="true"
             app:lottie_loop="false"
-            app:lottie_rawRes="@raw/empty" />
+            app:lottie_rawRes="@raw/security" />
 
         <TextView
             android:fontFamily="@font/ubuntu"
-            android:textColor="@color/md_black_1000"
-            android:id="@+id/message_body"
+            android:textColor="@color/md_grey_700"
+            android:id="@+id/notificationMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -40,7 +47,7 @@
             android:text="No se pudo leer el registro de lladamas." />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/boton_asignar_permiso"
+            android:id="@+id/btnPermissionAssign"
             android:text="Asignar permisos"
             android:layout_gravity="center"
             android:layout_width="wrap_content"

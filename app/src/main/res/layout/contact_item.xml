@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:clickable="true"
+    android:background="?android:attr/selectableItemBackground"
+    android:id="@+id/contact_item_container"
+    android:layout_height="wrap_content"
+    android:focusable="true">
+
+        <ImageView
+            android:transitionName="profile"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:id="@+id/contactItemAvatar"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_user" />
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Eder Rojas"
+                    android:textColor="@color/secondaryDarkColor"
+                    android:id="@+id/contactItemName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="18sp" />
+
+                <View
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/md_grey_300"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
+        </LinearLayout>
+
+</LinearLayout>

@@ -1,4 +1,4 @@
-package com.edxavier.cerberus_sms.ui.dashboard
+package com.edxavier.cerberus_sms.ui.contacts
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

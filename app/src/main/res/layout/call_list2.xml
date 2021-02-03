@@ -34,14 +34,6 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white" />
 
-        <ImageView
-            android:visibility="gone"
-            android:id="@+id/callHangupBtn"
-            app:tint="@color/md_red_500"
-            android:src="@drawable/ic_call_end_24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -61,6 +53,7 @@
                 android:layout_marginBottom="1dp"
                 android:layout_marginTop="1dp"
                 android:id="@+id/callOperator"
+                android:fontFamily="@font/source_sans_pro_light"
                 style="@style/TextAppearance.MaterialComponents.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,6 +61,7 @@
         </com.google.android.material.card.MaterialCardView>
         <TextView
             style="@style/TextAppearance.MaterialComponents.Caption"
+            android:fontFamily="@font/source_sans_pro_light"
             android:layout_marginStart="12dp"
             android:layout_marginTop="2dp"
             android:id="@+id/callCountry"

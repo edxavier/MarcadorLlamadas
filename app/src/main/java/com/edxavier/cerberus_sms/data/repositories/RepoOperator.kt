@@ -460,7 +460,7 @@ class RepoOperator(private var context: Context) {
     suspend fun getOperator(number:String):Operator? = withContext(Dispatchers.IO){
         var countryCode = ""
         var areaCode = ""
-        var tempNumber = number
+        var tempNumber = number.clearPhoneString()
         //Verificar si es un numero telefonico valido
         if(tempNumber.isValidPhoneNumber()){
             //si el numero inicia con 00 Reemplazar con +

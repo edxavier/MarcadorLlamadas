@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CoordinatorLayout is used to create scrolling and "floating" effects within a layout -->
+<!-- This is typically the root layout which wraps the app bar and content -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent">
+
+    <!-- AppBarLayout is a wrapper for a Toolbar in order to apply scrolling effects. -->
+    <!-- Note that AppBarLayout expects to be the first child nested within a CoordinatorLayout -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:fitsSystemWindows="true"
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:liftOnScroll="true">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_collapseMode="parallax"
+            app:contentScrim="@color/colorPrimary"
+            app:statusBarScrim="@color/colorPrimaryDark"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:expandedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Expanded"
+            app:collapsedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Collapsed">
+
+            <ImageView
+                android:transitionName="profile"
+                android:fitsSystemWindows="true"
+                android:layout_gravity="center"
+                android:id="@+id/expandedImage"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/diente_leon"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.7" />
+            <ImageView
+                android:fitsSystemWindows="true"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/traslucent_background2"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.7" />
+            <!-- Toolbar is the actual app bar with text and the action items -->
+            <com.google.android.material.appbar.MaterialToolbar
+                android:elevation="0dp"
+                android:id="@+id/toolbar"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                app:layout_collapseMode="pin" >
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- This could also be included from another file using the include tag -->
+    <!-- i.e `res/layout/content_main.xml` -->
+    <!-- `app:layout_behavior` is set to a pre-defined standard scrolling behavior -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:background="@color/colorPrimaryDark"
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:minHeight="60dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_contact_numbers"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

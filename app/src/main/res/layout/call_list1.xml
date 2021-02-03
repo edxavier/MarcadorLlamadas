@@ -27,25 +27,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="2dp"
             android:fontFamily="@font/source_sans_pro_light"
             android:textColor="@color/md_white_1000"
             android:textSize="13sp" />
 
         <com.google.android.material.card.MaterialCardView
+            app:cardBackgroundColor="@color/md_white_1000_10"
             android:layout_marginTop="2dp"
             android:id="@+id/operatorCard"
             android:padding="8dp"
             android:layout_gravity="center"
-            app:cardBackgroundColor="@color/md_white_1000_10"
             app:cardCornerRadius="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
                 <TextView
-                    android:fontFamily="@font/ubuntu"
+                    android:fontFamily="@font/source_sans_pro_light"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="1dp"
                     android:layout_marginTop="1dp"
                     android:id="@+id/callOperator"
                     style="@style/TextAppearance.MaterialComponents.Caption"
@@ -57,8 +55,6 @@
 
         <TextView
             android:id="@+id/callStatus"
-            android:fontFamily="@font/ubuntu"
-            style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
