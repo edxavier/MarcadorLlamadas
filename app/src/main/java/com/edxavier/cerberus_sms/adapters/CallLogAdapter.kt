@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.list.listItems
 import com.edxavier.cerberus_sms.data.models.CallsLog
 import com.edxavier.cerberus_sms.data.models.Operator
 import com.edxavier.cerberus_sms.databinding.CallLogItemBinding
@@ -62,6 +64,22 @@ class CallLogAdapter(val context: Context, val activity: Activity): ListAdapter<
             }
             if (call.operator==null)
                 operatorCard.invisible()
+            callLogContainer.setOnClickListener {
+                val options = arrayOf("Llamar", "Preferencias").toList()
+                MaterialDialog(context).show {
+                    title(text = call.name)
+                    listItems(items = options) { _, index, _ ->
+                        when(index){
+                            0 -> {
+                                context.makeCall(call.number)
+                            }
+                            1 -> {
+
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

@@ -4,6 +4,7 @@ plugins {
 }
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 30
@@ -74,9 +75,17 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-core:18.0.2'
     implementation 'com.google.firebase:firebase-ads:19.7.0'
+    // Recommended: Add the Firebase SDK for Google Analytics.
+    implementation 'com.google.firebase:firebase-analytics:18.0.2'
+    // Add the Firebase SDK for Crashlytics.
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.1'
 
     //ANIMATIONS
     implementation 'com.airbnb.android:lottie:3.4.1'
+    // DIALOGS
+    implementation 'com.afollestad.material-dialogs:core:3.3.0'
+    implementation 'com.afollestad.material-dialogs:input:3.3.0'
+
 
     implementation 'com.google.android.gms:play-services-ads:19.7.0'
 }

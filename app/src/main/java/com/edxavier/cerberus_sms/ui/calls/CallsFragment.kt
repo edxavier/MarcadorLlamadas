@@ -17,10 +17,9 @@ import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.adapters.CallLogAdapter
 import com.edxavier.cerberus_sms.data.models.CallsLog
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
+import com.edxavier.cerberus_sms.data.repositories.RepoOperator
 import com.edxavier.cerberus_sms.databinding.FragmentCallsBinding
-import com.edxavier.cerberus_sms.helpers.invisible
-import com.edxavier.cerberus_sms.helpers.makeCall
-import com.edxavier.cerberus_sms.helpers.visible
+import com.edxavier.cerberus_sms.helpers.*
 import com.nicrosoft.consumoelectrico.ScopeFragment
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -35,7 +34,7 @@ class CallsFragment : ScopeFragment() {
     private val CALL_PERMISSION_REQUEST = 1
     lateinit var adapter: CallLogAdapter
 
-    val enteredNumber = MutableStateFlow("")
+    private val enteredNumber = MutableStateFlow("")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,8 +94,17 @@ class CallsFragment : ScopeFragment() {
 
     private fun listenForTextChanges(){
         launch {
-            enteredNumber.debounce(150).collect {
-                Log.e("EDER", it)
+            enteredNumber.debounce(350).collect {
+                if(it.length >=5){
+                    val repo = RepoOperator.getInstance(requireContext())
+                    val op = repo.getOperator(it)
+                    if (op!=null){
+                        binding.padOperator.text = op.operator.getOperatorString()
+                        binding.padOperator.setTextColor(op.operator.getOperatorColor(requireContext()))
+                    }else
+                        binding.padOperator.text = ""
+                }else
+                    binding.padOperator.text = ""
             }
         }
     }

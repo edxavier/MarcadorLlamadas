@@ -20,6 +20,8 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -415,13 +417,23 @@ class CallActivity : ScopeActivity(), SensorEventListener {
     }
 
     private fun showDialPad(){
-        binding.row1.visible()
-        binding.row2.visible()
-        binding.row3.visible()
-        binding.row4.visible()
-        binding.row5.invisible()
+        val animSlideUp: Animation = AnimationUtils.loadAnimation(this, R.anim.slide_up)
+        val animSlideDown: Animation = AnimationUtils.loadAnimation(this, R.anim.slide_down)
+        with(binding){
+            row1.startAnimation(animSlideUp)
+            row2.startAnimation(animSlideUp)
+            row3.startAnimation(animSlideUp)
+            row4.startAnimation(animSlideUp)
+            //row5.startAnimation(animSlideDown)
+            row1.visible()
+            row2.visible()
+            row3.visible()
+            row4.visible()
+            row5.invisible()
+        }
     }
     private fun hideDialPad(){
+
         binding.row1.invisible()
         binding.row2.invisible()
         binding.row3.invisible()
