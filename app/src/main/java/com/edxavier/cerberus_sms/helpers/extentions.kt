@@ -1,11 +1,15 @@
 package com.edxavier.cerberus_sms.helpers
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.CallLog
 import android.telecom.Call
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.Operator
+import com.google.android.material.snackbar.Snackbar
 import kotlin.math.floor
 
 fun Int.stateToString (): String{
@@ -94,4 +98,21 @@ fun Int.getOperatorColor(context: Context): Int {
         this == Operator.UNKNOWN -> op = ContextCompat.getColor(context, R.color.md_grey_700)
     }
     return op
+}
+
+fun Int.getCallDirectionIcon(): Int {
+    var op: Int = R.drawable.ic_baseline_call_received_24
+    when {
+        this == CallLog.Calls.OUTGOING_TYPE -> op = R.drawable.ic_baseline_call_made_24
+        this == CallLog.Calls.INCOMING_TYPE -> op = R.drawable.ic_baseline_call_received_24
+        this == CallLog.Calls.MISSED_TYPE -> op = R.drawable.ic_baseline_call_missed_24
+    }
+    return op
+}
+
+fun Context.makeCall(number:String){
+    val uri = "tel:" + number.replace("\\s+".toRegex(), "").replace("#", "%23")
+    val intent = Intent(Intent.ACTION_CALL)
+    intent.data = Uri.parse(uri)
+    startActivity(intent)
 }

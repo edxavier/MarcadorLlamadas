@@ -83,12 +83,14 @@
 
 
         <ImageView
+            android:visibility="gone"
             android:layout_gravity="center"
             android:layout_marginEnd="16dp"
             android:src="@drawable/ic_baseline_settings_24"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <ImageView
+            android:id="@+id/btnCallNumber"
             android:layout_gravity="center"
             android:layout_marginEnd="16dp"
             android:src="@drawable/ic_call_24"

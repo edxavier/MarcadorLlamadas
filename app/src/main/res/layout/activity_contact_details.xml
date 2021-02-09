@@ -72,16 +72,26 @@
         android:layout_height="match_parent">
 
         <FrameLayout
-            android:background="@color/colorPrimaryDark"
-            android:id="@+id/frameLayout"
+            android:minHeight="100dp"
+            android:background="@color/md_grey_50"
+            android:layout_marginBottom="24dp"
+            android:id="@+id/nativeAdFrameLayout"
             android:layout_width="match_parent"
-            android:minHeight="60dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" >
+            <com.airbnb.lottie.LottieAnimationView
+                android:alpha="0.9"
+                app:lottie_rawRes="@raw/cat"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"/>
+        </FrameLayout>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="12dp"
             android:id="@+id/recycler_contact_numbers"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -89,7 +99,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/nativeAdFrameLayout" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

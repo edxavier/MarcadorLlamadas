@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="center"
+        android:id="@+id/callDirection"
+        android:src="@drawable/ic_baseline_call_missed_24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:fontFamily="@font/source_sans_pro_semibold"
+                android:textColor="@color/secondaryDarkColor"
+                android:text="Eder Rojas"
+                android:id="@+id/callContactName"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/callStatus"
+                android:layout_marginEnd="12dp"
+                android:layout_gravity="end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_marginTop="2dp"
+                android:id="@+id/operatorCard"
+                android:layout_marginStart="12dp"
+                app:cardBackgroundColor="@color/md_red_500"
+                app:cardCornerRadius="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="CLARO"
+                    android:textSize="10sp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:id="@+id/callOperator"
+                    android:fontFamily="@font/source_sans_pro_light"
+                    style="@style/TextAppearance.MaterialComponents.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white" />
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="12dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/callNumber"
+                android:layout_gravity="center"
+                android:text="8494 3267"
+                android:textStyle="italic"
+                style="@style/TextAppearance.MaterialComponents.Caption"
+                android:fontFamily="@font/source_sans_pro_light"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/callCountry"
+                android:layout_gravity="center"
+                android:textSize="11sp"
+                android:text="Nicaragua"
+                style="@style/TextAppearance.MaterialComponents.Caption"
+                android:fontFamily="@font/source_sans_pro_light"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginEnd="12dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/callDate"
+                android:layout_gravity="center"
+                android:text="05 feb 21 10:12 pm"
+                android:textSize="12sp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/callDuration"
+                android:text="02:00:44"
+                style="@style/TextAppearance.MaterialComponents.Caption"
+                android:fontFamily="@font/source_sans_pro_light"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+        <View
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/md_grey_200"
+            android:layout_width="match_parent"
+            android:layout_height="1dp" />
+    </LinearLayout>
+
+
+</LinearLayout>

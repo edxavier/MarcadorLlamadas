@@ -13,4 +13,5 @@
     <string name="calls">Llamadas</string>
     <string name="contacts">Contactos</string>
     <string name="preferences">Preferencias</string>
+    <string name="contactos_aviso_permiso_negado">Permiso denegado</string>
 </resources>

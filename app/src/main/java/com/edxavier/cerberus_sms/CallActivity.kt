@@ -20,16 +20,22 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.BlurTransformation
+import coil.transform.RoundedCornersTransformation
 import com.edxavier.cerberus_sms.adapters.SessionCallsAdapter
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
 import com.edxavier.cerberus_sms.databinding.ActivityCallBinding
+import com.edxavier.cerberus_sms.databinding.AdNativeInCallBinding
+import com.edxavier.cerberus_sms.databinding.AdNativeLayoutBinding
 import com.edxavier.cerberus_sms.helpers.*
 import com.google.android.gms.ads.*
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdView
 import com.nicrosoft.consumoelectrico.ScopeActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -72,7 +78,6 @@ class CallActivity : ScopeActivity(), SensorEventListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         CallStateManager.callActivityShown = true
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -84,7 +89,6 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                     WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
         }
-
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mProximity = mSensorManager?.getDefaultSensor(Sensor.TYPE_PROXIMITY)
 
@@ -95,7 +99,7 @@ class CallActivity : ScopeActivity(), SensorEventListener {
         //setContentView(R.layout.activity_call)
         binding = ActivityCallBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        loadNativeAd()
         val notificationId = intent.getIntExtra("notificationId", 0)
         val autoAnswer = intent.getIntExtra("autoAnswer", 0)
         val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -131,7 +135,7 @@ class CallActivity : ScopeActivity(), SensorEventListener {
             transformations(BlurTransformation(this@CallActivity))
         }
          */
-        setupBanner()
+        //setupBanner()
     }
 
     private fun setupClickListeners() {
@@ -492,4 +496,68 @@ class CallActivity : ScopeActivity(), SensorEventListener {
 
     }
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
+
+    @SuppressLint("InflateParams")
+    private fun loadNativeAd(){
+        val requestConfig = RequestConfiguration.Builder()
+                .setTestDeviceIds(arrayOf(
+                        "AC5F34885B0FE7EF03A409EB12A0F949",
+                        AdRequest.DEVICE_ID_EMULATOR
+                ).toList())
+                .build()
+        MobileAds.setRequestConfiguration(requestConfig)
+        val nativeCode = "ca-app-pub-9964109306515647/3495890674"
+        val builder = AdLoader.Builder(this, nativeCode)
+
+        builder.forNativeAd { nativeAd ->
+            val adBinding = AdNativeInCallBinding.inflate(layoutInflater)
+            //val nativeAdview = AdNativeLayoutBinding.inflate(layoutInflater).root
+            binding.nativeAdFrameLayout.removeAllViews()
+            binding.nativeAdFrameLayout.addView(populateNativeAd(nativeAd, adBinding))
+        }
+
+        val adLoader = builder.withAdListener(object : AdListener(){
+            override fun onAdFailedToLoad(p0: LoadAdError?) {
+                super.onAdFailedToLoad(p0)
+                Log.e("EDER", "${p0?.message}: ${p0?.cause.toString()}")
+            }
+        }).build()
+        adLoader.loadAd(AdRequest.Builder().build())
+    }
+
+    private fun populateNativeAd(nativeAd: NativeAd, adView: AdNativeInCallBinding): NativeAdView {
+        val nativeAdView = adView.root
+        with(adView){
+            adHeadline.text = nativeAd.headline
+            nativeAdView.headlineView = adHeadline
+            nativeAd.advertiser?.let {
+                adAdvertiser.text = it
+                nativeAdView.advertiserView = adAdvertiser
+            }
+            nativeAd.icon?.let {
+                //adIcon.setImageDrawable(it.drawable)
+                //adIcon.load(it.drawable){transformations(RoundedCornersTransformation(radius = 8f))}
+                adIcon.visible()
+                nativeAdView.iconView = adIcon
+                (nativeAdView.iconView as ImageView).load(it.drawable){transformations(RoundedCornersTransformation(radius = 8f))}
+            }
+            nativeAd.starRating?.let {
+                adStartRating.rating = it.toFloat()
+                adStartRating.visible()
+                nativeAdView.starRatingView = adStartRating
+            }
+            nativeAd.callToAction?.let {
+                adBtnCallToAction.text = it
+                nativeAdView.callToActionView = adBtnCallToAction
+            }
+            nativeAd.body?.let {
+                adBodyText.text = it
+                nativeAdView.bodyView = adBodyText
+            }
+        }
+        nativeAdView.setNativeAd(nativeAd)
+        return nativeAdView
+    }
+
+
 }

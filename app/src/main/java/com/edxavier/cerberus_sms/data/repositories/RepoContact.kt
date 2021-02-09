@@ -2,24 +2,21 @@ package com.edxavier.cerberus_sms.data.repositories
 
 import android.Manifest
 import android.content.ContentResolver
-import android.content.ContentUris
 import android.content.Context
 import android.content.pm.PackageManager
-import android.content.res.AssetFileDescriptor
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
+import android.provider.CallLog
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.Contacts
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.edxavier.cerberus_sms.data.models.CallsLog
 import com.edxavier.cerberus_sms.data.models.Contact
 import com.edxavier.cerberus_sms.helpers.clearPhoneString
+import com.edxavier.cerberus_sms.helpers.getOperatorString
 import com.edxavier.cerberus_sms.helpers.toPhoneFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.IOException
-import java.io.InputStream
 import java.util.*
 
 
@@ -30,9 +27,9 @@ class RepoContact(private var context: Context) {
     companion object {
         // For Singleton instantiation
         @Volatile private var instance: RepoContact? = null
-        fun getInstance(context: Context) =
+        fun getInstance(ctxt: Context) =
                 instance ?: synchronized(this) {
-                    instance ?: RepoContact(context).also { instance = it }
+                    instance ?: RepoContact(ctxt).also { instance = it }
                 }
     }
 
@@ -132,10 +129,12 @@ class RepoContact(private var context: Context) {
                 contact.operator = repoOperator.getOperator(contact.number)
                 //Log.e("EDER", "${contact.number} ${contact.id} -> ${contactCursor.getString(contactCursor.getColumnIndex(Phone._ID))}}")
                 if(prevNumber.clearPhoneString() != contact.number.clearPhoneString()) {
-                    contactList.add(contact)
                     prevNumber = contact.number
+                    if(!numberExists(contactList, contact.number))
+                        contactList.add(contact)
                 }
             }
+            contactCursor.close()
         }
         return@withContext contactList
     }
@@ -168,8 +167,73 @@ class RepoContact(private var context: Context) {
                 contact.photo = contactCursor.getString(contactCursor.getColumnIndex(Contacts.PHOTO_URI)) ?:""
                 contactList.add(contact)
             }
+            contactCursor.close()
         }
         return@withContext contactList
+    }
+
+    //Verificar que el numero exista en la lista
+    private fun numberExists(numbers:List<Contact>, number:String):Boolean{
+        var itExists = false
+        numbers.forEach {
+            if (it.number.clearPhoneString() == number.clearPhoneString()) {
+                itExists = true
+            }
+        }
+        if (!itExists && number.length==8 && !number.startsWith("+505")){
+            numbers.forEach {
+                if (it.number.clearPhoneString() == "+505${number.clearPhoneString()}") {
+                    itExists = true
+                }
+            }
+        }else if(!itExists && number.length>8 && number.startsWith("+505")){
+            //Si no hay resultado, son mas de 8 digitosm e inicia con 505, buscar sin el 505
+            val tmpNumber = number.clearPhoneString()
+            numbers.forEach {
+                if (it.number.clearPhoneString() == tmpNumber.substring(4, tmpNumber.length)) {
+                    itExists = true
+                }
+            }
+        }
+        return itExists
+    }
+
+
+    suspend fun getCallLog():List<CallsLog> = withContext(Dispatchers.IO){
+        Log.e("EDER", "getCallLog")
+        val calls: MutableList<CallsLog> =  ArrayList()
+        val repoOperator = RepoOperator.getInstance(context)
+        val PROJECTION = arrayOf(
+                CallLog.Calls._ID,
+                CallLog.Calls.CACHED_NAME,
+                CallLog.Calls.NUMBER,
+                CallLog.Calls.TYPE,
+                CallLog.Calls.DURATION,
+                CallLog.Calls.DATE
+        )
+
+        val cr = context.contentResolver
+        val strOrder = "${CallLog.Calls.DATE} DESC LIMIT 300"
+        val callUri = Uri.parse("content://call_log/calls")
+        val cur = cr.query(callUri, PROJECTION, null, null, strOrder)
+        // loop through cursor
+        //var temp_id = -1
+        while (cur != null && cur.moveToNext()) {
+            val callsLog = CallsLog()
+            callsLog.id = Integer.valueOf(cur.getString(cur.getColumnIndex(CallLog.Calls._ID)))
+            callsLog.number = cur.getString(cur.getColumnIndex(CallLog.Calls.NUMBER)).clearPhoneString()
+            val callDate = cur.getLong(cur.getColumnIndex(CallLog.Calls.DATE))
+            callsLog.callDate = Calendar.getInstance().apply { timeInMillis = callDate }
+            callsLog.type = cur.getInt(cur.getColumnIndex(CallLog.Calls.TYPE))
+            callsLog.duration = cur.getInt(cur.getColumnIndex(CallLog.Calls.DURATION))
+            callsLog.name = cur.getString(cur.getColumnIndex(CallLog.Calls.CACHED_NAME))?: callsLog.number.toPhoneFormat()
+            callsLog.operator = repoOperator.getOperator(callsLog.number)
+            //Log.e("EDER", "${callsLog.number} ${callsLog.type} ${callsLog.operator?.operator?.getOperatorString()}")
+            calls.add(callsLog)
+        }//Fin de While
+        cur?.close()
+        //Log.e("EDER", "Fin Soncro LLAMADAS")
+        return@withContext calls
     }
 
 

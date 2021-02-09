@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.call_list2.view.*
 
 
 class ContactAdapter(val context: Context, val activity: Activity): ListAdapter<Contact, ContactAdapter.ViewHolder>(
-    ContactAdapter.DiffCallback()
+    DiffCallback()
 ){
 
     class DiffCallback: DiffUtil.ItemCallback<Contact>() {

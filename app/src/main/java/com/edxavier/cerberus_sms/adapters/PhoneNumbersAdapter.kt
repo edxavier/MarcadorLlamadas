@@ -1,12 +1,16 @@
 package com.edxavier.cerberus_sms.adapters
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.recyclerview.widget.DiffUtil
@@ -65,27 +69,16 @@ class PhoneNumbersAdapter(val context: Context, val activity: Activity): ListAda
                     op.country
                 itemCountry.text = tmp
             }
-
-            
-            /*contactItemNumber.text = contact.number.toPhoneFormat()
-            contactItemCountry.text = ""
-            operatorCard.invisible()
-            contact.operator?.let { op ->
-                operatorCard.visible()
-                contactItemOperator.text = op.operator.getOperatorString()
-                operatorCard.setCardBackgroundColor(op.operator.getOperatorColor(context))
-                if(op.operator!= Operator.INTERNATIONAL)
-                    operatorCard.visible()
-                else
-                    operatorCard.invisible()
-                var tmp = ""
-                tmp = if(op.area.isNotBlank())
-                    "${op.area}, ${op.country}"
-                else
-                    op.country
-                contactItemCountry.text = tmp
+            btnCallNumber.setOnClickListener {
+                val uri = "tel:" + contact.number
+                val intent = Intent(Intent.ACTION_CALL)
+                intent.data = Uri.parse(uri)
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    context.startActivity(intent)
+                }else{
+                    Toast.makeText(context, context.resources.getString(R.string.contactos_aviso_permiso_negado), Toast.LENGTH_LONG).show()
+                }
             }
-            */
         }
     }
 

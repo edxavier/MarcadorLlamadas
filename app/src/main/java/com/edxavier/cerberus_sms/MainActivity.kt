@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.telecom.TelecomManager
+import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -16,6 +17,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.edxavier.cerberus_sms.data.models.Operator
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
 import com.edxavier.cerberus_sms.databinding.ActivityMainBinding
+import com.google.android.gms.ads.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nicrosoft.consumoelectrico.ScopeActivity
 import kotlinx.coroutines.launch
@@ -41,6 +43,7 @@ class MainActivity : ScopeActivity() {
         launch {
             Operator.initializeOperators(this@MainActivity)
         }
+        setupBanner()
     }
     private val REQUEST_ID = 1
 
@@ -66,6 +69,42 @@ class MainActivity : ScopeActivity() {
                 // Your app is not the default dialer app
             }
         }
+    }
+    private fun setupBanner() {
+        val requestConfig = RequestConfiguration.Builder()
+                .setTestDeviceIds(arrayOf(
+                        "AC5F34885B0FE7EF03A409EB12A0F949",
+                        AdRequest.DEVICE_ID_EMULATOR
+                ).toList())
+                .build()
+        MobileAds.setRequestConfiguration(requestConfig)
+
+        val adRequest = AdRequest.Builder()
+                .build()
+
+        val adView =  AdView(this)
+        binding.adViewContainer.addView(adView)
+
+        adView.adSize = getAdSize()
+        adView.adUnitId = getString(R.string.BANNER_FLOTANTE)
+
+        adView.loadAd(adRequest)
+        //nav_view.menu.findItem(R.id.destino_ocultar_publicidad).isVisible = false
+    }
+
+    private fun getAdSize(): AdSize {
+        //Determine the screen width to use for the ad width.
+        val display = windowManager.defaultDisplay
+        val outMetrics = DisplayMetrics()
+        display.getMetrics(outMetrics)
+        val widthPixels = outMetrics.widthPixels.toFloat()
+        val density = outMetrics.density
+
+        //you can also pass your selected width here in dp
+        val adWidth = (widthPixels / density).toInt()
+
+        //return the optimal size depends on your orientation (landscape or portrait)
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
     }
 
 }
