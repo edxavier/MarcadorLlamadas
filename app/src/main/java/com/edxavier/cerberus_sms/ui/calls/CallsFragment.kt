@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -18,11 +20,14 @@ import com.edxavier.cerberus_sms.data.repositories.RepoContact
 import com.edxavier.cerberus_sms.databinding.FragmentCallsBinding
 import com.edxavier.cerberus_sms.helpers.invisible
 import com.edxavier.cerberus_sms.helpers.makeCall
-import com.edxavier.cerberus_sms.helpers.toPhoneFormat
 import com.edxavier.cerberus_sms.helpers.visible
 import com.nicrosoft.consumoelectrico.ScopeFragment
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.util.*
+
 
 class CallsFragment : ScopeFragment() {
 
@@ -30,10 +35,12 @@ class CallsFragment : ScopeFragment() {
     private val CALL_PERMISSION_REQUEST = 1
     lateinit var adapter: CallLogAdapter
 
+    val enteredNumber = MutableStateFlow("")
+
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         binding = FragmentCallsBinding.inflate(layoutInflater)
         return binding.root
@@ -42,6 +49,7 @@ class CallsFragment : ScopeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLayout()
+        listenForTextChanges()
     }
 
     private fun checkRequiredPermission(){
@@ -53,12 +61,24 @@ class CallsFragment : ScopeFragment() {
 
 
     private fun hasReadCallLogPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.READ_CALL_LOG
+        ) == PackageManager.PERMISSION_GRANTED
     }
     private fun requestReadCallLogPermission() {
-        requestPermissions(arrayOf(Manifest.permission.READ_CALL_LOG, Manifest.permission.CALL_PHONE), this.CALL_PERMISSION_REQUEST)
+        requestPermissions(
+            arrayOf(
+                Manifest.permission.READ_CALL_LOG,
+                Manifest.permission.CALL_PHONE
+            ), this.CALL_PERMISSION_REQUEST
+        )
     }
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             this.CALL_PERMISSION_REQUEST -> {
@@ -71,6 +91,16 @@ class CallsFragment : ScopeFragment() {
             }
         }
     }
+
+
+    private fun listenForTextChanges(){
+        launch {
+            enteredNumber.debounce(150).collect {
+                Log.e("EDER", it)
+            }
+        }
+    }
+
 
     private fun getCallsLog(){
         binding.btnPermissionAssign.invisible()
@@ -98,7 +128,11 @@ class CallsFragment : ScopeFragment() {
         binding.btnPermissionAssign.setOnClickListener { requestReadCallLogPermission() }
         checkRequiredPermission()
         adapter = CallLogAdapter(requireContext(), requireActivity())
-        binding.recyclerCallLog.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.recyclerCallLog.layoutManager = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.VERTICAL,
+            false
+        )
         binding.recyclerCallLog.adapter = adapter
         binding.recyclerCallLog.setHasFixedSize(true)
 
@@ -107,34 +141,51 @@ class CallsFragment : ScopeFragment() {
         }
 
         with(binding){
-            val cursorPos = binding.dialNumber.selectionStart
 
             dialNumber.showSoftInputOnFocus = false
             showDialPad.setOnClickListener {
+                val animSlideUp: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up)
+                val animSlideDown: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
+
+                dialPad.startAnimation(animSlideUp)
                 dialPad.visible()
+                showDialPad.startAnimation(animSlideDown)
                 showDialPad.invisible()
             }
             hideDialPad.setOnClickListener {
+                val animSlideUp: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up)
+                val animSlideDown: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
+                dialPad.startAnimation(animSlideDown)
                 dialPad.invisible()
+                showDialPad.startAnimation(animSlideUp)
                 showDialPad.visible()
             }
             btnBackspace.setOnLongClickListener {
                 dialNumber.setText("")
+                enteredNumber.value = binding.dialNumber.text.toString()
                 true
             }
             btnBackspace.setOnClickListener {
                 val cursorPos = binding.dialNumber.selectionStart - 1
                 if(cursorPos>=0) {
-                    val tmp = binding.dialNumber.text.toString().removeRange(cursorPos, cursorPos + 1)
+                    val tmp = binding.dialNumber.text.toString().removeRange(
+                        cursorPos,
+                        cursorPos + 1
+                    )
                     binding.dialNumber.setText(tmp)
                     binding.dialNumber.setSelection(cursorPos)
+                    enteredNumber.value = binding.dialNumber.text.toString()
                 }
             }
             btnCall.setOnClickListener {
                 if (dialNumber.text.isNotEmpty())
                     requireContext().makeCall(dialNumber.text.toString())
                 else
-                    Toast.makeText(requireContext(), "No se pudo realizar la llamada.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "No se pudo realizar la llamada.",
+                        Toast.LENGTH_LONG
+                    ).show()
             }
             pad0.setOnLongClickListener {
                 insertChar("+")
@@ -159,6 +210,7 @@ class CallsFragment : ScopeFragment() {
     private fun insertChar(char: String){
         val cursorPos = binding.dialNumber.selectionStart
         binding.dialNumber.text.insert(cursorPos, char)
+        enteredNumber.value = binding.dialNumber.text.toString()
     }
 
 }

@@ -21,6 +21,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -335,6 +336,7 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                                     muteMic = false
                                     finishAndRemoveTask()
                                 } else {
+                                    Toast.makeText(this@CallActivity, "Llamada continua mostrar botones de llamada", Toast.LENGTH_LONG).show()
                                     showActiveCallButtons()
                                 }
                             } else if (CallStateManager.callList.size > 1) {
@@ -372,7 +374,7 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                         Call.STATE_RINGING -> {
                             showIncomingCallButtons()
                             currentStatus = state
-                            if(CallStateManager.callList.size>0)
+                            if(CallStateManager.callList.size>=1)
                                 playIncomingCallDTMFTone()
                         }
                         Call.STATE_HOLDING -> {

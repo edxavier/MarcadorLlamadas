@@ -154,7 +154,7 @@ object CallNotificationHelper: CoroutineScope {
         val mgr = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(CHANNEL_ID_ACTIVE_CALL, CHANNEL_ACTIVE_CALL,
-                    NotificationManager.IMPORTANCE_DEFAULT)
+                    NotificationManager.IMPORTANCE_HIGH)
             channel.setSound(null, null)
             channel.enableVibration(false)
             mgr.createNotificationChannel(channel)
@@ -166,7 +166,7 @@ object CallNotificationHelper: CoroutineScope {
         val pendingIntent = PendingIntent.getActivity(ctx, 3, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_ACTIVE_CALL)
-        builder.priority = NotificationCompat.PRIORITY_DEFAULT
+        builder.priority = NotificationCompat.PRIORITY_HIGH
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         builder.setAutoCancel(false)
         builder.setSound(null)
