@@ -73,7 +73,7 @@
 
         <FrameLayout
             android:minHeight="100dp"
-            android:background="@color/md_grey_50"
+            android:background="@color/md_grey_100"
             android:layout_marginBottom="24dp"
             android:id="@+id/nativeAdFrameLayout"
             android:layout_width="match_parent"

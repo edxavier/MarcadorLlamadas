@@ -213,7 +213,7 @@ class RepoContact(private var context: Context) {
         )
 
         val cr = context.contentResolver
-        val strOrder = "${CallLog.Calls.DATE} DESC LIMIT 300"
+        val strOrder = "${CallLog.Calls.DATE} DESC LIMIT 150"
         val callUri = Uri.parse("content://call_log/calls")
         val cur = cr.query(callUri, PROJECTION, null, null, strOrder)
         // loop through cursor

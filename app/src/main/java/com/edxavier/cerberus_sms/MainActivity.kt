@@ -44,6 +44,7 @@ class MainActivity : ScopeActivity() {
             Operator.initializeOperators(this@MainActivity)
         }
         setupBanner()
+
     }
     private val REQUEST_ID = 1
 

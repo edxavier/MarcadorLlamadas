@@ -54,7 +54,6 @@ class CallActivity : ScopeActivity(), SensorEventListener {
     private var wakeLock: PowerManager.WakeLock? = null
 
     private lateinit var powerManager: PowerManager
-    private var field: Int = 0x00000020
     private lateinit var binding: ActivityCallBinding
     private var mSensorManager: SensorManager? = null
     private var mProximity: Sensor? = null
@@ -441,13 +440,6 @@ class CallActivity : ScopeActivity(), SensorEventListener {
         binding.row5.visible()
     }
     private fun setupBanner() {
-        val requestConfig = RequestConfiguration.Builder()
-                .setTestDeviceIds(arrayOf(
-                        "AC5F34885B0FE7EF03A409EB12A0F949",
-                        AdRequest.DEVICE_ID_EMULATOR
-                ).toList())
-                .build()
-        MobileAds.setRequestConfiguration(requestConfig)
 
         val adRequest = AdRequest.Builder()
                 .build()
@@ -513,29 +505,22 @@ class CallActivity : ScopeActivity(), SensorEventListener {
 
     @SuppressLint("InflateParams")
     private fun loadNativeAd(){
-        val requestConfig = RequestConfiguration.Builder()
-                .setTestDeviceIds(arrayOf(
-                        "AC5F34885B0FE7EF03A409EB12A0F949",
-                        AdRequest.DEVICE_ID_EMULATOR
-                ).toList())
-                .build()
-        MobileAds.setRequestConfiguration(requestConfig)
+
         val nativeCode = "ca-app-pub-9964109306515647/3495890674"
         val builder = AdLoader.Builder(this, nativeCode)
 
         builder.forNativeAd { nativeAd ->
+            if (isDestroyed || isFinishing || isChangingConfigurations) {
+                nativeAd.destroy();
+                return@forNativeAd;
+            }
             val adBinding = AdNativeInCallBinding.inflate(layoutInflater)
             //val nativeAdview = AdNativeLayoutBinding.inflate(layoutInflater).root
             binding.nativeAdFrameLayout.removeAllViews()
             binding.nativeAdFrameLayout.addView(populateNativeAd(nativeAd, adBinding))
         }
 
-        val adLoader = builder.withAdListener(object : AdListener(){
-            override fun onAdFailedToLoad(p0: LoadAdError?) {
-                super.onAdFailedToLoad(p0)
-                Log.e("EDER", "${p0?.message}: ${p0?.cause.toString()}")
-            }
-        }).build()
+        val adLoader = builder.build()
         adLoader.loadAd(AdRequest.Builder().build())
     }
 
@@ -549,11 +534,10 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                 nativeAdView.advertiserView = adAdvertiser
             }
             nativeAd.icon?.let {
-                //adIcon.setImageDrawable(it.drawable)
+                adIcon.setImageDrawable(it.drawable)
                 //adIcon.load(it.drawable){transformations(RoundedCornersTransformation(radius = 8f))}
                 adIcon.visible()
                 nativeAdView.iconView = adIcon
-                (nativeAdView.iconView as ImageView).load(it.drawable){transformations(RoundedCornersTransformation(radius = 8f))}
             }
             nativeAd.starRating?.let {
                 adStartRating.rating = it.toFloat()

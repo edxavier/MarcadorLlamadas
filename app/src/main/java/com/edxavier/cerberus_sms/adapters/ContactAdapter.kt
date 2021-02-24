@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.size.Scale
+import coil.transform.CircleCropTransformation
 import coil.transform.RoundedCornersTransformation
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.Contact
@@ -52,12 +53,12 @@ class ContactAdapter(val context: Context, val activity: Activity): ListAdapter<
                 contactItemAvatar.load(Uri.parse(contact.photo)) {
                     placeholder(R.drawable.diente_leon)
                     error(R.drawable.diente_leon)
-                    transformations(RoundedCornersTransformation(radius = 12f))
+                    transformations(CircleCropTransformation())
                 }
             }else {
                 contactItemAvatar.load(R.drawable.diente_leon) {
                     error(R.drawable.diente_leon)
-                    transformations(RoundedCornersTransformation(radius = 12f))
+                    transformations(CircleCropTransformation())
                     placeholder(R.drawable.diente_leon)
                 }
             }

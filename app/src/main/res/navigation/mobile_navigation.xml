@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/nav_preferences"
-        android:name="com.edxavier.cerberus_sms.ui.notifications.NotificationsFragment"
+        android:name="com.edxavier.cerberus_sms.ui.preferences.PreferencesFragment"
         android:label="@string/preferences"
         tools:layout="@layout/fragment_preferences" />
 </navigation>

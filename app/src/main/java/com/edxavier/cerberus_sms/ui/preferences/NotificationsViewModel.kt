@@ -1,4 +1,4 @@
-package com.edxavier.cerberus_sms.ui.notifications
+package com.edxavier.cerberus_sms.ui.preferences
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

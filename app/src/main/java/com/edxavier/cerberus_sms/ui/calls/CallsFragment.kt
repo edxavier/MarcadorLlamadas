@@ -2,7 +2,9 @@ package com.edxavier.cerberus_sms.ui.calls
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.adapters.CallLogAdapter
 import com.edxavier.cerberus_sms.data.models.CallsLog
+import com.edxavier.cerberus_sms.data.models.Operator
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
 import com.edxavier.cerberus_sms.data.repositories.RepoOperator
 import com.edxavier.cerberus_sms.databinding.FragmentCallsBinding
@@ -49,6 +52,23 @@ class CallsFragment : ScopeFragment() {
         super.onViewCreated(view, savedInstanceState)
         initLayout()
         listenForTextChanges()
+        handleCallIntent()
+    }
+
+    private fun handleCallIntent() {
+        if (!requireActivity().intent.dataString.isNullOrEmpty()){
+            val callPhone = PhoneNumberUtils.getNumberFromIntent(requireActivity().intent, requireContext()).clearPhoneString()
+            callPhone.forEachIndexed { index, char ->
+                //Log.e("EDER", "$index $char")
+                if(index>0 && char.toString() != "+") {
+                    insertChar(char.toString())
+                }else if (index==0){
+                    insertChar(char.toString())
+                }
+            }
+            binding.dialPad.visible()
+            binding.showDialPad.invisible()
+        }
     }
 
     private fun checkRequiredPermission(){
@@ -99,7 +119,23 @@ class CallsFragment : ScopeFragment() {
                     val repo = RepoOperator.getInstance(requireContext())
                     val op = repo.getOperator(it)
                     if (op!=null){
-                        binding.padOperator.text = op.operator.getOperatorString()
+                        when (op.operator) {
+                            Operator.INTERNATIONAL -> {
+                                binding.padOperator.text  = if(op.area.isNotBlank())
+                                    "${op.area}, ${op.country}"
+                                else
+                                    op.country
+                                op.operator.getOperatorString()
+                            }
+                            Operator.CONVENTIONAL -> {
+                                binding.padOperator.text  = if(op.area.isNotBlank())
+                                    "${op.area}, ${op.country}"
+                                else
+                                    op.country
+                                op.operator.getOperatorString()
+                            }
+                            else -> binding.padOperator.text = op.operator.getOperatorString()
+                        }
                         binding.padOperator.setTextColor(op.operator.getOperatorColor(requireContext()))
                     }else
                         binding.padOperator.text = ""

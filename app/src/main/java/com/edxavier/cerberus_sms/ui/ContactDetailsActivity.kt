@@ -92,6 +92,10 @@ class ContactDetailsActivity : ScopeActivity() {
         val builder = AdLoader.Builder(this, nativeCode)
 
         builder.forNativeAd { native ->
+            if (isDestroyed || isFinishing || isChangingConfigurations) {
+                nativeAd.destroy();
+                return@forNativeAd;
+            }
             nativeAd = native
             val adBinding = AdNativeLayoutBinding.inflate(layoutInflater)
             //val nativeAdview = AdNativeLayoutBinding.inflate(layoutInflater).root
@@ -114,22 +118,23 @@ class ContactDetailsActivity : ScopeActivity() {
             adHeadline.text = nativeAd.headline
             nativeAdView.headlineView = adHeadline
 
-            /*
             nativeAd.mediaContent?.let {
                 adMedia.setMediaContent(it)
                 adMedia.visible()
-                adMedia.setImageScaleType(ImageView.ScaleType.CENTER_CROP)
+                adMedia.setImageScaleType(ImageView.ScaleType.FIT_XY)
                 nativeAdView.mediaView = adMedia
-            }*/
+            }
             nativeAd.advertiser?.let {
                 adAdvertiser.text = it
+                adAdvertiser.visible()
                 nativeAdView.advertiserView = adAdvertiser
             }
             nativeAd.icon?.let {
-                //adIcon.setImageDrawable(it.drawable)
+                adIcon.setImageDrawable(it.drawable)
                 //adIcon.load(it.drawable){transformations(RoundedCornersTransformation(radius = 8f))}
+                adIcon.visible()
                 nativeAdView.iconView = adIcon
-                (nativeAdView.iconView as ImageView).load(it.drawable){transformations(RoundedCornersTransformation(radius = 8f))}
+                //(nativeAdView.iconView as ImageView).load(it.drawable){transformations(RoundedCornersTransformation(radius = 8f))}
             }
             nativeAd.starRating?.let {
                 adStartRating.rating = it.toFloat()
