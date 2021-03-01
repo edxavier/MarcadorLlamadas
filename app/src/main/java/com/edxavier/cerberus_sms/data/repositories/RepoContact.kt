@@ -15,6 +15,7 @@ import com.edxavier.cerberus_sms.data.models.Contact
 import com.edxavier.cerberus_sms.helpers.clearPhoneString
 import com.edxavier.cerberus_sms.helpers.getOperatorString
 import com.edxavier.cerberus_sms.helpers.toPhoneFormat
+import com.pixplicity.easyprefs.library.Prefs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -40,18 +41,21 @@ class RepoContact(private var context: Context) {
     suspend fun getPhoneContact(phoneNumber: String):Contact = withContext(Dispatchers.IO){
         //buscar tal como se recibe
         //Log.e("EDER", "getPhoneContact")
-        var contact = getPhoneContact(phoneNumber, false)
-        // si no hay resultado, son 8 digitos y no inicia con 505, buscar agregando el 505
-        /*contact?.let {
+        var contact:Contact? = null
+        if(phoneNumber.length>4) {
+            contact = getPhoneContact(phoneNumber, false)
+            // si no hay resultado, son 8 digitos y no inicia con 505, buscar agregando el 505
+            /*contact?.let {
             Log.e("EDER", "Contacto encontrado")
             Log.e("EDER", it.name)
         }*/
-        if (contact==null && phoneNumber.length==8 && !phoneNumber.startsWith("+505")){
-            contact = getPhoneContact(phoneNumber, true)
-        }else if(contact==null && phoneNumber.length>8 && phoneNumber.startsWith("+505")){
-            //Si no hay resultado, son mas de 8 digitosm e inicia con 505, buscar sin el 505
-            contact = getPhoneContact(phoneNumber.substring(4, phoneNumber.length), false)
-        }        //regresar el resultaso o el mismo numero formateado
+            if (contact == null && phoneNumber.length == 8 && !phoneNumber.startsWith("+505")) {
+                contact = getPhoneContact(phoneNumber, true)
+            } else if (contact == null && phoneNumber.length > 8 && phoneNumber.startsWith("+505")) {
+                //Si no hay resultado, son mas de 8 digitosm e inicia con 505, buscar sin el 505
+                contact = getPhoneContact(phoneNumber.substring(4, phoneNumber.length), false)
+            }        //regresar el resultaso o el mismo numero formateado
+        }
         return@withContext contact ?: Contact(name = phoneNumber.toPhoneFormat())
     }
 
@@ -211,9 +215,10 @@ class RepoContact(private var context: Context) {
                 CallLog.Calls.DURATION,
                 CallLog.Calls.DATE
         )
+        val limit = Prefs.getInt("call_log_limit", 100)
 
         val cr = context.contentResolver
-        val strOrder = "${CallLog.Calls.DATE} DESC LIMIT 150"
+        val strOrder = "${CallLog.Calls.DATE} DESC LIMIT $limit"
         val callUri = Uri.parse("content://call_log/calls")
         val cur = cr.query(callUri, PROJECTION, null, null, strOrder)
         // loop through cursor

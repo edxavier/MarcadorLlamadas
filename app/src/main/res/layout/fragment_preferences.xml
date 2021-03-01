@@ -15,7 +15,7 @@
             android:focusable="true"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -39,7 +39,12 @@
                     style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Compartir esta aplicacion" />
+                    android:text="Compartir Aplicación " />
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Dile a tus amigos sobre esta aplicación " />
 
             </LinearLayout>
 
@@ -51,7 +56,7 @@
             android:focusable="true"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -75,7 +80,13 @@
                     style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Calificar esta aplicacion" />
+                    android:text="Calificar Aplicación " />
+
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Comparte tu opinion sobre la aplicación " />
 
             </LinearLayout>
 
@@ -84,7 +95,7 @@
         <LinearLayout
             android:visibility="gone"
             android:padding="8dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -155,7 +166,48 @@
                     style="@style/TextAppearance.MaterialComponents.Caption"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Establece el numero maximo de registros de llamadas a cargar" />
+                    android:text="Establece el numero maximo de registros de llamadas a mostrar" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/default_app_container"
+            android:padding="8dp"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                app:srcCompat="@drawable/ic_phonelink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_marginStart="32dp"
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Aplicación  por defecto" />
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Establece aplicación de teléfono por defecto para gestionar pantalla de llamadas" />
 
             </LinearLayout>
 

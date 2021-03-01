@@ -85,6 +85,12 @@ class CallsFragment : ScopeFragment() {
             Manifest.permission.READ_CALL_LOG
         ) == PackageManager.PERMISSION_GRANTED
     }
+    private fun hasCallPhonePermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.CALL_PHONE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
     private fun requestReadCallLogPermission() {
         requestPermissions(
             arrayOf(
@@ -222,7 +228,7 @@ class CallsFragment : ScopeFragment() {
                 }
             }
             btnCall.setOnClickListener {
-                if (dialNumber.text.isNotEmpty())
+                if (dialNumber.text.isNotEmpty() && hasCallPhonePermission())
                     requireContext().makeCall(dialNumber.text.toString())
                 else
                     Toast.makeText(

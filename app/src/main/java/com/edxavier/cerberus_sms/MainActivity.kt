@@ -20,6 +20,7 @@ import com.edxavier.cerberus_sms.databinding.ActivityMainBinding
 import com.google.android.gms.ads.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nicrosoft.consumoelectrico.ScopeActivity
+import com.pixplicity.easyprefs.library.Prefs
 import kotlinx.coroutines.launch
 
 
@@ -39,11 +40,15 @@ class MainActivity : ScopeActivity() {
                 R.id.nav_calls, R.id.nav_contacts, R.id.nav_preferences))
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.bottomNavView.setupWithNavController(navController)
-        requestRole()
         launch {
             Operator.initializeOperators(this@MainActivity)
         }
         setupBanner()
+        val requested = Prefs.getBoolean("start_requested_role", false)
+        if(!requested) {
+            requestRole()
+            Prefs.putBoolean("start_requested_role", true)
+        }
 
     }
     private val REQUEST_ID = 1
@@ -72,13 +77,6 @@ class MainActivity : ScopeActivity() {
         }
     }
     private fun setupBanner() {
-        val requestConfig = RequestConfiguration.Builder()
-                .setTestDeviceIds(arrayOf(
-                        "AC5F34885B0FE7EF03A409EB12A0F949",
-                        AdRequest.DEVICE_ID_EMULATOR
-                ).toList())
-                .build()
-        MobileAds.setRequestConfiguration(requestConfig)
 
         val adRequest = AdRequest.Builder()
                 .build()
