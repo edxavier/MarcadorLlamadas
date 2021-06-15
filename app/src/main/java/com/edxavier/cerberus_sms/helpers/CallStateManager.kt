@@ -1,15 +1,15 @@
 package com.edxavier.cerberus_sms.helpers
 
+import android.annotation.SuppressLint
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.telecom.InCallService
-import android.telecom.VideoProfile
 import android.util.Log
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlin.random.Random
 
+@SuppressLint("StaticFieldLeak")
 @ExperimentalCoroutinesApi
 object CallStateManager {
 
@@ -33,7 +33,6 @@ object CallStateManager {
     var newCall: Call? = null
         set(value) {
             value?.let {
-
                 Log.e("EDER_callAdded", it.getPhoneNumber())
                 val handle = CallHandle()
                 //it.registerCallback(handle.callback)

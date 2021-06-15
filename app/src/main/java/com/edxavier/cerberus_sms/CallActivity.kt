@@ -310,14 +310,14 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                 //Log.e("EDER_STATE", "----------collect--------------------")
                 val state = callState.state
                 //Log.e("EDER_STATE", state.stateToString())
-                callState.call?.let {
-                    val index = CallStateManager.getCallIndex(callState.call)
+                callState.call?.let { myCall ->
+                    val index = CallStateManager.getCallIndex(myCall)
                     val repoC = RepoContact.getInstance(this@CallActivity)
                     if(CallStateManager.callList.size>1)
                         binding.iconHold.setImageDrawable(ContextCompat.getDrawable(this@CallActivity, R.drawable.ic_baseline_swap_calls))
                     else {
                         binding.iconHold.setImageDrawable(ContextCompat.getDrawable(this@CallActivity, R.drawable.ic_baseline_pause))
-                        val contact = repoC.getPhoneContact(it.getPhoneNumber())
+                        val contact = repoC.getPhoneContact(myCall.getPhoneNumber())
                         if (contact.photo.isNotBlank())
                             binding.backgroundImage.load(Uri.parse(contact.photo)){
                                 placeholder(R.drawable.diente_leon)
@@ -337,7 +337,7 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                                     muteMic = false
                                     finishAndRemoveTask()
                                 } else {
-                                    Toast.makeText(this@CallActivity, "Llamada continua mostrar botones de llamada", Toast.LENGTH_LONG).show()
+                                    //Toast.makeText(this@CallActivity, "Llamada continua mostrar botones de llamada", Toast.LENGTH_LONG).show()
                                     showActiveCallButtons()
                                 }
                             } else if (CallStateManager.callList.size > 1) {
@@ -375,8 +375,11 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                         Call.STATE_RINGING -> {
                             showIncomingCallButtons()
                             currentStatus = state
-                            if(CallStateManager.callList.size>=1)
+                            //Log.e("EDER", CallStateManager.callList.size.toString())
+                            //Log.e("EDER", "playIncomingCallDTMFTone")
+                            if(CallStateManager.callList.size>1) {
                                 playIncomingCallDTMFTone()
+                            }
                         }
                         Call.STATE_HOLDING -> {
                             currentStatus = state

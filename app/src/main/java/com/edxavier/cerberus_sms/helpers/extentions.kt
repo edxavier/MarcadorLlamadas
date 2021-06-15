@@ -116,3 +116,9 @@ fun Context.makeCall(number:String){
     intent.data = Uri.parse(uri)
     startActivity(intent)
 }
+
+fun Context.sendSms(number:String){
+    val intent2 = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$number"))
+    intent2.putExtra("sms_body", "")
+    startActivity(intent2)
+}

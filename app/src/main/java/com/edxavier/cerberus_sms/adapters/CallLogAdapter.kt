@@ -65,7 +65,7 @@ class CallLogAdapter(val context: Context, val activity: Activity): ListAdapter<
             if (call.operator==null)
                 operatorCard.invisible()
             callLogContainer.setOnClickListener {
-                val options = arrayOf("Llamar", "Preferencias").toList()
+                val options = arrayOf("Llamar", "Escribir").toList()
                 MaterialDialog(context).show {
                     title(text = call.name)
                     listItems(items = options) { _, index, _ ->
@@ -74,7 +74,7 @@ class CallLogAdapter(val context: Context, val activity: Activity): ListAdapter<
                                 context.makeCall(call.number)
                             }
                             1 -> {
-
+                                context.sendSms(call.number)
                             }
                         }
                     }

@@ -117,7 +117,7 @@ object CallNotificationHelper: CoroutineScope {
 
         // Setup notification content.
         launch {
-            val number = CallStateManager.newCall?.getPhoneNumber()?.toPhoneFormat()
+            val number = CallStateManager.newCall?.getPhoneNumber()
             val repo = RepoContact.getInstance(ctx)
             val repo2 = RepoOperator.getInstance(ctx)
             val contact = repo.getPhoneContact(number!!)

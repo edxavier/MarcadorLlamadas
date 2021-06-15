@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.telecom.Call
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,12 +74,27 @@ class SessionCallsAdapter(
                     }
 
                     callStatus.text = callHandle.call?.state?.stateToString()
-                    callHandle.call?.getPhoneNumber()?.let {
+                    callHandle.call?.getPhoneNumber()?.let { callNUmber ->
+                        //Log.e("EDER_NUM", "---------$callNUmber---------")
                         val repo = RepoOperator.getInstance(context)
                         val repoContact = RepoContact.getInstance(context)
                         cScope.launch {
-                            callDisplayContact.text = callHandle.call?.getPhoneNumber()?.toPhoneFormat()
-                            val op = repo.getOperator(it)
+                            val formattedPhone = callNUmber.toPhoneFormat()
+                            callDisplayContact.text = formattedPhone
+                            //Log.e("EDER_NUM", "---------$formattedPhone---------")
+                            val op = repo.getOperator(callNUmber)
+
+                            if(repoContact.hasReadContactsPermission()){
+                                val contact = repoContact.getPhoneContact(callNUmber)
+                                //val contact2 = repoContact.getPhoneContact(formattedPhone)
+                                //Log.e("EDER_NUM", "---------${contact2.name}---------")
+
+                                callDisplayContact.text = contact.name
+                                if (contact.photo.isNotBlank())
+                                    callAvatar.load(Uri.parse(contact.photo)){
+                                        transformations(CircleCropTransformation())
+                                    }
+                            }
                             if(op!=null){
                                 callCountry.visible()
                                 if(op.operator!= Operator.INTERNATIONAL)
@@ -101,14 +117,6 @@ class SessionCallsAdapter(
                                 operatorCard.setCardBackgroundColor(Operator.UNKNOWN.getOperatorColor(context))
                             }
 
-                            if(repoContact.hasReadContactsPermission()){
-                                val contact = repoContact.getPhoneContact(callHandle.call?.getPhoneNumber()!!)
-                                callDisplayContact.text = contact.name
-                                if (contact.photo.isNotBlank())
-                                    callAvatar.load(Uri.parse(contact.photo)){
-                                        transformations(CircleCropTransformation())
-                                    }
-                            }
                         }
                     }
                 }
