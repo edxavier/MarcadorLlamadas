@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.edxavier.cerberus_sms.R
 
@@ -20,7 +21,7 @@ fun NoDataScreen(
     message:String,
     imageId: Int
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -33,7 +34,11 @@ fun NoDataScreen(
                 imageVector = ImageVector.vectorResource(id = imageId),
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = message, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
 
         }
     }

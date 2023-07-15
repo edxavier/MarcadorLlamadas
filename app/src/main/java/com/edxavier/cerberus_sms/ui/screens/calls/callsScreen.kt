@@ -1,5 +1,7 @@
 package com.edxavier.cerberus_sms.ui.screens.calls
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -19,25 +21,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.Operator
 import com.edxavier.cerberus_sms.data.repositories.RepoOperator
-import com.edxavier.cerberus_sms.helpers.hasReadCallLogPermissions
-import com.edxavier.cerberus_sms.helpers.hasRequiredPermissions
 import com.edxavier.cerberus_sms.helpers.makeCall
 import com.edxavier.cerberus_sms.helpers.sendSms
-import com.edxavier.cerberus_sms.navigation.Routes
-import com.edxavier.cerberus_sms.ui.calls.CallsScreen
 import com.edxavier.cerberus_sms.ui.calls.AppViewModel
-import com.edxavier.cerberus_sms.ui.core.ui.LoadingIndicator
+import com.edxavier.cerberus_sms.ui.core.ui.MyBannerAd
+import com.edxavier.cerberus_sms.ui.core.ui.NativeMediumAd
 import com.edxavier.cerberus_sms.ui.screens.calls.comp.NoDataScreen
 import com.edxavier.cerberus_sms.ui.screens.dialer.DialKeyboard
-import com.edxavier.cerberus_sms.ui.screens.dialer.DialSearchResults
 import com.edxavier.cerberus_sms.ui.screens.dialer.KeyContent
 import com.edxavier.cerberus_sms.ui.screens.dialer.NumberInput
-import com.edxavier.cerberus_sms.ui.screens.permissions.PermissionRequiredScreen
 import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,9 +62,11 @@ fun CallLogScreen(
     }
 
     LaunchedEffect(true){
+        /*
         if(myContext.hasRequiredPermissions()) {
             viewModel.getCallLog()
         }
+        */
     }
 
     Scaffold(
@@ -91,22 +92,28 @@ fun CallLogScreen(
             .fillMaxSize()
             .padding(it)
         ) {
-            if(state.isLoading && state.callLog.isEmpty()){
-                LoadingIndicator()
-            }else if(!state.isLoading && state.callLog.isEmpty()){
-                NoDataScreen(message = "Tu historial de llamadas esta vacio", imageId = R.drawable.recent_calls)
-            }
-            else{
-                if(state.dialCalls.isEmpty() && state.dialContacts.isEmpty()){
-                    CallsScreen(
-                        callLog = state.callLog,
-                        navCtrl = navCtrl, viewModel = viewModel,
-                        listState = listState
-                    )
-                }else{
-                    DialSearchResults(viewModel = viewModel, navController = navCtrl)
+            NativeMediumAd()
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                NoDataScreen(
+                    message = "El registro de llamadas esta restringido por politicas de Google en esta version de la app, si deseas tener la version completa," +
+                            " descarga el APK e instalalo de manera manual",
+                    imageId = R.drawable.recent_calls
+                )
+                Button(onClick = {
+                    val url = "https://verificaoperadora.edxr.es/descargas/app-release.apk"
+                    val i = Intent(Intent.ACTION_VIEW)
+                    i.data = Uri.parse(url)
+                    myContext.startActivity(i)
+                }) {
+                    Text(text = "Descargar APK ")
                 }
             }
+
             AnimatedVisibility(
                 visible = (showPad),
                 modifier = Modifier
@@ -146,7 +153,7 @@ fun CallLogScreen(
                                 cursorPos = cursor
                                 if(dialNumber.isNotEmpty()) {
                                     scope.launch {
-                                        viewModel.getDialRecords(dialNumber)
+                                        // viewModel.getDialRecords(dialNumber)
                                     }
                                 }else{
                                     scope.launch {
@@ -198,7 +205,7 @@ fun CallLogScreen(
                                                 }
                                             }.toString()
                                         scope.launch {
-                                                viewModel.getDialRecords(dialNumber)
+                                                // viewModel.getDialRecords(dialNumber)
                                         }
                                     },
                                     enableLongKeyPress = longPress

@@ -153,12 +153,12 @@ fun Context.hasReadCallLogPermissions(): Boolean{
 }
 
 fun Context.hasRequiredPermissions(): Boolean{
-    val readCallLog = checkSelfPermission(Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+    // val readCallLog = checkSelfPermission(Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
     val readPhoneState = checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
     val readContacts = checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
     val callPhone = checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED
     // val writeContacts = checkSelfPermission(Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED
-    var perms = readContacts && readPhoneState && callPhone && readCallLog
+    var perms = readContacts && readPhoneState && callPhone
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val readPhoneNumbers = checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS) == PackageManager.PERMISSION_GRANTED
         perms = perms && readPhoneNumbers
