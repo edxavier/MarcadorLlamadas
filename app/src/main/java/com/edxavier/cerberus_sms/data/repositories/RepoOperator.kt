@@ -461,23 +461,22 @@ class RepoOperator(private var context: Context) {
         var countryCode = ""
         var areaCode = ""
         var tempNumber = number.clearPhoneString()
-        //Verificar si es un numero telefonico valido
+        // Verificar si es un numero telefonico valido
         if(tempNumber.isValidPhoneNumber()){
             //si el numero inicia con 00 Reemplazar con +
             if(tempNumber.length >= 2 && tempNumber.startsWith("00"))
-                tempNumber = "+" + tempNumber.substring(2, number.length)
+                tempNumber = "+" + tempNumber.substring(2)
             // si son 8 digitos y el numero no inicia con +, poner +505 por defecto
             if(tempNumber.length in 4..8 && ! tempNumber.startsWith('+'))
                 tempNumber = "+505${tempNumber}"
             countryCode = getCountryCode(tempNumber)
             areaCode = getAreaCode(tempNumber, countryCode)
             var operator:Operator? = null
-            if (countryCode.isNotBlank()){
-                operator = if (areaCode.isNotBlank()){
-                    dao.getOperator2(countryCode, areaCode)
-                }else{
-                    dao.getOperatorByCountry(countryCode)
-                }
+            if (countryCode.isNotBlank() && areaCode.isNotBlank()){
+                operator =  dao.getOperator2(countryCode, areaCode)
+            }
+            if (countryCode.isNotBlank() && operator==null){
+                operator = dao.getOperatorByCountry(countryCode)
             }
 
             return@withContext operator

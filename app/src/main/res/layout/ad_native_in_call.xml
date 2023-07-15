@@ -4,6 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout
+        android:layout_marginTop="2dp"
+        android:visibility="gone"
+        android:id="@+id/NativeLinearLayout"
         android:layout_marginStart="2dp"
         android:layout_marginEnd="2dp"
         android:orientation="vertical"
@@ -23,11 +26,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
+                android:visibility="gone"
                 android:textColor="@color/white"
                 android:layout_marginStart="8dp"
                 android:id="@+id/ad_advertiser"
                 android:textSize="11sp"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <RatingBar
+                android:layout_marginStart="8dp"
+                android:visibility="gone"
+                android:id="@+id/ad_start_rating"
+                style="?android:attr/ratingBarStyleSmall"
+                android:progressTint="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_marginStart="8dp"
+                android:textColor="@color/white"
+                android:id="@+id/ad_headline"
+                android:text=""
+                android:textSize="11sp"
+                android:fontFamily="@font/source_sans_pro_semibold"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
@@ -43,37 +64,22 @@
                 android:id="@+id/ad_icon"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:layout_width="50dp"
-                android:layout_height="50dp"/>
+                android:layout_width="38dp"
+                android:layout_height="38dp"/>
             <LinearLayout
                 android:layout_marginStart="4dp"
                 android:orientation="vertical"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content">
-
-                <TextView
-                    android:textColor="@color/white"
-                    android:id="@+id/ad_headline"
-                    android:text="Head Line for Ads"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/source_sans_pro_semibold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <RatingBar
-                    android:visibility="gone"
-                    android:id="@+id/ad_start_rating"
-                    style="?android:attr/ratingBarStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
                 <TextView
                     android:textColor="@color/white"
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
+                    android:fontFamily="@font/source_sans_pro_semibold"
                     android:id="@+id/ad_body_text"
-                    android:text="This is the ad body text"
-                    android:textSize="12sp"
+                    android:text=""
+                    android:textSize="11sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -83,11 +89,11 @@
                 android:layout_marginBottom="2dp"
                 android:id="@+id/ad_btn_call_to_action"
                 android:layout_gravity="end"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="1dp"
                 android:textAllCaps="true"
                 android:text="Abrir"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textColor="@color/white"
                 android:background="@drawable/button"
                 android:layout_width="wrap_content"

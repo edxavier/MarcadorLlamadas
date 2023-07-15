@@ -5,6 +5,7 @@ import android.telecom.Call
 import android.telecom.CallAudioState
 import android.telecom.InCallService
 import android.util.Log
+import com.edxavier.cerberus_sms.services.CallService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,6 @@ object CallStateManager {
     var newCall: Call? = null
         set(value) {
             value?.let {
-                Log.e("EDER_callAdded", it.getPhoneNumber())
                 val handle = CallHandle()
                 //it.registerCallback(handle.callback)
                 handle.call = it

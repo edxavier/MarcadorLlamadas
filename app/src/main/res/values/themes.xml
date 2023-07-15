@@ -1,5 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
+    <style name="Theme.MarcadorLlamadasM3" parent="android:Theme.Material.Light.NoActionBar" />
+
     <style name="Theme.MarcadorLlamadas" parent="Theme.MaterialComponents.Light.NoActionBar">
 
         <!-- Primary brand color. -->
@@ -31,12 +33,24 @@
         <item name="android:fontFamily">@font/source_sans_pro</item>
     </style>
 
+    <style name="IncallScreen" parent="Theme.MarcadorLlamadas">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:fontFamily">@font/source_sans_pro</item>
+    </style>
+
 
     <style name="App.Caption" parent="android:Widget.TextView">
         <item name="android:fontFamily">@font/source_sans_pro</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="ShapeAppearanceOverlay.MyApp.Button.Rounded" parent="">

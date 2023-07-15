@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
-import coil.transform.RoundedCornersTransformation
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.adapters.PhoneNumbersAdapter
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
@@ -17,9 +15,7 @@ import com.edxavier.cerberus_sms.helpers.visible
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
-import com.google.android.material.button.MaterialButton
 import com.nicrosoft.consumoelectrico.ScopeActivity
-import kotlinx.android.synthetic.main.ad_native_layout.*
 import kotlinx.coroutines.launch
 
 class ContactDetailsActivity : ScopeActivity() {
@@ -104,10 +100,6 @@ class ContactDetailsActivity : ScopeActivity() {
         }
 
         val adLoader = builder.withAdListener(object : AdListener(){
-            override fun onAdFailedToLoad(p0: LoadAdError?) {
-                super.onAdFailedToLoad(p0)
-                Log.e("EDER", "${p0?.message}: ${p0?.cause.toString()}")
-            }
         }).build()
         adLoader.loadAd(AdRequest.Builder().build())
     }

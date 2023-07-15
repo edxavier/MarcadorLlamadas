@@ -7,26 +7,17 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import coil.size.Scale
-import coil.transform.RoundedCornersTransformation
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.Contact
 import com.edxavier.cerberus_sms.data.models.Operator
-import com.edxavier.cerberus_sms.databinding.ContactItemBinding
 import com.edxavier.cerberus_sms.databinding.ContactPhoneNumbersItemBinding
 import com.edxavier.cerberus_sms.helpers.*
-import com.edxavier.cerberus_sms.ui.ContactDetailsActivity
-import kotlinx.android.synthetic.main.call_list2.view.*
 
 
 class PhoneNumbersAdapter(val context: Context, val activity: Activity): ListAdapter<Contact, PhoneNumbersAdapter.ViewHolder>(

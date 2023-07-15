@@ -84,7 +84,7 @@ class MainActivity : ScopeActivity() {
         val adView =  AdView(this)
         binding.adViewContainer.addView(adView)
 
-        adView.adSize = getAdSize()
+        adView.setAdSize(getAdSize())
         adView.adUnitId = getString(R.string.BANNER_FLOTANTE)
 
         adView.loadAd(adRequest)

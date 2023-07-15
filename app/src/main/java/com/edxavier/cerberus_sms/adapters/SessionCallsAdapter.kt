@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.telecom.Call
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,13 +16,11 @@ import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.Operator
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
 import com.edxavier.cerberus_sms.data.repositories.RepoOperator
+import com.edxavier.cerberus_sms.databinding.CallList2Binding
+import com.edxavier.cerberus_sms.databinding.ContactItemBinding
 import com.edxavier.cerberus_sms.helpers.*
-import kotlinx.android.synthetic.main.call_list1.view.callDisplayContact
-import kotlinx.android.synthetic.main.call_list1.view.callStatus
-import kotlinx.android.synthetic.main.call_list2.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
@@ -43,7 +40,7 @@ class SessionCallsAdapter(
         }
     }
 
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+    class ViewHolder(val bindig: CallList2Binding): RecyclerView.ViewHolder(bindig.root){
         @SuppressLint("SetTextI18n")
         fun bind(callHandle: CallHandle, cScope: CoroutineScope, context: Context){
             itemView.apply {
@@ -55,9 +52,9 @@ class SessionCallsAdapter(
                                 }
                                 .collect {
                                     if(it.call?.state == Call.STATE_ACTIVE)
-                                        callStatus.text = callHandle.seconds.timeFormat()
+                                        bindig.callStatus.text = callHandle.seconds.timeFormat()
                                     if (it.call?.state == Call.STATE_HOLDING)
-                                        callStatus.text = it.call?.state?.stateToString()
+                                        bindig.callStatus.text = it.call?.state?.stateToString()
                                 }
                     }
                     cScope.launch {
@@ -69,18 +66,18 @@ class SessionCallsAdapter(
                                     //Log.e("EDER:OBJ_STAT", it.state.stateToString())
                                     //it.call?.let { c-> Log.e("EDER:OBJ_STAT2", c.getPhoneNumber()) }
                                     if(it.state != Call.STATE_ACTIVE)
-                                        callStatus.text = it.state.stateToString()
+                                        bindig.callStatus.text = it.state.stateToString()
                                 }
                     }
 
-                    callStatus.text = callHandle.call?.state?.stateToString()
+                    bindig.callStatus.text = callHandle.call?.state?.stateToString()
                     callHandle.call?.getPhoneNumber()?.let { callNUmber ->
                         //Log.e("EDER_NUM", "---------$callNUmber---------")
                         val repo = RepoOperator.getInstance(context)
                         val repoContact = RepoContact.getInstance(context)
                         cScope.launch {
                             val formattedPhone = callNUmber.toPhoneFormat()
-                            callDisplayContact.text = formattedPhone
+                            bindig.callDisplayContact.text = formattedPhone
                             //Log.e("EDER_NUM", "---------$formattedPhone---------")
                             val op = repo.getOperator(callNUmber)
 
@@ -89,32 +86,32 @@ class SessionCallsAdapter(
                                 //val contact2 = repoContact.getPhoneContact(formattedPhone)
                                 //Log.e("EDER_NUM", "---------${contact2.name}---------")
 
-                                callDisplayContact.text = contact.name
+                                bindig.callDisplayContact.text = contact.name
                                 if (contact.photo.isNotBlank())
-                                    callAvatar.load(Uri.parse(contact.photo)){
+                                    bindig.callAvatar.load(Uri.parse(contact.photo)){
                                         transformations(CircleCropTransformation())
                                     }
                             }
                             if(op!=null){
-                                callCountry.visible()
+                                bindig.callCountry.visible()
                                 if(op.operator!= Operator.INTERNATIONAL)
-                                    operatorCard.visible()
+                                    bindig.operatorCard.visible()
                                 else
-                                    operatorCard.invisible()
-                                callOperator.text = op.operator.getOperatorString()
-                                operatorCard.setCardBackgroundColor(op.operator.getOperatorColor(context))
+                                    bindig.operatorCard.invisible()
+                                bindig.callOperator.text = op.operator.getOperatorString()
+                                bindig.operatorCard.setCardBackgroundColor(op.operator.getOperatorColor(context))
                                 var tmp = ""
                                 tmp = if(op.area.isNotBlank())
                                     "${op.area}, ${op.country}"
                                 else
                                     op.country
-                                callCountry.text = tmp
+                                bindig.callCountry.text = tmp
                             }else{
-                                callCountry.text = ""
-                                callCountry.invisible()
-                                operatorCard.visible()
-                                callOperator.text = Operator.UNKNOWN.getOperatorString()
-                                operatorCard.setCardBackgroundColor(Operator.UNKNOWN.getOperatorColor(context))
+                                bindig.callCountry.text = ""
+                                bindig. callCountry.invisible()
+                                bindig.operatorCard.visible()
+                                bindig.callOperator.text = Operator.UNKNOWN.getOperatorString()
+                                bindig.operatorCard.setCardBackgroundColor(Operator.UNKNOWN.getOperatorColor(context))
                             }
 
                         }
@@ -125,10 +122,8 @@ class SessionCallsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return if (itemCount>1)
-            ViewHolder(LayoutInflater.from(parent.context!!).inflate(R.layout.call_list2, parent, false))
-        else
-            ViewHolder(LayoutInflater.from(parent.context!!).inflate(R.layout.call_list1, parent, false))
+        val binding = CallList2Binding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
 
     }
 

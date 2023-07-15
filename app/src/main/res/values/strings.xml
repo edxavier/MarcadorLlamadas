@@ -1,6 +1,6 @@
 <resources>
     <string name="admob_id_aplicacion">ca-app-pub-9964109306515647~3887839019</string>
-    <string name="app_name">Marcador Verifica Operadora</string>
+    <string name="app_name">Mi Marcador</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -14,4 +14,6 @@
     <string name="contacts">Contactos</string>
     <string name="preferences">Preferencias</string>
     <string name="contactos_aviso_permiso_negado">Permiso denegado</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_in_call">InCallActivity</string>
 </resources>

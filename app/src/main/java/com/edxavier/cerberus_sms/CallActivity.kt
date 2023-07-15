@@ -22,28 +22,21 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.ImageView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
-import coil.transform.BlurTransformation
-import coil.transform.RoundedCornersTransformation
 import com.edxavier.cerberus_sms.adapters.SessionCallsAdapter
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
 import com.edxavier.cerberus_sms.databinding.ActivityCallBinding
 import com.edxavier.cerberus_sms.databinding.AdNativeInCallBinding
-import com.edxavier.cerberus_sms.databinding.AdNativeLayoutBinding
 import com.edxavier.cerberus_sms.helpers.*
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
 import com.nicrosoft.consumoelectrico.ScopeActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
@@ -52,11 +45,11 @@ import kotlinx.coroutines.launch
 class CallActivity : ScopeActivity(), SensorEventListener {
 
     private var wakeLock: PowerManager.WakeLock? = null
-
-    private lateinit var powerManager: PowerManager
-    private lateinit var binding: ActivityCallBinding
     private var mSensorManager: SensorManager? = null
     private var mProximity: Sensor? = null
+    private lateinit var powerManager: PowerManager
+
+    private lateinit var binding: ActivityCallBinding
 
     lateinit var adapter: SessionCallsAdapter
 
@@ -119,6 +112,7 @@ class CallActivity : ScopeActivity(), SensorEventListener {
         }
         setupClickListeners()
         collectCallEvents()
+
 
         binding.recyclerSessionCalls.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerSessionCalls.adapter = adapter
@@ -306,6 +300,12 @@ class CallActivity : ScopeActivity(), SensorEventListener {
 
     private fun collectCallEvents(){
         launch {
+            FlowEventBus.subscribe<List<Call>> {
+                Log.w("EDER  FlowEventBus", "${it}")
+            }
+        }
+        launch {
+
             CallStateManager.callState.filter { it.call!=null }.collect { callState ->
                 //Log.e("EDER_STATE", "----------collect--------------------")
                 val state = callState.state
@@ -321,7 +321,7 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                         if (contact.photo.isNotBlank())
                             binding.backgroundImage.load(Uri.parse(contact.photo)){
                                 placeholder(R.drawable.diente_leon)
-                                transformations(BlurTransformation(this@CallActivity))
+                                // transformations(BlurTransformation(this@CallActivity))
                             }
                     }
                     //Log.e("EDER_STATE", it.getPhoneNumber())
@@ -450,7 +450,7 @@ class CallActivity : ScopeActivity(), SensorEventListener {
         val adView =  AdView(this)
         binding.adViewContainer.addView(adView)
 
-        adView.adSize = getAdSize()
+        adView.setAdSize( getAdSize())
         adView.adUnitId = getString(R.string.BANNER_FLOTANTE)
 
         adView.loadAd(adRequest)

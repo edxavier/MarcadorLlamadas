@@ -3,7 +3,6 @@ package com.edxavier.cerberus_sms.ui.contacts
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +48,7 @@ class ContactsFragment : ScopeFragment() {
                 binding.notificationAnimation.loop(true)
                 binding.notificationMessage.text = "Cargando..."
                 val repo = RepoContact.getInstance(requireContext())
-                val res = repo.getPhoneContactsList()
+                val res = repo.getContacts()
                 adapter.submitList(res)
                 binding.recyclerContacts.adapter = adapter
                 binding.notificationContainer.invisible()

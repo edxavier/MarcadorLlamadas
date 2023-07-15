@@ -2,42 +2,50 @@ package com.edxavier.cerberus_sms.services
 
 import android.app.NotificationManager
 import android.content.Context
-import android.telecom.Call
-import android.telecom.InCallService
-import android.util.Log
-import com.edxavier.cerberus_sms.CallActivity
-import com.edxavier.cerberus_sms.helpers.CallNotificationHelper
-import com.edxavier.cerberus_sms.helpers.CallState
-import com.edxavier.cerberus_sms.helpers.CallStateManager
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import android.telecom.*
+import com.edxavier.cerberus_sms.InCallActivity
+import com.edxavier.cerberus_sms.helpers.*
+import kotlinx.coroutines.*
+
 
 @ExperimentalCoroutinesApi
 class CallService: InCallService() {
 
-
+    companion object {
+        @Volatile
+        private var instance: CallService? = null
+        fun getInstance():CallService?{
+            return instance
+        }
+        fun setInstance(service: CallService){
+                instance=service
+        }
+    }
     override fun onCallAdded(call: Call) {
 
-        //call.details.handle.schemeSpecificPart?.let { Log.e("EDER", it) }
-        //this.setAudioRoute(CallAudioState.ROUTE_SPEAKER)
+        // var accHandle = call.details.accountHandle
+        // getCallSim(accHandle.id)
+        setInstance(this)
         call.registerCallback(callback)
+        MyCallsManager.addCall(call)
+
         CallStateManager.newCall = call
         CallStateManager.callService = this
 
         // Its a outgoing call
         if(call.state == Call.STATE_CONNECTING || call.state == Call.STATE_DIALING)
-            CallActivity.start(this, call)
+            InCallActivity.start(this, call)
         //Its a incoming call
-        else if(call.state == Call.STATE_RINGING && !CallStateManager.callActivityShown)
-            CallNotificationHelper.sendNotification(this )
-        //else if(call.state == Call.STATE_RINGING && CallStateManager.callActivityShown)
-        //    CallActivity.start(this, call)
+        else if(call.state == Call.STATE_RINGING && !MyCallsManager.inCallUiShown)
+            CallNotificationHelper.sendIncomeCallNotification(this )
+
     }
 
     override fun onCallRemoved(call: Call) {
-        Log.e("EDER", "onCallRemoved")
-        //Buscar la llamada dentro de la lista y eliminarla
-        //CallStateManager.newCall = null
-        //Log.e("EDER ","Calls: ${CallStateManager.callList.size}")
+        // Buscar la llamada dentro de la lista y eliminarla
+        call.unregisterCallback(callback)
+        MyCallsManager.removeCall(call)
+
         val callIndex = CallStateManager.getCallIndex(call)
         val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if(callIndex>=0) {
@@ -54,12 +62,15 @@ class CallService: InCallService() {
         }
     }
 
+
     private val callback = object : Call.Callback() {
         override fun onStateChanged(call: Call?, newState: Int) {
             call?.let {
                 CallStateManager.pushStateChange(CallState(call, newState))
+                MyCallsManager.callStateChange(it)
             }
         }
+
     }
 
 
