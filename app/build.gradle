@@ -43,57 +43,58 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.8"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    namespace 'com.edxavier.cerberus_sms'
 }
 
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.11.0'
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
 
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
 
     implementation "com.xwray:groupie:2.9.0"
     implementation "com.xwray:groupie-kotlin-android-extensions:2.8.1"
     implementation "com.xwray:groupie-viewbinding:2.9.0"
 
-    implementation 'androidx.room:room-runtime:2.5.2'
-    kapt 'androidx.room:room-compiler:2.5.2'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+    implementation 'androidx.room:room-runtime:2.6.1'
+    kapt 'androidx.room:room-compiler:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
 
     // ################### COMPOSE ###################
-    implementation 'androidx.activity:activity-compose:1.7.2'
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.2.0-alpha03'
+    implementation 'androidx.activity:activity-compose:1.8.2'
+    implementation "androidx.compose.ui:ui:1.6.1"
+    implementation "androidx.compose.ui:ui-tooling-preview:1.6.1"
+    implementation 'androidx.compose.material3:material3:1.2.0'
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     implementation("io.coil-kt:coil-compose:2.3.0")
 
-    implementation("androidx.navigation:navigation-compose:2.6.0")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.6.1"
+    debugImplementation "androidx.compose.ui:ui-tooling:1.6.1"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:1.6.1"
     // ################### END COMPOSE ###################
 
 
@@ -102,11 +103,11 @@ dependencies {
     implementation("io.coil-kt:coil:2.3.0")
 
     implementation 'com.google.firebase:firebase-core:21.1.1'
-    implementation 'com.google.firebase:firebase-ads:22.2.0'
+    implementation 'com.google.firebase:firebase-ads:22.6.0'
     // Recommended: Add the Firebase SDK for Google Analytics.
-    implementation 'com.google.firebase:firebase-analytics:21.3.0'
+    implementation 'com.google.firebase:firebase-analytics:21.5.1'
     // Add the Firebase SDK for Crashlytics.
-    implementation 'com.google.firebase:firebase-crashlytics:18.4.0'
+    implementation 'com.google.firebase:firebase-crashlytics:18.6.2'
 
     //ANIMATIONS
     implementation 'com.airbnb.android:lottie:4.2.2'
@@ -117,7 +118,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'com.pixplicity.easyprefs:library:1.9.0'
-    implementation 'com.google.android.gms:play-services-ads:22.2.0'
+    implementation 'com.google.android.gms:play-services-ads:22.6.0'
 
 }
 apply plugin: 'com.google.gms.google-services'
