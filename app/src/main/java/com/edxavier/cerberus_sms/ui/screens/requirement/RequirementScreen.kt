@@ -49,7 +49,8 @@ fun RequirementScreen(navController: NavController) {
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
             if (it.resultCode == android.app.Activity.RESULT_OK) {
-                val nextRoute = if (myContext.hasRequiredPermissions()) Routes.Calls.route else Routes.Permissions.route
+                // val nextRoute = if (myContext.hasRequiredPermissions()) Routes.Calls.route else Routes.Permissions.route
+                val nextRoute = Routes.Calls.route
                 navController.navigate(nextRoute){
                     val route = navController.currentBackStackEntry?.destination?.route
                     route?.apply {

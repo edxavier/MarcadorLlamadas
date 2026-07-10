@@ -59,11 +59,12 @@ class MainActivity : ComponentActivity() {
         viewModel = AppViewModel(RepoContact(this))
         handleCallIntent()
         val defaultRoute = if(defaultDialer){
-            if(hasPermission){
+            Routes.Calls.route
+            /*if(hasPermission){
                 Routes.Calls.route
             }else{
                 Routes.Permissions.route
-            }
+            }*/
         }else{
             Routes.Required.route
         }

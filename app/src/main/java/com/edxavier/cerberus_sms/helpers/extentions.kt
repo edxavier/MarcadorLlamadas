@@ -193,7 +193,7 @@ fun Context.getSimInfoBySubsManager(
     val simInfo = SimInfo()
     val subscriptionManager = getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
     try {
-        for (subscriptionInfo in subscriptionManager.activeSubscriptionInfoList) {
+        for (subscriptionInfo in subscriptionManager.activeSubscriptionInfoList.orEmpty()) {
             if (accountId == subscriptionInfo.iccId ||
                 accountId == subscriptionInfo.subscriptionId.toString()
             ){
@@ -216,7 +216,7 @@ fun Context.getSubscriptions(): List<String>{
         true
     if(hasReadPhoneNumbersPermission && hasReadPhoneStatePermission) {
         try {
-            for (subscriptionInfo in subscriptionManager.activeSubscriptionInfoList) {
+            for (subscriptionInfo in subscriptionManager.activeSubscriptionInfoList.orEmpty()) {
                 subs.add(subscriptionInfo.iccId)
             }
         } catch (e: Throwable) {

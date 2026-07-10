@@ -63,9 +63,7 @@ fun CallLogScreen(
     }
 
     LaunchedEffect(true){
-        if(myContext.hasRequiredPermissions()) {
-            viewModel.getCallLog()
-        }
+        viewModel.getCallLog()
     }
 
     Scaffold(
