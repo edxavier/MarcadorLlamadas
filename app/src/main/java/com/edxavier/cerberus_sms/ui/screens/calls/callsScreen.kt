@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
@@ -56,6 +58,7 @@ fun CallLogScreen(
                 !state.isLoading && state.callLog.isEmpty() -> {
                     NoDataScreen(
                         message = "Tu historial de llamadas está vacío",
+                        subtitle = "Las llamadas aparecerán aquí",
                         imageId = R.drawable.recent_calls,
                         onAction = {
                             showPad = !showPad
@@ -93,6 +96,21 @@ fun CallLogScreen(
                         contentDescription = "Abrir marcador"
                     )
                 }
+            }
+
+            // Scrim overlay — tocar fuera del dial pad lo cierra
+            if (showPad) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            showPad = false
+                            viewModel.onDialPadEvent()
+                        }
+                )
             }
 
             AnimatedVisibility(

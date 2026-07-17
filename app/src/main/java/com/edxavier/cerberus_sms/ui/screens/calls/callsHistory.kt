@@ -23,11 +23,15 @@ import androidx.navigation.NavHostController
 import com.edxavier.cerberus_sms.helpers.FlowEventBus
 import com.edxavier.cerberus_sms.helpers.makeCall
 import com.edxavier.cerberus_sms.helpers.sendSms
+import com.edxavier.cerberus_sms.helpers.toPhoneFormat
+import com.edxavier.cerberus_sms.data.models.CallsLog
 import com.edxavier.cerberus_sms.ui.calls.AppViewModel
+import com.edxavier.cerberus_sms.ui.core.ui.CallLogSkeleton
 import com.edxavier.cerberus_sms.ui.core.ui.ConfirmDialog
-import com.edxavier.cerberus_sms.ui.core.ui.LoadingIndicator
 import com.edxavier.cerberus_sms.ui.screens.calls.comp.OptionsHistory
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -78,12 +82,17 @@ fun CallHistory(viewModel:AppViewModel, navController: NavHostController) {
         topBar = {
             LargeTopAppBar(
                 title ={
-                    Text(text =  call.name, softWrap = false, overflow = TextOverflow.Ellipsis)
+                    Column {
+                        Text(text = call.name, softWrap = false, overflow = TextOverflow.Ellipsis)
+                        Text(
+                            text = call.number.toPhoneFormat(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        navController.navigateUp()
-                    }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
                     }
                 },
@@ -93,36 +102,80 @@ fun CallHistory(viewModel:AppViewModel, navController: NavHostController) {
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         if(state.isLoading){
-            LoadingIndicator()
-        }
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ){
-            stickyHeader {
-                OptionsHistory(
-                    onCall = { myContext.makeCall(call.number) },
-                    onText = { myContext.sendSms(call.number) },
-                    onDelete = { confirm = true},
-                    onBlock={
-                        if(locked){
-                            BlockedNumberContract.unblock(myContext, call.number)
-                            Toast.makeText(myContext, "${call.name} desbloqueado", Toast.LENGTH_LONG).show()
-                        }else{
-                            viewModel.blockNumber(call.number)
-                            Toast.makeText(myContext, "${call.name} bloqueado", Toast.LENGTH_LONG).show()
-                        }
-                        locked = !locked
-                    },
-                    isNumberBlocked = locked
-                )
+            Box(modifier = Modifier.fillMaxSize().padding(it)) {
+                CallLogSkeleton()
             }
-            items(items = state.callLogForNumber, key = { cl -> cl.id }){ callLog ->
-                HistoryLogEntry(call = callLog)
-            }
-        }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ){
+                stickyHeader {
+                    OptionsHistory(
+                        onCall = { myContext.makeCall(call.number) },
+                        onText = { myContext.sendSms(call.number) },
+                        onDelete = { confirm = true},
+                        onBlock={
+                            if(locked){
+                                BlockedNumberContract.unblock(myContext, call.number)
+                                Toast.makeText(myContext, "${call.name} desbloqueado", Toast.LENGTH_LONG).show()
+                            }else{
+                                viewModel.blockNumber(call.number)
+                                Toast.makeText(myContext, "${call.name} bloqueado", Toast.LENGTH_LONG).show()
+                            }
+                            locked = !locked
+                        },
+                        isNumberBlocked = locked
+                    )
+                }
 
+                val grouped = groupByDate(state.callLogForNumber)
+                grouped.forEach { (label, items) ->
+                    stickyHeader {
+                        Surface(
+                            tonalElevation = 1.dp,
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                        ) {
+                            Text(
+                                text = label,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+                    }
+                    items(items = items, key = { cl -> cl.id }) { callLog ->
+                        HistoryLogEntry(call = callLog)
+                    }
+                }
+            }
+        }
     }
+}
+
+private fun groupByDate(calls: List<CallsLog>): List<Pair<String, List<CallsLog>>> {
+    val today = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+    val yesterday = (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -1) }
+    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+    val groups = mutableMapOf<String, MutableList<CallsLog>>()
+    for (call in calls) {
+        val label = when {
+            call.callDate.timeInMillis >= today.timeInMillis -> "Hoy"
+            call.callDate.after(yesterday) -> "Ayer"
+            else -> dateFormat.format(call.callDate.timeInMillis)
+        }
+        groups.getOrPut(label) { mutableListOf() }.add(call)
+    }
+    return groups.toList()
 }

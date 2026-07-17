@@ -16,7 +16,8 @@ import com.edxavier.cerberus_sms.helpers.timeFormat
 @Composable
 fun CallLine2(call: CallsLog) {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
     ) {
         val callTypeLabel = when (call.type) {
             CallLog.Calls.INCOMING_TYPE -> "Entrante"
@@ -33,39 +34,39 @@ fun CallLine2(call: CallsLog) {
 
         Text(
             text = callTypeLabel,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelSmall,
             color = typeColor,
             fontWeight = FontWeight.Medium
         )
         if (call.duration > 0) {
             Text(
                 text = " · ",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
             Text(
                 text = call.duration.timeFormat(),
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         if (call.total > 1) {
             Text(
                 text = " · ",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
             Text(
                 text = "[${call.total}]",
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         if (call.sim > 0) {
             Text(
                 text = " · ",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
             )
             Icon(
                 painter = painterResource(id = R.drawable.sim_card),
@@ -73,10 +74,9 @@ fun CallLine2(call: CallsLog) {
                 modifier = Modifier.size(12.dp),
                 tint = MaterialTheme.colorScheme.outline
             )
-            Spacer(modifier = Modifier.width(2.dp))
             Text(
-                text = "${call.sim}",
-                style = MaterialTheme.typography.labelMedium,
+                text = " ${call.sim}",
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

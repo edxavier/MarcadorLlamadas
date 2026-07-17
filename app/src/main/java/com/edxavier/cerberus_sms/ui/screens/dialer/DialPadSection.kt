@@ -1,6 +1,7 @@
 package com.edxavier.cerberus_sms.ui.screens.dialer
 
 import android.widget.Toast
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -10,6 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +22,8 @@ import androidx.compose.ui.unit.sp
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.Operator
 import com.edxavier.cerberus_sms.data.repositories.RepoOperator
+import com.edxavier.cerberus_sms.helpers.getOperatorColor
+import com.edxavier.cerberus_sms.helpers.getOperatorString
 import com.edxavier.cerberus_sms.helpers.makeCall
 import com.edxavier.cerberus_sms.helpers.sendSms
 import com.edxavier.cerberus_sms.ui.calls.AppViewModel
@@ -47,22 +52,65 @@ fun DialPadSection(
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         shadowElevation = 16.dp
     ) {
+        var dragAccumulator by remember { mutableFloatStateOf(0f) }
+
         Column(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures(
+                        onDragEnd = {
+                            if (dragAccumulator > 800f) onHidePad()
+                            dragAccumulator = 0f
+                        },
+                        onVerticalDrag = { _, dragAmount ->
+                            dragAccumulator += dragAmount
+                        }
+                    )
+                }
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HorizontalDivider(
-                modifier = Modifier
-                    .width(36.dp)
-                    .padding(bottom = 12.dp),
-                thickness = 3.dp,
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                HorizontalDivider(
+                    modifier = Modifier.width(36.dp),
+                    thickness = 3.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Operator badge — tint sutil con color del operador
+            operator?.let { op ->
+                if (!op.operator.getOperatorString().startsWith("INTE")) {
+                    val opStr = if (op.operator.getOperatorString().startsWith("LINEA")) {
+                        "${op.area} ${op.country}"
+                    } else {
+                        op.operator.getOperatorString().replaceFirstChar { c -> c.uppercase() }
+                    }
+                    val opColor = Color(op.operator.getOperatorColor(context))
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = opColor.copy(alpha = 0.50f),
+                        tonalElevation = 2.dp
+                    ) {
+                        Text(
+                            text = opStr,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             NumberInput(
                 valueText = dialNumber,
                 cursorPos = cursorPos,
-                operator = operator,
                 onBackSpace = { number, cursor ->
                     onDialNumberChange(number)
                     onCursorPosChange(cursor)

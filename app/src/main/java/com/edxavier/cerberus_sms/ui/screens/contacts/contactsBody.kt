@@ -22,7 +22,7 @@ fun ContactsResults(
     if(state.isLoading && state.contacts.isEmpty()){
         LoadingIndicator()
     }else if(!state.isLoading && state.contacts.isEmpty()){
-        NoDataScreen(message = "No hay contactos para mostrar", imageId = R.drawable.contacts_book)
+        NoDataScreen(message = "No hay contactos para mostrar", subtitle = "Los contactos aparecerán aquí cuando sincronices tu cuenta", imageId = R.drawable.contacts_book)
     }else{
         ContactList(
             contactList = state.contacts,

@@ -148,7 +148,7 @@ class InCallActivity : ComponentActivity(){
                 override fun createShader(size: Size): Shader {
                     val biggerDimension = maxOf(size.height, size.width)
                     return RadialGradientShader(
-                        colors = listOf( Color(0xFF0488EC), Color(0xFF045DE9)),
+                        colors = listOf( Color(0xFF1E293B), Color(0xFF0F172A)),
                         center = size.center,
                         radius = biggerDimension/2,
                         colorStops = listOf(0f, 0.95f)
@@ -179,14 +179,13 @@ class InCallActivity : ComponentActivity(){
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .align(Alignment.BottomCenter)
-                                .padding(bottom = 8.dp),
+                                .padding(bottom = 12.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                            verticalArrangement = Arrangement.Bottom
                         ) {
                             CallMainButtons(viewModel = viewModel)
                         }
                     }
-
                 }
             }
         }

@@ -6,6 +6,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -50,8 +51,8 @@ class MainActivity : ComponentActivity() {
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_MarcadorLlamadasM3)
         MyCallsManager.adSize = getAdSize()
         val defaultDialer = isDefaultDialerApp()
         val hasPermission = hasRequiredPermissions()

@@ -23,7 +23,7 @@ fun FavoritesResults(
     if(state.isLoading && state.contacts.isEmpty()){
         LoadingIndicator()
     }else if(!state.isLoading && state.contacts.isEmpty()){
-        NoDataScreen(message = "Nadie esta en tu lista de favoritos aun", imageId = R.drawable.folder_favorite_icon)
+        NoDataScreen(message = "Nadie está en tu lista de favoritos aún", subtitle = "Agrega contactos como favoritos desde sus detalles", imageId = R.drawable.folder_favorite_icon)
     }else{
         FavoritesList(
             contactList = state.contacts,

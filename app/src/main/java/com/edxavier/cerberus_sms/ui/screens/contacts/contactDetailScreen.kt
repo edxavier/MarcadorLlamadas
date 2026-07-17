@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -67,7 +67,7 @@ fun ContactDetailsScreen(
                     IconButton(onClick = {
                         navController.navigateUp()
                     }) {
-                        Icon(Icons.Filled.ArrowBack, null)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -155,14 +155,16 @@ fun ContactDetailsScreen(
                         }
                         AnimatedVisibility(visible = (showMenu && clickNum == cNumber.number)) {
                             Spacer(modifier = Modifier.height(8.dp))
-                            Divider(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .alpha(0.5f), color = MaterialTheme.colorScheme.surface)
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                            )
                             Row(
                                 Modifier
                                     .padding(6.dp)
-                                    .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
                                 var locked by remember {
                                     mutableStateOf(BlockedNumberContract.isBlocked(myContext, cNumber.number))
                                 }
@@ -171,73 +173,74 @@ fun ContactDetailsScreen(
                                 )else ImageVector.vectorResource(
                                     id = R.drawable.lock_off
                                 )
-                                Icon(
-                                    imageVector = icon, contentDescription = null,
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .clickable {
-                                            if (locked) {
-                                                BlockedNumberContract.unblock(
-                                                    myContext,
-                                                    cNumber.number
-                                                )
-                                            } else {
-                                                viewModel.blockNumber(cNumber.number)
-                                            }
-                                            locked = !locked
+                                Surface(
+                                    onClick = {
+                                        if (locked) {
+                                            BlockedNumberContract.unblock(myContext, cNumber.number)
+                                        } else {
+                                            viewModel.blockNumber(cNumber.number)
                                         }
-                                        .padding(14.dp)
-                                )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(
-                                        id = R.drawable.chat
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .clickable {
-                                            myContext.sendSms(cNumber.number)
-                                        }
-                                        .padding(14.dp)
-                                )
+                                        locked = !locked
+                                    },
+                                    shape = CircleShape,
+                                    tonalElevation = 1.dp,
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                                ) {
+                                    Box(modifier = Modifier.padding(12.dp)) {
+                                        Icon(imageVector = icon, contentDescription = "Bloquear")
+                                    }
+                                }
+                                Surface(
+                                    onClick = { myContext.sendSms(cNumber.number) },
+                                    shape = CircleShape,
+                                    tonalElevation = 1.dp,
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                                ) {
+                                    Box(modifier = Modifier.padding(12.dp)) {
+                                        Icon(imageVector = ImageVector.vectorResource(id = R.drawable.chat), contentDescription = "SMS")
+                                    }
+                                }
                                 if(cNumber.whatsapp){
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(
-                                            id = R.drawable.whatsapp_com
-                                        ),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .clip(CircleShape)
-                                            .clickable {
-                                                val url = "https://api.whatsapp.com/send?phone=${cNumber.number.toPhoneFormat()}"
-                                                try {
-                                                    val pm: PackageManager = myContext.packageManager
-                                                    val i = Intent(Intent.ACTION_VIEW)
-                                                    i.setPackage("com.whatsapp")
-                                                    i.data = Uri.parse(url)
-                                                    if (i.resolveActivity(pm) != null) {
-                                                        myContext.startActivity(i)
-                                                    } else {
-                                                        Toast.makeText(myContext, "Whatsapp no instalado", Toast.LENGTH_LONG).show()
-                                                    }
-                                                } catch (e: PackageManager.NameNotFoundException) {
+                                    Surface(
+                                        onClick = {
+                                            val url = "https://api.whatsapp.com/send?phone=${cNumber.number.toPhoneFormat()}"
+                                            try {
+                                                val pm: PackageManager = myContext.packageManager
+                                                val i = Intent(Intent.ACTION_VIEW)
+                                                i.setPackage("com.whatsapp")
+                                                i.data = Uri.parse(url)
+                                                if (i.resolveActivity(pm) != null) {
+                                                    myContext.startActivity(i)
+                                                } else {
                                                     Toast.makeText(myContext, "Whatsapp no instalado", Toast.LENGTH_LONG).show()
                                                 }
+                                            } catch (e: PackageManager.NameNotFoundException) {
+                                                Toast.makeText(myContext, "Whatsapp no instalado", Toast.LENGTH_LONG).show()
                                             }
-                                            .padding(14.dp)
-                                    )
+                                        },
+                                        shape = CircleShape,
+                                        tonalElevation = 1.dp,
+                                        color = Color(0xFF25D366).copy(alpha = 0.15f)
+                                    ) {
+                                        Box(modifier = Modifier.padding(12.dp)) {
+                                            Icon(
+                                                imageVector = ImageVector.vectorResource(id = R.drawable.whatsapp_com),
+                                                contentDescription = "WhatsApp",
+                                                tint = Color(0xFF25D366)
+                                            )
+                                        }
+                                    }
                                 }
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Icon(
-                                    imageVector = Icons.Outlined.Phone,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .clickable { myContext.makeCall(cNumber.number) }
-                                        .padding(14.dp)
-                                )
+                                Surface(
+                                    onClick = { myContext.makeCall(cNumber.number) },
+                                    shape = CircleShape,
+                                    tonalElevation = 1.dp,
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                                ) {
+                                    Box(modifier = Modifier.padding(12.dp)) {
+                                        Icon(imageVector = Icons.Outlined.Phone, contentDescription = "Llamar")
+                                    }
+                                }
                             }
                         }
                     }

@@ -20,6 +20,7 @@ import com.edxavier.cerberus_sms.R
 fun NoDataScreen(
     message:String,
     imageId: Int,
+    subtitle: String = "",
     onAction: (() -> Unit)? = null
 ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -56,12 +57,14 @@ fun NoDataScreen(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Las llamadas aparecerán aquí",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (subtitle.isNotBlank()) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 if (onAction != null) {
                     Spacer(modifier = Modifier.height(24.dp))
                     FilledTonalButton(onClick = onAction) {

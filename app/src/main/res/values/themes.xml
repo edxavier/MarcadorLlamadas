@@ -19,6 +19,12 @@
     </style>
 
     <!-- Splash Screen Theme. -->
+    <style name="Theme.MarcadorLlamadas.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#E67E22</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.MarcadorLlamadasM3</item>
+    </style>
+
     <style name="DetailActivity" parent="Theme.MarcadorLlamadas">
         <item name="android:windowTranslucentStatus">true</item>
     </style>

@@ -13,39 +13,45 @@ import com.edxavier.cerberus_sms.data.models.CallsLog
 
 @Composable
 fun CallLine3(call: CallsLog) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        call.operator?.let {
-            if (it.area.isNotBlank()) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Ubicación",
-                    modifier = Modifier.size(12.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                Text(
-                    text = it.area,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-            }
-            if (it.country.isNotBlank()) {
-                Icon(
-                    imageVector = Icons.Default.Public,
-                    contentDescription = "País",
-                    modifier = Modifier.size(12.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                Text(
-                    text = it.country,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                )
+    call.operator?.let { op ->
+        val showArea = op.area.isNotBlank()
+        val showCountry = op.country.isNotBlank()
+        if (showArea || showCountry) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (showArea) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Ubicación",
+                        modifier = Modifier.size(11.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = op.area,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                    if (showCountry) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                    }
+                }
+                if (showCountry) {
+                    Icon(
+                        imageVector = Icons.Default.Public,
+                        contentDescription = "País",
+                        modifier = Modifier.size(11.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = op.country,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                }
             }
         }
     }

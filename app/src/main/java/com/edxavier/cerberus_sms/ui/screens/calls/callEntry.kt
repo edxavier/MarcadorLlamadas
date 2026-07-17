@@ -29,6 +29,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.CallsLog
@@ -50,7 +51,8 @@ import kotlinx.coroutines.launch
 fun CallLogEntry(
     call: CallsLog,
     navCtrl: NavHostController,
-    viewModel: AppViewModel
+    viewModel: AppViewModel,
+    timeOnly: Boolean = false
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -73,11 +75,8 @@ fun CallLogEntry(
     }
 
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .padding(horizontal = 12.dp)
             .combinedClickable(
@@ -90,7 +89,6 @@ fun CallLogEntry(
                 .fillMaxWidth()
                 .height(IntrinsicSize.Max)
         ) {
-            // Operator color left border — solo cuando hay operador
             if (operatorColor != null) {
                 Box(
                     modifier = Modifier
@@ -104,12 +102,12 @@ fun CallLogEntry(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 3.dp)
+                    .padding(start = if (operatorColor != null) 4.dp else 0.dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 12.dp, end = 12.dp, top = 14.dp, bottom = 14.dp),
+                        .padding(start = 14.dp, end = 14.dp, top = 14.dp, bottom = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val filter = if (call.type == CallLog.Calls.MISSED_TYPE || call.type == CallLog.Calls.BLOCKED_TYPE)
@@ -157,25 +155,25 @@ fun CallLogEntry(
                     }
 
                     Surface(
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier.size(42.dp),
                         shape = CircleShape,
-                        color = filter.copy(alpha = 0.15f),
-                        tonalElevation = 2.dp
+                        color = filter.copy(alpha = 0.12f),
+                        tonalElevation = 3.dp
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 painter = painterResource(id = call.type.getCallDirectionIcon()),
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(22.dp),
                                 tint = filter
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(14.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
-                        CallLine1(call = call)
+                        CallLine1(call = call, timeOnly = timeOnly)
                         Spacer(modifier = Modifier.height(4.dp))
                         CallLine2(call = call)
                         Spacer(modifier = Modifier.height(2.dp))
@@ -189,13 +187,13 @@ fun CallLogEntry(
                 exit = fadeOut(animationSpec = tween(150)) + shrinkVertically(animationSpec = tween(150))
             ) {
                     HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        modifier = Modifier.padding(horizontal = 14.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                     )
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         ActionButton(
@@ -203,9 +201,11 @@ fun CallLogEntry(
                                 Icon(
                                     painter = painterResource(id = R.drawable.chat),
                                     contentDescription = "Enviar SMS",
-                                    tint = MaterialTheme.colorScheme.tertiary
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(22.dp)
                                 )
                             },
+                            label = "SMS",
                             onClick = { context.sendSms(call.number) }
                         )
                         ActionButton(
@@ -213,9 +213,11 @@ fun CallLogEntry(
                                 Icon(
                                     imageVector = Icons.Outlined.Info,
                                     contentDescription = "Historial",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(22.dp)
                                 )
                             },
+                            label = "Detalles",
                             onClick = {
                                 viewModel.selectedCall = call
                                 navCtrl.navigate(Routes.CallHistory.route)
@@ -226,9 +228,11 @@ fun CallLogEntry(
                                 Icon(
                                     imageVector = Icons.Outlined.Phone,
                                     contentDescription = "Llamar",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(22.dp)
                                 )
                             },
+                            label = "Llamar",
                             onClick = { context.makeCall(call.number) }
                         )
                     }
@@ -241,19 +245,27 @@ fun CallLogEntry(
 @Composable
 private fun ActionButton(
     icon: @Composable () -> Unit,
+    label: String,
     onClick: () -> Unit
 ) {
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
         tonalElevation = 1.dp
     ) {
-        Box(
-            modifier = Modifier.padding(12.dp),
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             icon()
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 10.sp
+            )
         }
     }
 }

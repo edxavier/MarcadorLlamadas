@@ -7,20 +7,12 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -34,7 +26,6 @@ import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.helpers.MyCallsManager
 import com.edxavier.cerberus_sms.ui.ui.theme.green_700
 import com.edxavier.cerberus_sms.ui.ui.theme.red_700
-import com.edxavier.cerberus_sms.ui.ui.theme.white_50
 
 @Composable
 fun CallMainButtons(
@@ -54,18 +45,10 @@ fun CallMainButtons(
     )
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
-        val inactiveBtnModifier = Modifier
-            .clip(CircleShape)
-            .background(Color.Transparent, CircleShape)
-        val activeBtnModifier = Modifier
-            .clip(CircleShape)
-            .background(white_50, CircleShape)
         val micIcon = if(!state.micOff) ImageVector.vectorResource(id = R.drawable.ic_baseline_mic) else ImageVector.vectorResource(id = R.drawable.ic_baseline_mic_off)
         val pauseIcon = if(state.callsQueue.size==1) ImageVector.vectorResource(id = R.drawable.ic_baseline_pause) else ImageVector.vectorResource(id = R.drawable.ic_baseline_swap_calls)
         val pauseText = if(state.callsQueue.size==1) "Retener" else "Intercambiar"
@@ -88,120 +71,44 @@ fun CallMainButtons(
                 horizontalArrangement = Arrangement.SpaceAround,
                 modifier = Modifier.fillMaxWidth()
             ) {
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(1.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = pauseIcon,
-                        contentDescription = null,
-                        modifier = (if (!state.paused) inactiveBtnModifier else activeBtnModifier)
-                            .clickable {
-                                if (!state.paused)
-                                    viewModel.setOnHold()
-                                else
-                                    viewModel.setUnHold()
-                            }
-                            .padding(12.dp),
-                        tint = Color.White
-                    )
-                    Text(
-                        text = pauseText,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color.White
-                    )
-                }
-
-            }
-        }
-        AnimatedVisibility(
-            visible = !state.incomingCall,
-            enter = scaleIn(animationSpec = tween(durationMillis = 200)),
-            exit = scaleOut(animationSpec = tween(durationMillis = 200))
-        ) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(1.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = micIcon,
-                        contentDescription = null,
-                        modifier = (if (!state.micOff) inactiveBtnModifier else activeBtnModifier)
-                            .clickable {
-                                if (!state.micOff)
-                                    viewModel.setMicOff()
-                                else
-                                    viewModel.setMicOn()
-                            }
-                            .padding(12.dp),
-                        tint = Color.White
-                    )
-                    Text(
-                        text = "Silenciar",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color.White
-                    )
-                }
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(1.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_baseline_dialpad),
-                        contentDescription = null,
-                        modifier = (if (!state.showDialPad) inactiveBtnModifier else activeBtnModifier)
-                            .clickable {
-                                viewModel.showDialPad()
-                            }
-                            .padding(12.dp),
-                        tint = Color.White
-                    )
-                    Text(
-                        text = "Teclado",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color.White
-                    )
-                }
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(1.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_baseline_speaker),
-                        contentDescription = null,
-                        modifier = (if (!state.speakerOn) inactiveBtnModifier else activeBtnModifier)
-                            .clickable {
-                                if (!state.speakerOn)
-                                    viewModel.setSpeakerOn()
-                                else
-                                    viewModel.setSpeakerOff()
-                            }
-                            .padding(12.dp),
-                        tint = Color.White
-                    )
-                    Text(
-                        text = "Altavoz",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color.White
-                    )
-                }
+                InCallActionButton(
+                    icon = { Icon(imageVector = pauseIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp)) },
+                    label = pauseText,
+                    isActive = state.paused,
+                    onClick = {
+                        if (!state.paused) viewModel.setOnHold() else viewModel.setUnHold()
+                    },
+                    activeTint = Color(0xFFFFC107)
+                )
+                InCallActionButton(
+                    icon = { Icon(imageVector = micIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp)) },
+                    label = "Silenciar",
+                    isActive = state.micOff,
+                    onClick = {
+                        if (!state.micOff) viewModel.setMicOff() else viewModel.setMicOn()
+                    },
+                    activeTint = Color(0xFFEF4444)
+                )
+                InCallActionButton(
+                    icon = { Icon(imageVector = ImageVector.vectorResource(id = R.drawable.ic_baseline_dialpad), contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp)) },
+                    label = "Teclado",
+                    isActive = state.showDialPad,
+                    onClick = { viewModel.showDialPad() },
+                    activeTint = Color(0xFF3B82F6)
+                )
+                InCallActionButton(
+                    icon = { Icon(imageVector = ImageVector.vectorResource(id = R.drawable.ic_baseline_speaker), contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp)) },
+                    label = "Altavoz",
+                    isActive = state.speakerOn,
+                    onClick = {
+                        if (!state.speakerOn) viewModel.setSpeakerOn() else viewModel.setSpeakerOff()
+                    },
+                    activeTint = Color(0xFF3B82F6)
+                )
             }
         }
 
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround,
             modifier = Modifier.fillMaxWidth().animateContentSize()
@@ -246,11 +153,41 @@ fun CallMainButtons(
                     )
                 }
             }
-
         }
 
         if(MyCallsManager.thereIsIncomingCall()){
             Spacer(modifier = Modifier.height(60.dp))
+        }
+    }
+}
+
+@Composable
+private fun InCallActionButton(
+    icon: @Composable () -> Unit,
+    label: String,
+    isActive: Boolean,
+    onClick: () -> Unit,
+    activeTint: Color = Color.White
+) {
+    Surface(
+        onClick = onClick,
+        shape = CircleShape,
+        color = if (isActive) activeTint.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.08f),
+        tonalElevation = if (isActive) 4.dp else 1.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            icon()
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = label,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Light,
+                color = Color.White,
+                letterSpacing = 0.2.sp
+            )
         }
     }
 }

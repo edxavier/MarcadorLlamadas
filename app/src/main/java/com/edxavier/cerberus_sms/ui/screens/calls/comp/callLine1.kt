@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun CallLine1(call: CallsLog, showNumber: Boolean = false) {
+fun CallLine1(call: CallsLog, showNumber: Boolean = false, timeOnly: Boolean = false) {
     val context = LocalContext.current
     val now = Calendar.getInstance()
     val today = Calendar.getInstance().apply {
@@ -94,17 +94,27 @@ fun CallLine1(call: CallsLog, showNumber: Boolean = false) {
             horizontalAlignment = Alignment.End,
             modifier = Modifier.padding(start = 8.dp)
         ) {
-            Text(
-                text = dateText,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            if (showTime) {
+            if (timeOnly) {
+                if (showTime) {
+                    Text(
+                        text = timeText,
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                }
+            } else {
                 Text(
-                    text = timeText,
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    text = dateText,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                if (showTime) {
+                    Text(
+                        text = timeText,
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
     }
