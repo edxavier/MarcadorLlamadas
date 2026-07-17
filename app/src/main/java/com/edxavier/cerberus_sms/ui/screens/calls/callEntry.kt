@@ -4,9 +4,15 @@ import android.provider.BlockedNumberContract
 import android.provider.CallLog
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Phone
@@ -16,11 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +33,7 @@ import androidx.navigation.NavHostController
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.CallsLog
 import com.edxavier.cerberus_sms.helpers.getCallDirectionIcon
+import com.edxavier.cerberus_sms.helpers.getOperatorColor
 import com.edxavier.cerberus_sms.helpers.makeCall
 import com.edxavier.cerberus_sms.helpers.sendSms
 import com.edxavier.cerberus_sms.navigation.Routes
@@ -54,173 +58,202 @@ fun CallLogEntry(
     var confirm by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
 
-
-
     val content = buildAnnotatedString {
-        append("Se eleminara el historial de llamadas de ")
+        append("Se eliminara el historial de llamadas de ")
         withStyle(
             style = SpanStyle(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary
             )
-        ) {append(call.name) }
+        ) { append(call.name) }
     }
+
+    val operatorColor = call.operator?.let {
+        Color(it.operator.getOperatorColor(context))
+    }
+
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         ),
-        elevation =  CardDefaults.cardElevation(1.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        shape = RoundedCornerShape(8.dp),
         modifier = Modifier
-            .padding(horizontal = 6.dp)
+            .padding(horizontal = 12.dp)
             .combinedClickable(
-                onClick = { showMenu = !showMenu},
-                onLongClick = {
-                    expanded = !expanded
-                }
+                onClick = { showMenu = !showMenu },
+                onLongClick = { expanded = !expanded }
             ),
-    ){
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(0.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                val filter = if(call.type == CallLog.Calls.MISSED_TYPE || call.type == CallLog.Calls.BLOCKED_TYPE)
-                    Color.Red
-                else
-                    MaterialTheme.colorScheme.secondary
-                val items = mutableListOf("Eliminar historial")
-
-                if (expanded) {
-                    MenuDialog(
-                        title = call.name,
-                        options = items,
-                        onItemClick = {
-                            expanded = false
-                            when(it){
-                                0 -> {
-                                    if(call.isBlocked){
-                                        BlockedNumberContract.unblock(context, call.number)
-                                        Toast.makeText(context, "${call.name} desbloqueado", Toast.LENGTH_LONG).show()
-                                    }else{
-                                        viewModel.blockNumber(call.number)
-                                        Toast.makeText(context, "${call.name} bloqueado", Toast.LENGTH_LONG).show()
-                                    }
-                                    scope.launch { viewModel.getCallLog() }
-                                }
-                            }
-                        },
-                        onDismiss = { expanded = false}
-                    )
-                }
-
-                if(confirm){
-                    ConfirmDialog(
-                        title = "Continuar?",
-                        content = content,
-                        onConfirm = {
-                            confirm = false
-                            viewModel.deleteCallsForNumber(call.number)
-                            scope.launch { viewModel.getCallLog() }
-                        },
-                        onDismiss = { confirm = false },
-                        onCancel = {confirm = false}
-                    )
-                }
-                Image(
-                    painter = painterResource(id = call.type.getCallDirectionIcon()),
-                    contentDescription = null, modifier = Modifier.size(18.dp),
-                    colorFilter = ColorFilter.tint(filter),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Max)
+        ) {
+            // Operator color left border — solo cuando hay operador
+            if (operatorColor != null) {
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(topStart = 12.dp, bottomStart = 12.dp))
+                        .background(operatorColor)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(modifier = Modifier.weight(1f)){
-                    CallLine1(call = call)
-                    CallLine2(call = call)
-                    Spacer(modifier = Modifier.height(2.dp))
-                    CallLine3(call = call)
-                }
             }
 
-            AnimatedVisibility(visible = (showMenu)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 3.dp)
+            ) {
                 Row(
-                    Modifier
-                        .padding(2.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 12.dp, end = 12.dp, top = 14.dp, bottom = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    var locked by remember {
-                        mutableStateOf(BlockedNumberContract.isBlocked(context, call.number))
-                    }
-                    val icon = if(locked) ImageVector.vectorResource(
-                        id = R.drawable.lock_on
-                    )else ImageVector.vectorResource(
-                        id = R.drawable.lock_off
-                    )
-                    /*
-                    Icon(
-                        imageVector = icon, contentDescription = null,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .clickable {
-                                locked = !locked
-                                if(call.isBlocked){
-                                    BlockedNumberContract.unblock(context, call.number)
-                                    Toast.makeText(context, "${call.name} desbloqueado", Toast.LENGTH_LONG).show()
-                                }else{
-                                    viewModel.blockNumber(call.number)
-                                    Toast.makeText(context, "${call.name} bloqueado", Toast.LENGTH_LONG).show()
+                    val filter = if (call.type == CallLog.Calls.MISSED_TYPE || call.type == CallLog.Calls.BLOCKED_TYPE)
+                        MaterialTheme.colorScheme.error
+                    else
+                        MaterialTheme.colorScheme.secondary
+
+                    val items = mutableListOf("Eliminar historial")
+
+                    if (expanded) {
+                        MenuDialog(
+                            title = call.name,
+                            options = items,
+                            onItemClick = {
+                                expanded = false
+                                when (it) {
+                                    0 -> {
+                                        if (call.isBlocked) {
+                                            BlockedNumberContract.unblock(context, call.number)
+                                            Toast.makeText(context, "${call.name} desbloqueado", Toast.LENGTH_LONG).show()
+                                        } else {
+                                            viewModel.blockNumber(call.number)
+                                            Toast.makeText(context, "${call.name} bloqueado", Toast.LENGTH_LONG).show()
+                                        }
+                                        scope.launch { viewModel.getCallLog() }
+                                    }
                                 }
+                            },
+                            onDismiss = { expanded = false }
+                        )
+                    }
+
+                    if (confirm) {
+                        ConfirmDialog(
+                            title = "Continuar?",
+                            content = content,
+                            onConfirm = {
+                                confirm = false
+                                viewModel.deleteCallsForNumber(call.number)
                                 scope.launch { viewModel.getCallLog() }
-                            }
-                            .padding(14.dp)
+                            },
+                            onDismiss = { confirm = false },
+                            onCancel = { confirm = false }
+                        )
+                    }
+
+                    Surface(
+                        modifier = Modifier.size(40.dp),
+                        shape = CircleShape,
+                        color = filter.copy(alpha = 0.15f),
+                        tonalElevation = 2.dp
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                painter = painterResource(id = call.type.getCallDirectionIcon()),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = filter
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        CallLine1(call = call)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        CallLine2(call = call)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        CallLine3(call = call)
+                    }
+                }
+
+            AnimatedVisibility(
+                visible = showMenu,
+                enter = fadeIn(animationSpec = tween(200)) + expandVertically(animationSpec = tween(200)),
+                exit = fadeOut(animationSpec = tween(150)) + shrinkVertically(animationSpec = tween(150))
+            ) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                     */
-                    Icon(
-                        imageVector = ImageVector.vectorResource(
-                            id = R.drawable.chat
-                        ),
-                        contentDescription = null,
+                    Row(
                         modifier = Modifier
-                            .clip(CircleShape)
-                            
-                            .clickable {
-                                context.sendSms(call.number)
-                            }
-                            .padding(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Icon(
-                        imageVector = Icons.Outlined.Info,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            
-                            .clickable {
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        ActionButton(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.chat),
+                                    contentDescription = "Enviar SMS",
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
+                            },
+                            onClick = { context.sendSms(call.number) }
+                        )
+                        ActionButton(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Info,
+                                    contentDescription = "Historial",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            onClick = {
                                 viewModel.selectedCall = call
                                 navCtrl.navigate(Routes.CallHistory.route)
                             }
-                            .padding(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Icon(
-                        imageVector = Icons.Outlined.Phone,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            
-                            .clickable { context.makeCall(call.number) }
-                            .padding(14.dp)
-                    )
+                        )
+                        ActionButton(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Phone,
+                                    contentDescription = "Llamar",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            onClick = { context.makeCall(call.number) }
+                        )
+                    }
                 }
             }
         }
     }
+}
 
-
-
-
-
+@Composable
+private fun ActionButton(
+    icon: @Composable () -> Unit,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+        tonalElevation = 1.dp
+    ) {
+        Box(
+            modifier = Modifier.padding(12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            icon()
+        }
+    }
 }

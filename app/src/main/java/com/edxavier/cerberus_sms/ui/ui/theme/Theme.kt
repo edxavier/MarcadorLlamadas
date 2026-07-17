@@ -95,13 +95,10 @@ fun AppTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            (view.context as Activity).window.statusBarColor = colorScheme.primary.toArgb()
-            if (useDarkTheme) {
-                (view.context as Activity).window.navigationBarColor = colorScheme.outlineVariant.toArgb()
-            }else{
-                (view.context as Activity).window.navigationBarColor = colorScheme.primary.toArgb()
-            }
-            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = useDarkTheme
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.surface.toArgb()
+            window.navigationBarColor = colorScheme.surface.toArgb()
+            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = !useDarkTheme
         }
     }
 

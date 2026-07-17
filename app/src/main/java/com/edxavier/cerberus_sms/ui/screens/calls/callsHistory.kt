@@ -3,18 +3,14 @@ package com.edxavier.cerberus_sms.ui.screens.calls
 import android.provider.BlockedNumberContract
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
@@ -23,14 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.edxavier.cerberus_sms.helpers.FlowEventBus
-import com.edxavier.cerberus_sms.helpers.hasRequiredPermissions
 import com.edxavier.cerberus_sms.helpers.makeCall
 import com.edxavier.cerberus_sms.helpers.sendSms
-import com.edxavier.cerberus_sms.ui.calls.CallsScreen
 import com.edxavier.cerberus_sms.ui.calls.AppViewModel
+import com.edxavier.cerberus_sms.ui.core.ui.ConfirmDialog
 import com.edxavier.cerberus_sms.ui.core.ui.LoadingIndicator
 import com.edxavier.cerberus_sms.ui.screens.calls.comp.OptionsHistory
 import kotlinx.coroutines.launch
@@ -47,39 +41,28 @@ fun CallHistory(viewModel:AppViewModel, navController: NavHostController) {
     var confirm by remember { mutableStateOf(false) }
     var locked by remember { mutableStateOf(call.isBlocked) }
     if(confirm){
-        AlertDialog(
-            onDismissRequest = { confirm = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        confirm = false
-                        scope.launch {
-                            viewModel.deleteCallsForNumber(call.number)
-                            viewModel.getCallsFor(call.number)
-                        }
-                    }
-                )
-                { Text(text = "OK") }
-            },
-            dismissButton = {
-                TextButton(onClick = {confirm = false})
-                { Text(text = "Cancelar") }
-            },
-            title = { Text(text = "Continuar?", color = MaterialTheme.colorScheme.tertiary)},
-            text = {
-                Text(text =  buildAnnotatedString {
-                    append("Se eleminara el historial de llamadas de ")
-                    withStyle(
-                        style = SpanStyle(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    ) {
-                        append(call.name)
-                    }
+        ConfirmDialog(
+            title = "Continuar?",
+            content = buildAnnotatedString {
+                append("Se eleminara el historial de llamadas de ")
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    append(call.name)
                 }
-                )
-            }
+            },
+            onConfirm = {
+                confirm = false
+                scope.launch {
+                    viewModel.deleteCallsForNumber(call.number)
+                    viewModel.getCallsFor(call.number)
+                }
+            },
+            onDismiss = { confirm = false },
+            onCancel = { confirm = false }
         )
     }
     scope.launch {
@@ -101,7 +84,7 @@ fun CallHistory(viewModel:AppViewModel, navController: NavHostController) {
                     IconButton(onClick = {
                         navController.navigateUp()
                     }) {
-                        Icon(Icons.Filled.ArrowBack, null)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
                     }
                 },
                 scrollBehavior = scrollBehavior

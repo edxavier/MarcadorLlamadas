@@ -6,11 +6,11 @@ import android.util.DisplayMetrics
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
@@ -80,39 +80,47 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Scaffold(
-                        bottomBar = { BottomNavBar(navController = navController, viewModel) }
-                    ) { paddingValues->
-                        NavHost(
-                            navController = navController,
-                            startDestination = defaultRoute,
-                            modifier = Modifier.padding(paddingValues)
-                        ) {
-                            composable(Routes.Calls.route){
-                                CallLogScreen(viewModel = viewModel, navCtrl = navController)
-                            }
-                            composable(Routes.Contacts.route){
-                                ContactsScreen(viewModel = viewModel, navController = navController)
-                            }
-                            composable(Routes.Favorites.route){
-                                FavoritesScreen(viewModel = viewModel, navController = navController)
-                            }
-                            composable(Routes.Settings.route){
-                                SettingsScreen(viewModel=viewModel, navController = navController)
-                            }
-                            composable(Routes.Required.route){
-                                RequirementScreen(navController =navController)
-                            }
-                            composable(Routes.Permissions.route){
-                                PermissionRequiredScreen(navController=navController)
-                            }
-                            composable(Routes.CallHistory.route){
-                                CallHistory(viewModel=viewModel, navController = navController)
-                            }
-                            composable(Routes.ContactDetail.route){
-                                ContactDetailsScreen(viewModel=viewModel, navController = navController)
+                    Box(Modifier.fillMaxSize()) {
+                        Scaffold { _ ->
+                            NavHost(
+                                navController = navController,
+                                startDestination = defaultRoute,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                composable(Routes.Calls.route){
+                                    CallLogScreen(viewModel = viewModel, navCtrl = navController)
+                                }
+                                composable(Routes.Contacts.route){
+                                    ContactsScreen(viewModel = viewModel, navController = navController)
+                                }
+                                composable(Routes.Favorites.route){
+                                    FavoritesScreen(viewModel = viewModel, navController = navController)
+                                }
+                                composable(Routes.Settings.route){
+                                    SettingsScreen(viewModel=viewModel, navController = navController)
+                                }
+                                composable(Routes.Required.route){
+                                    RequirementScreen(navController =navController)
+                                }
+                                composable(Routes.Permissions.route){
+                                    PermissionRequiredScreen(navController=navController)
+                                }
+                                composable(Routes.CallHistory.route){
+                                    CallHistory(viewModel=viewModel, navController = navController)
+                                }
+                                composable(Routes.ContactDetail.route){
+                                    ContactDetailsScreen(viewModel=viewModel, navController = navController)
+                                }
                             }
                         }
+                        BottomNavBar(
+                            navController = navController,
+                            viewModel = viewModel,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .navigationBarsPadding()
+                                .fillMaxWidth()
+                        )
                     }
                 }
             }
