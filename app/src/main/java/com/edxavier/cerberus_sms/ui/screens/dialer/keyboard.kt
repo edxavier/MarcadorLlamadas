@@ -51,6 +51,7 @@ fun DialKeyboard(
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
             .combinedClickable(
                 interactionSource = interactionSource,
+                indication = null,
                 onClick = { onKeyPress(mainText) },
                 onLongClick = {
                     if (enableLongKeyPress) onKeyPress(secondaryText)
