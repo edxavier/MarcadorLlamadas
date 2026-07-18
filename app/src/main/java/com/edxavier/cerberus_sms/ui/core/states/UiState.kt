@@ -13,6 +13,6 @@ data class UiState(
     var dialContacts: List<Contact> = listOf(),
     var dialCalls: List<CallsLog> = listOf(),
     var dialShown: Boolean = false,
-    var dialNumber: String = ""
-
+    var dialNumber: String = "",
+    var hasMoreCallLog: Boolean = true
 )

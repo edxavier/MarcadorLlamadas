@@ -42,13 +42,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        lifecycleScope.launch {
-            FlowEventBus.subscribe<String> {
-                lifecycleScope.launch {
-                    viewModel.getCallLog()
-                }
-            }
-        }
+        viewModel.refreshCallLog()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()

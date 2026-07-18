@@ -18,9 +18,7 @@ import com.edxavier.cerberus_sms.ui.screens.dialer.DialKeyboard
 import com.edxavier.cerberus_sms.ui.screens.dialer.KeyContent
 
 @Composable
-fun CallDialPad(
-    viewModel: InCallViewModel
-) {
+fun CallDialPad(viewModel: InCallViewModel) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally

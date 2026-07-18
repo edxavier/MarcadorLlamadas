@@ -10,7 +10,8 @@ import kotlinx.coroutines.launch
 
 object MyCallsManager {
     private val ioScope = CoroutineScope(Dispatchers.IO + Job())
-    private val callsQueue:MutableList<Call> = ArrayList()
+    private val lock = Any()
+    private val callsQueue: MutableList<Call> = ArrayList()
     var inCallUiShown = false
     var inCallNotificationId = -1
 
@@ -19,81 +20,93 @@ object MyCallsManager {
     var paused: Boolean = false
     var adSize: AdSize = AdSize.BANNER
 
-
-    fun addCall(call: Call){
-        callsQueue.add(call)
-        ioScope.launch {
-            FlowEventBus.publish(callsQueue)
-        }
-
+    fun addCall(call: Call) {
+        synchronized(lock) { callsQueue.add(call) }
+        ioScope.launch { FlowEventBus.publish(ArrayList(callsQueue)) }
     }
+
     fun getCalls(): MutableList<Call> {
-        return callsQueue
-    }
-    fun getActiveCall(): Call? {
-        return callsQueue.find{ it.state == Call.STATE_ACTIVE}
-    }
-    fun getHoldCall(): Call? {
-        return callsQueue.find{ it.state == Call.STATE_HOLDING}
-    }
-    fun getLatestCall(): Call{
-        return callsQueue.last()
-    }
-    fun removeCall(call: Call){
-        val disconnectedCall = callsQueue.find{ it == call}
-        callsQueue.remove(disconnectedCall)
-        ioScope.launch {
-            FlowEventBus.publish(callsQueue)
-        }
+        synchronized(lock) { return ArrayList(callsQueue) }
     }
 
-    fun callStateChange(call:Call){
+    fun getActiveCall(): Call? {
+        synchronized(lock) { return callsQueue.find { it.state == Call.STATE_ACTIVE } }
+    }
+
+    fun getHoldCall(): Call? {
+        synchronized(lock) { return callsQueue.find { it.state == Call.STATE_HOLDING } }
+    }
+
+    fun getLatestCall(): Call {
+        synchronized(lock) { return callsQueue.last() }
+    }
+
+    fun removeCall(call: Call) {
+        synchronized(lock) {
+            val disconnectedCall = callsQueue.find { it == call }
+            callsQueue.remove(disconnectedCall)
+        }
+        ioScope.launch { FlowEventBus.publish(ArrayList(callsQueue)) }
+    }
+
+    fun callStateChange(call: Call) {
         ioScope.launch {
-            FlowEventBus.publish(callsQueue)
+            FlowEventBus.publish(ArrayList(callsQueue))
             FlowEventBus.publish(call)
         }
     }
-    fun answerRingingCall(){
-        val ringingCall = callsQueue.find{ it.state == Call.STATE_RINGING}
-        ringingCall?.let {
-            it.answer(VideoProfile.STATE_AUDIO_ONLY)
-            callStateChange(it)
+
+    fun answerRingingCall() {
+        synchronized(lock) {
+            callsQueue.find { it.state == Call.STATE_RINGING }?.let {
+                it.answer(VideoProfile.STATE_AUDIO_ONLY)
+                ioScope.launch {
+                    FlowEventBus.publish(ArrayList(callsQueue))
+                    FlowEventBus.publish(it)
+                }
+            }
         }
     }
-    fun thereIsRingingOrDialingCall(): Boolean{
-        val ringingCall = callsQueue.find{ it.state == Call.STATE_RINGING || it.state == Call.STATE_DIALING}
-        return ringingCall!=null
-    }
-    fun thereIsIncomingCall(): Boolean{
-        val ringingCall = callsQueue.find{ it.state == Call.STATE_RINGING}
-        return ringingCall!=null
-    }
-    private fun thereIsActiveCall(): Boolean{
-        val activeCall = callsQueue.find{ it.state == Call.STATE_ACTIVE}
-        return activeCall!=null
-    }
-    fun disconnectCall(){
-        if(callsQueue.size==1){
-            disconnectUniqueCall()
-        }else if(thereIsRingingOrDialingCall()){
-            disconnectRingingCall()
-        }else if(thereIsActiveCall() && callsQueue.size>1){
-            disconnectActiveCall()
-        }else{
-            disconnectUniqueCall()
+
+    fun thereIsRingingOrDialingCall(): Boolean {
+        synchronized(lock) {
+            return callsQueue.any { it.state == Call.STATE_RINGING || it.state == Call.STATE_DIALING }
         }
     }
-    private fun disconnectActiveCall(){
-        val activeCall = callsQueue.find{ it.state == Call.STATE_ACTIVE}
-        activeCall?.disconnect()
+
+    fun thereIsIncomingCall(): Boolean {
+        synchronized(lock) {
+            return callsQueue.any { it.state == Call.STATE_RINGING }
+        }
     }
-    private fun disconnectRingingCall(){
-        val ringingCall = callsQueue.find{ it.state == Call.STATE_RINGING}
-        val dialingCall = callsQueue.find{ it.state == Call.STATE_DIALING}
-        ringingCall?.disconnect()
-        dialingCall?.disconnect()
+
+    private fun thereIsActiveCall(): Boolean {
+        synchronized(lock) {
+            return callsQueue.any { it.state == Call.STATE_ACTIVE }
+        }
     }
-    private fun disconnectUniqueCall(){
+
+    fun disconnectCall() {
+        synchronized(lock) {
+            when {
+                callsQueue.size == 1 -> disconnectUniqueCall()
+                thereIsRingingOrDialingCall() -> disconnectRingingCall()
+                thereIsActiveCall() && callsQueue.size > 1 -> disconnectActiveCall()
+                else -> disconnectUniqueCall()
+            }
+        }
+    }
+
+    private fun disconnectActiveCall() {
+        callsQueue.find { it.state == Call.STATE_ACTIVE }?.disconnect()
+    }
+
+    private fun disconnectRingingCall() {
+        callsQueue.find { it.state == Call.STATE_RINGING }?.disconnect()
+        callsQueue.find { it.state == Call.STATE_DIALING }?.disconnect()
+    }
+
+    private fun disconnectUniqueCall() {
         callsQueue.last().disconnect()
     }
 }

@@ -14,19 +14,12 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.telecom.Call
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,36 +31,34 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RadialGradientShader
 import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import com.edxavier.cerberus_sms.data.repositories.RepoContact
+import com.edxavier.cerberus_sms.helpers.AnalyticsLogger
 import com.edxavier.cerberus_sms.helpers.CallNotificationHelper
-import com.edxavier.cerberus_sms.helpers.CallStateManager
 import com.edxavier.cerberus_sms.helpers.FlowEventBus
 import com.edxavier.cerberus_sms.helpers.MyCallsManager
-import com.edxavier.cerberus_sms.ui.calls.AppViewModel
 import com.edxavier.cerberus_sms.ui.screens.incall.CallMainButtons
 import com.edxavier.cerberus_sms.ui.screens.incall.InCallViewModel
 import com.edxavier.cerberus_sms.ui.screens.incall.OnGoingCalls
-import com.edxavier.cerberus_sms.ui.ui.theme.AppTheme
 import com.edxavier.cerberus_sms.ui.ui.theme.InCallTheme
-import com.edxavier.cerberus_sms.ui.ui.theme.red_700
 import com.google.android.gms.ads.AdSize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class InCallActivity : ComponentActivity(){
+class InCallActivity : ComponentActivity() {
     private var wakeLock: PowerManager.WakeLock? = null
     private var mSensorManager: SensorManager? = null
     private var mProximity: Sensor? = null
     private lateinit var powerManager: PowerManager
     lateinit var viewModel: InCallViewModel
+
+    private var proximityListener: SensorEventListener? = null
+    private var flowSubscription: Job? = null
 
     companion object {
         fun start(context: Context, call: Call) {
@@ -88,14 +79,19 @@ class InCallActivity : ComponentActivity(){
         setupScreenBehaviour()
 
         handleNotification()
-        lifecycleScope.launch {
+        flowSubscription = lifecycleScope.launch {
             FlowEventBus.publish(MyCallsManager.getCalls())
             FlowEventBus.subscribe<MutableList<Call>> { inCalls ->
-                // If no calls finish activity
-                if(MyCallsManager.thereIsIncomingCall() && MyCallsManager.getCalls().size>1){
+                if (MyCallsManager.thereIsIncomingCall() && MyCallsManager.getCalls().size > 1) {
                     playIncomingCallDTMFTone()
                 }
-                if(inCalls.isEmpty()){
+                if (inCalls.isEmpty()) {
+                    MyCallsManager.getCalls().lastOrNull()?.let { lastCall ->
+                        val duration = if (lastCall.details.connectTimeMillis > 0)
+                            ((System.currentTimeMillis() - lastCall.details.connectTimeMillis) / 1000).toInt()
+                        else 0
+                        AnalyticsLogger.callEnded(duration)
+                    }
                     MyCallsManager.inCallUiShown = false
                     MyCallsManager.speakerOn = false
                     MyCallsManager.micOff = false
@@ -105,52 +101,13 @@ class InCallActivity : ComponentActivity(){
             }
         }
         setContent {
-            val proximitySensorEventListener = object : SensorEventListener {
-                override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
-
-                // on below line we are creating a sensor on sensor changed
-                override fun onSensorChanged(event: SensorEvent) {
-                    // check if the sensor type is proximity sensor.
-                    if (event.sensor.type == Sensor.TYPE_PROXIMITY) {
-                        if(event.values[0]<5){
-                            // Turn off Screen
-                            wakeLock?.apply {
-                                if(!isHeld) {
-                                    acquire(600000)
-                                }
-                            }
-                        }else{
-                            //Turn on Screen
-                            wakeLock?.apply {
-                                if(isHeld)
-                                    release()
-                            }
-                        }
-                    }
-                }
-            }
-
-            // on below line we are registering listener for our sensor manager.
-            mSensorManager?.registerListener(
-                // on below line we are passing
-                // proximity sensor event listener
-                proximitySensorEventListener,
-
-                // on below line we are
-                // setting proximity sensor.
-                mProximity,
-                // on below line we are specifying
-                // sensor manager as delay normal
-                SensorManager.SENSOR_DELAY_NORMAL
-            )
-
             val largeRadialGradient = object : ShaderBrush() {
                 override fun createShader(size: Size): Shader {
                     val biggerDimension = maxOf(size.height, size.width)
                     return RadialGradientShader(
-                        colors = listOf( Color(0xFF1E293B), Color(0xFF0F172A)),
+                        colors = listOf(Color(0xFF1E293B), Color(0xFF0F172A)),
                         center = size.center,
-                        radius = biggerDimension/2,
+                        radius = biggerDimension / 2,
                         colorStops = listOf(0f, 0.95f)
                     )
                 }
@@ -162,26 +119,20 @@ class InCallActivity : ComponentActivity(){
                         .fillMaxSize(),
                     color = Color.Transparent
                 ) {
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .statusBarsPadding()
                             .navigationBarsPadding(),
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.TopCenter)
-                        ) {
-                           OnGoingCalls(viewModel)
+                        Column(modifier = Modifier.weight(1f)) {
+                            OnGoingCalls(viewModel)
                         }
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .align(Alignment.BottomCenter)
                                 .padding(bottom = 12.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Bottom
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             CallMainButtons(viewModel = viewModel)
                         }
@@ -191,7 +142,48 @@ class InCallActivity : ComponentActivity(){
         }
     }
 
-    private fun setupScreenBehaviour(){
+    override fun onStart() {
+        super.onStart()
+        proximityListener?.let { mSensorManager?.unregisterListener(it) }
+
+        proximityListener = object : SensorEventListener {
+            override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+            override fun onSensorChanged(event: SensorEvent) {
+                if (event.sensor.type == Sensor.TYPE_PROXIMITY) {
+                    if (event.values[0] < 5) {
+                        wakeLock?.apply { if (!isHeld) acquire(600000) }
+                    } else {
+                        wakeLock?.apply { if (isHeld) release() }
+                    }
+                }
+            }
+        }
+        mSensorManager?.registerListener(
+            proximityListener, mProximity, SensorManager.SENSOR_DELAY_NORMAL
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        proximityListener?.let { mSensorManager?.unregisterListener(it) }
+        proximityListener = null
+
+        wakeLock?.apply { if (isHeld) release() }
+
+        MyCallsManager.inCallUiShown = false
+        if (MyCallsManager.getCalls().isNotEmpty()) {
+            val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            mgr.cancel(MyCallsManager.inCallNotificationId)
+            CallNotificationHelper.showInCallNotification(this)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        flowSubscription?.cancel()
+    }
+
+    private fun setupScreenBehaviour() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -202,68 +194,57 @@ class InCallActivity : ComponentActivity(){
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                         or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
                         WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+            )
         }
     }
-    private fun initSensors(){
+
+    private fun initSensors() {
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mProximity = mSensorManager?.getDefaultSensor(Sensor.TYPE_PROXIMITY)
         powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "com.edxavier.cerberus_sms:wakelog")
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
+            "com.edxavier.cerberus_sms:wakelog"
+        )
     }
 
-    private fun handleNotification(){
+    private fun handleNotification() {
         val callNotificationId = intent.getIntExtra("callNotificationId", 0)
         val autoAnswer = intent.getIntExtra("autoAnswer", 0)
         val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        // mgr.cancel(CallStateManager.activeCallNotificationId)
-        if(MyCallsManager.inCallNotificationId != -1) {
+        if (MyCallsManager.inCallNotificationId != -1) {
             mgr.cancel(callNotificationId)
             mgr.cancel(5)
         }
-        if(autoAnswer == 1) {
+        if (autoAnswer == 1) {
             MyCallsManager.answerRingingCall()
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        MyCallsManager.inCallUiShown = false
-        if(MyCallsManager.getCalls().isNotEmpty()) {
-            val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            mgr.cancel(MyCallsManager.inCallNotificationId)
-            CallNotificationHelper.showInCallNotification(this)
-        }
-    }
-
-    private fun playIncomingCallDTMFTone(){
+    private fun playIncomingCallDTMFTone() {
         lifecycleScope.launch {
             val dtmfGenerator = ToneGenerator(0, ToneGenerator.MAX_VOLUME)
-            while(MyCallsManager.thereIsIncomingCall() && MyCallsManager.getCalls().size>1) {
-                dtmfGenerator.startTone(ToneGenerator.TONE_SUP_CALL_WAITING, 2000) // all types of tones are available...
+            while (MyCallsManager.thereIsIncomingCall() && MyCallsManager.getCalls().size > 1) {
+                dtmfGenerator.startTone(ToneGenerator.TONE_SUP_CALL_WAITING, 2000)
                 delay(400)
                 dtmfGenerator.stopTone()
                 delay(500)
-                dtmfGenerator.startTone(ToneGenerator.TONE_SUP_CALL_WAITING, 1000) // all types of tones are available...
+                dtmfGenerator.startTone(ToneGenerator.TONE_SUP_CALL_WAITING, 1000)
                 delay(400)
                 dtmfGenerator.stopTone()
                 delay(2000)
             }
-
         }
     }
+
     private fun getAdSize(): AdSize {
-        //Determine the screen width to use for the ad width.
         val display = windowManager.defaultDisplay
         val outMetrics = DisplayMetrics()
         display.getMetrics(outMetrics)
         val widthPixels = outMetrics.widthPixels.toFloat()
         val density = outMetrics.density
-
-        //you can also pass your selected width here in dp
         val adWidth = (widthPixels / density).toInt()
-
-        //return the optimal size depends on your orientation (landscape or portrait)
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
     }
 }

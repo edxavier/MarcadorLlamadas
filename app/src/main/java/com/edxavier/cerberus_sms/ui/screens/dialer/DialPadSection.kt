@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.edxavier.cerberus_sms.R
 import com.edxavier.cerberus_sms.data.models.Operator
 import com.edxavier.cerberus_sms.data.repositories.RepoOperator
+import com.edxavier.cerberus_sms.helpers.AnalyticsLogger
 import com.edxavier.cerberus_sms.helpers.getOperatorColor
 import com.edxavier.cerberus_sms.helpers.getOperatorString
 import com.edxavier.cerberus_sms.helpers.makeCall
@@ -41,6 +42,8 @@ fun DialPadSection(
     val context = LocalContext.current
     var operator: Operator? by remember { mutableStateOf(Operator()) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) { AnalyticsLogger.dialerOpened() }
 
     LaunchedEffect(dialNumber) {
         val opRepo = RepoOperator(context)
@@ -212,9 +215,10 @@ fun DialPadSection(
 
                 FloatingActionButton(
                     onClick = {
-                        if (dialNumber.isNotEmpty())
+                        if (dialNumber.isNotEmpty()) {
                             context.makeCall(dialNumber)
-                        else
+                            AnalyticsLogger.callOutgoing()
+                        } else
                             Toast.makeText(context, "Digite un numero", Toast.LENGTH_LONG).show()
                     },
                     containerColor = MaterialTheme.colorScheme.primary,

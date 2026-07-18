@@ -25,7 +25,6 @@ import com.edxavier.cerberus_sms.data.repositories.RepoOperator
 import com.edxavier.cerberus_sms.services.CancelCallReceiver
 import kotlinx.coroutines.*
 import java.util.*
-import kotlin.coroutines.CoroutineContext
 
 
 @ExperimentalCoroutinesApi
@@ -148,10 +147,8 @@ object CallNotificationHelper{
             // Use builder.addAction(..) to add buttons to answer or reject the call.
             incCallNotifMgr.notify(notificationId, builder.build())
             // Listen is call stop ringing
-            FlowEventBus.subscribe<Call> {call ->
-                if(call.state == Call.STATE_DISCONNECTED) {
-                    incCallNotifMgr.cancel(notificationId)
-                }else if(call.state == Call.STATE_ACTIVE) {
+            FlowEventBus.subscribe<Call> { call ->
+                if (call.state == Call.STATE_DISCONNECTED || call.state == Call.STATE_ACTIVE) {
                     incCallNotifMgr.cancel(notificationId)
                 }
             }

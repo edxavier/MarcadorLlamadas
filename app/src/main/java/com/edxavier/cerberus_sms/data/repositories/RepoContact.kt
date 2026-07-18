@@ -43,6 +43,16 @@ class RepoContact(var mContext: Context) {
     )
     private val contentResolver: ContentResolver = mContext.contentResolver
 
+    // Call log cache — 15 second TTL
+    private var cachedCallLog: List<CallsLog>? = null
+    private var cacheTimestamp: Long = 0
+    private val cacheDuration = 15_000L
+
+    fun invalidateCallLogCache() {
+        cachedCallLog = null
+        cacheTimestamp = 0
+    }
+
     companion object {
         // For Singleton instantiation
         @Volatile private var instance: RepoContact? = null
@@ -276,21 +286,41 @@ class RepoContact(var mContext: Context) {
     }
 
 
-    suspend fun getCallLog(searchText:String=""):List<CallsLog> = withContext(Dispatchers.IO){
+    suspend fun getCallLog(searchText: String = "", beforeDate: Long? = null): List<CallsLog> = withContext(Dispatchers.IO){
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CALL_LOG) 
+            != PackageManager.PERMISSION_GRANTED) {
+            invalidateCallLogCache()
+            return@withContext emptyList()
+        }
+
+        // Return from cache when available (no text filter, first page only, within TTL)
+        if (searchText.isEmpty() && beforeDate == null && cachedCallLog != null &&
+            System.currentTimeMillis() - cacheTimestamp < cacheDuration) {
+            return@withContext cachedCallLog!!
+        }
+
         val calls: MutableList<CallsLog> =  ArrayList()
         val repoOperator = RepoOperator.getInstance(mContext)
 
         val limit = if(searchText.isEmpty())
-            Prefs.getInt("call_log_limit", 300)
+            Prefs.getInt("call_log_limit", 200)
         else
             Prefs.getInt("call_log_limit", 10)
         val sortOrder = "${CallLog.Calls.DATE} DESC LIMIT $limit"
         val callUri = CallLog.Calls.CONTENT_URI
-        val selectionFilter = if (searchText.isEmpty())
-            "${CallLog.Calls._ID} != ?"
-        else
-            "${CallLog.Calls.NUMBER} LIKE ?"
-        val selectionArgs = if(searchText.isEmpty()) arrayOf("0") else arrayOf("$searchText%")
+
+        val selectionFilter: String
+        val selectionArgs: Array<String>
+        if (beforeDate != null) {
+            selectionFilter = "${CallLog.Calls.DATE} < ?"
+            selectionArgs = arrayOf(beforeDate.toString())
+        } else if (searchText.isEmpty()) {
+            selectionFilter = "${CallLog.Calls._ID} != ?"
+            selectionArgs = arrayOf("0")
+        } else {
+            selectionFilter = "${CallLog.Calls.NUMBER} LIKE ?"
+            selectionArgs = arrayOf("$searchText%")
+        }
 
         val cursor = contentResolver.query(
             callUri,
@@ -337,11 +367,21 @@ class RepoContact(var mContext: Context) {
             call.carrier = sim.carrier
             callsGrouped.add(call)
         }
+        // Cache only first page (no beforeDate, no text filter)
+        if (searchText.isEmpty() && beforeDate == null) {
+            cachedCallLog = callsGrouped
+            cacheTimestamp = System.currentTimeMillis()
+        }
         return@withContext callsGrouped
     }
     suspend fun getCallLogFor(number: String):List<CallsLog> = withContext(Dispatchers.IO){
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CALL_LOG) 
+            != PackageManager.PERMISSION_GRANTED) {
+            return@withContext emptyList()
+        }
+
         val calls: MutableList<CallsLog> =  ArrayList()
-        val limit = Prefs.getInt("call_log_limit", 300)
+        val limit = Prefs.getInt("call_log_limit", 100)
 
         val sortOrder = "${CallLog.Calls.DATE} DESC LIMIT $limit"
         val callUri = CallLog.Calls.CONTENT_URI
@@ -387,6 +427,7 @@ class RepoContact(var mContext: Context) {
     }
 
     fun deleteNumberCallLog(number: String? = null){
+        invalidateCallLogCache()
         val callUri = CallLog.Calls.CONTENT_URI
         val selectionFilter = "${CallLog.Calls.NUMBER} == ?"
         if (number.isNullOrBlank()){
@@ -402,6 +443,7 @@ class RepoContact(var mContext: Context) {
 
     }
     fun blockNumber(number: String){
+        invalidateCallLogCache()
         val values = ContentValues()
         values.put(BlockedNumbers.COLUMN_ORIGINAL_NUMBER, number)
         contentResolver.insert(BlockedNumbers.CONTENT_URI, values)

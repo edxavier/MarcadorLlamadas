@@ -11,8 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.edxavier.cerberus_sms.ui.core.ui.MyBannerAd
-import com.edxavier.cerberus_sms.ui.core.ui.NativeMediumAd
+import com.edxavier.cerberus_sms.ui.core.ui.SmartAd
 
 @Composable
 fun OnGoingCalls(
@@ -26,10 +25,7 @@ fun OnGoingCalls(
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         item {
-            if((0..1).random() == 0)
-                NativeMediumAd()
-            else
-                MyBannerAd()
+            SmartAd()
         }
         if(state.callsQueue.size==1){
             item {
