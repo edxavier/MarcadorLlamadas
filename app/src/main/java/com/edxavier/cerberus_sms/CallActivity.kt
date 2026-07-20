@@ -543,9 +543,9 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                 nativeAdView.iconView = adIcon
             }
             nativeAd.starRating?.let {
-                adStartRating.rating = it.toFloat()
-                adStartRating.visible()
-                nativeAdView.starRatingView = adStartRating
+                adStarRating.rating = it.toFloat()
+                adStarRating.visible()
+                nativeAdView.starRatingView = adStarRating
             }
             nativeAd.callToAction?.let {
                 adBtnCallToAction.text = it
@@ -555,6 +555,7 @@ class CallActivity : ScopeActivity(), SensorEventListener {
                 adBodyText.text = it
                 nativeAdView.bodyView = adBodyText
             }
+            nativeAdView.setAdChoicesView(adChoices)
         }
         nativeAdView.setNativeAd(nativeAd)
         return nativeAdView

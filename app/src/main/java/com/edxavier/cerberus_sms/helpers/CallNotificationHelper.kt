@@ -189,7 +189,7 @@ object CallNotificationHelper{
         builder.setOngoing(true)
 
         builder.setUsesChronometer(true)
-        builder.setWhen(MyCallsManager.getLatestCall().details.connectTimeMillis)
+        builder.setWhen(MyCallsManager.getLatestCall()?.details?.connectTimeMillis ?: System.currentTimeMillis())
 
         ioScope.launch {
             val number = CallStateManager.newCall?.getPhoneNumber()?.toPhoneFormat()

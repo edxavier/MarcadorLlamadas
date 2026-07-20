@@ -129,9 +129,9 @@ class ContactDetailsActivity : ScopeActivity() {
                 //(nativeAdView.iconView as ImageView).load(it.drawable){transformations(RoundedCornersTransformation(radius = 8f))}
             }
             nativeAd.starRating?.let {
-                adStartRating.rating = it.toFloat()
-                adStartRating.visible()
-                nativeAdView.starRatingView = adStartRating
+                adStarRating.rating = it.toFloat()
+                adStarRating.visible()
+                nativeAdView.starRatingView = adStarRating
             }
             nativeAd.callToAction?.let {
                 adBtnCallToAction.text = it
@@ -141,6 +141,7 @@ class ContactDetailsActivity : ScopeActivity() {
                 adBodyText.text = it
                 nativeAdView.bodyView = adBodyText
             }
+            nativeAdView.setAdChoicesView(adChoices)
         }
         nativeAdView.setNativeAd(nativeAd)
         return nativeAdView

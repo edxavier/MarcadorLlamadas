@@ -107,7 +107,7 @@ fun NativeMediumAd(onGiveUp: () -> Unit = {}) {
                 adView.callToActionView = adNativeInCall.adBtnCallToAction
                 adView.headlineView = adNativeInCall.adHeadline
                 adView.iconView = adNativeInCall.adIcon
-                adView.starRatingView = adNativeInCall.adStartRating
+                adView.starRatingView = adNativeInCall.adStarRating
             }
 
             var retryCount = 0
@@ -129,6 +129,7 @@ fun NativeMediumAd(onGiveUp: () -> Unit = {}) {
             builder.forNativeAd { nativeAd ->
                 populateNativeAd(nativeAd, adNativeInCall)
                 adView.setNativeAd(nativeAd)
+                adView.setAdChoicesView(adNativeInCall.adChoices)
             }
             val adLoader = builder.build()
             adLoader.loadAd(AdRequest.Builder().build())
@@ -148,8 +149,8 @@ private fun populateNativeAd(nativeAd: com.google.android.gms.ads.nativead.Nativ
         binding.adIcon.visible()
     }
     nativeAd.starRating?.let {
-        binding.adStartRating.rating = it.toFloat()
-        binding.adStartRating.visible()
+        binding.adStarRating.rating = it.toFloat()
+        binding.adStarRating.visible()
     }
     nativeAd.callToAction?.let {
         binding.adBtnCallToAction.text = it

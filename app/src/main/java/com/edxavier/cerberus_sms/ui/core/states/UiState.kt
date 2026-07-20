@@ -14,5 +14,5 @@ data class UiState(
     var dialCalls: List<CallsLog> = listOf(),
     var dialShown: Boolean = false,
     var dialNumber: String = "",
-    var hasMoreCallLog: Boolean = true
+    var hasMoreCallLog: Boolean = false
 )

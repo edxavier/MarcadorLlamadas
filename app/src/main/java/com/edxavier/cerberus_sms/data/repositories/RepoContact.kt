@@ -45,11 +45,13 @@ class RepoContact(var mContext: Context) {
 
     // Call log cache — 15 second TTL
     private var cachedCallLog: List<CallsLog>? = null
+    private var cachedCallLogHasMore: Boolean = true
     private var cacheTimestamp: Long = 0
     private val cacheDuration = 15_000L
 
     fun invalidateCallLogCache() {
         cachedCallLog = null
+        cachedCallLogHasMore = true
         cacheTimestamp = 0
     }
 
@@ -148,6 +150,10 @@ class RepoContact(var mContext: Context) {
         return isWhatsappNumber
     }
     suspend fun getContactNumbers(id:Int = -1, searchText: String = ""):List<Contact> = withContext(Dispatchers.IO){
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CONTACTS)
+            != PackageManager.PERMISSION_GRANTED) {
+            return@withContext emptyList()
+        }
 
         val contactList: MutableList<Contact> =  ArrayList()
         val repoOperator = RepoOperator.getInstance(mContext)
@@ -286,17 +292,17 @@ class RepoContact(var mContext: Context) {
     }
 
 
-    suspend fun getCallLog(searchText: String = "", beforeDate: Long? = null): List<CallsLog> = withContext(Dispatchers.IO){
+    suspend fun getCallLog(searchText: String = "", beforeDate: Long? = null): Pair<List<CallsLog>, Boolean> = withContext(Dispatchers.IO){
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CALL_LOG) 
             != PackageManager.PERMISSION_GRANTED) {
             invalidateCallLogCache()
-            return@withContext emptyList()
+            return@withContext Pair(emptyList(), false)
         }
 
         // Return from cache when available (no text filter, first page only, within TTL)
         if (searchText.isEmpty() && beforeDate == null && cachedCallLog != null &&
             System.currentTimeMillis() - cacheTimestamp < cacheDuration) {
-            return@withContext cachedCallLog!!
+            return@withContext Pair(cachedCallLog!!, cachedCallLogHasMore)
         }
 
         val calls: MutableList<CallsLog> =  ArrayList()
@@ -306,7 +312,7 @@ class RepoContact(var mContext: Context) {
             Prefs.getInt("call_log_limit", 200)
         else
             Prefs.getInt("call_log_limit", 10)
-        val sortOrder = "${CallLog.Calls.DATE} DESC LIMIT $limit"
+        val sortOrder = "${CallLog.Calls.DATE} DESC"
         val callUri = CallLog.Calls.CONTENT_URI
 
         val selectionFilter: String
@@ -330,7 +336,8 @@ class RepoContact(var mContext: Context) {
             sortOrder
         )
         // loop through cursor
-        while (cursor != null && cursor.moveToNext()) {
+        var count = 0
+        while (cursor != null && cursor.moveToNext() && count < limit) {
             val callLog = CallsLog()
             callLog.id = Integer.valueOf(cursor.getString(0))
             callLog.number = cursor.getString(1)?:""
@@ -349,8 +356,10 @@ class RepoContact(var mContext: Context) {
             callLog.callDate = Calendar.getInstance().apply { timeInMillis = callDate }
             callLog.account_id = cursor.getString(8)?:""
             calls.add(callLog)
+            count++
         }//Fin de While
         cursor?.close()
+        val hasMore = count >= limit
         val callsGrouped: MutableList<CallsLog> =  ArrayList()
         val gby = calls.groupBy { it.number }
         gby.forEach {
@@ -370,9 +379,10 @@ class RepoContact(var mContext: Context) {
         // Cache only first page (no beforeDate, no text filter)
         if (searchText.isEmpty() && beforeDate == null) {
             cachedCallLog = callsGrouped
+            cachedCallLogHasMore = hasMore
             cacheTimestamp = System.currentTimeMillis()
         }
-        return@withContext callsGrouped
+        return@withContext Pair(callsGrouped, hasMore)
     }
     suspend fun getCallLogFor(number: String):List<CallsLog> = withContext(Dispatchers.IO){
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CALL_LOG) 
@@ -383,7 +393,7 @@ class RepoContact(var mContext: Context) {
         val calls: MutableList<CallsLog> =  ArrayList()
         val limit = Prefs.getInt("call_log_limit", 100)
 
-        val sortOrder = "${CallLog.Calls.DATE} DESC LIMIT $limit"
+        val sortOrder = "${CallLog.Calls.DATE} DESC"
         val callUri = CallLog.Calls.CONTENT_URI
         val selectionFilter = "${CallLog.Calls.NUMBER} == ?"
         val selectionArgs = arrayOf(number)
@@ -396,7 +406,8 @@ class RepoContact(var mContext: Context) {
             sortOrder
         )
         // loop through cursor
-        while (cursor != null && cursor.moveToNext()) {
+        var count = 0
+        while (cursor != null && cursor.moveToNext() && count < limit) {
             val callLog = CallsLog()
             callLog.id = Integer.valueOf(cursor.getString(0))
             callLog.number = cursor.getString(1)?:""
@@ -421,6 +432,7 @@ class RepoContact(var mContext: Context) {
             if(sim.slot == -1 && callLog.account_id == "1")
                 callLog.sim = 2
             calls.add(callLog)
+            count++
         }//Fin de While
         cursor?.close()
         return@withContext calls

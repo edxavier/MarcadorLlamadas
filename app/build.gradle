@@ -15,8 +15,8 @@ android {
         applicationId "com.edxavier.cerberus_sms"
         minSdkVersion 24
         targetSdkVersion 37
-        versionCode 1053
-        versionName "2026.07.4.2.1"
+        versionCode 1054
+        versionName "2026.07.4.2.2"
         vectorDrawables {
             useSupportLibrary true
         }

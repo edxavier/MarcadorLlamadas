@@ -160,7 +160,7 @@ class CallsFragment : ScopeFragment() {
             binding.notificationAnimation.loop(true)
             binding.notificationMessage.text = "Cargando..."
             val repo = RepoContact.getInstance(requireContext())
-            val calls = repo.getCallLog()
+            val (calls, _) = repo.getCallLog()
             val gby = calls.groupBy { it.number }
             val callsGrouped: MutableList<CallsLog> =  ArrayList()
             gby.forEach {

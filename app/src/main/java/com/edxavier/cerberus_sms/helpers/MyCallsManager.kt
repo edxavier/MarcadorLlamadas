@@ -37,8 +37,8 @@ object MyCallsManager {
         synchronized(lock) { return callsQueue.find { it.state == Call.STATE_HOLDING } }
     }
 
-    fun getLatestCall(): Call {
-        synchronized(lock) { return callsQueue.last() }
+    fun getLatestCall(): Call? {
+        synchronized(lock) { return callsQueue.lastOrNull() }
     }
 
     fun removeCall(call: Call) {
@@ -107,6 +107,6 @@ object MyCallsManager {
     }
 
     private fun disconnectUniqueCall() {
-        callsQueue.last().disconnect()
+        callsQueue.lastOrNull()?.disconnect()
     }
 }

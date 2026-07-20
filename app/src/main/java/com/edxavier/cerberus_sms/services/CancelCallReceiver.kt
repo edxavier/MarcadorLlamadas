@@ -17,6 +17,6 @@ class CancelCallReceiver: BroadcastReceiver() {
         val notificationId = intent.getIntExtra("callNotificationId", 0)
         val mgr = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         mgr.cancel(notificationId)
-        MyCallsManager.getLatestCall().disconnect()
+        MyCallsManager.getLatestCall()?.disconnect()
     }
 }

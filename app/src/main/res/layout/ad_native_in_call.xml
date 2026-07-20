@@ -36,7 +36,7 @@
             <RatingBar
                 android:layout_marginStart="8dp"
                 android:visibility="gone"
-                android:id="@+id/ad_start_rating"
+                android:id="@+id/ad_star_rating"
                 style="?android:attr/ratingBarStyleSmall"
                 android:progressTint="@color/white"
                 android:layout_width="wrap_content"
@@ -48,8 +48,15 @@
                 android:text=""
                 android:textSize="11sp"
                 android:fontFamily="@font/source_sans_pro_semibold"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"/>
+
+            <com.google.android.gms.ads.nativead.AdChoicesView
+                android:id="@+id/ad_choices"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"/>
         </LinearLayout>
 
         <LinearLayout

@@ -32,9 +32,9 @@ class AppViewModel(private val repo: RepoContact): ViewModel() {
         _uiState.update { state ->
             state.copy(isLoading = true)
         }
-        val calls = repo.getCallLog(beforeDate = null)
+        val (calls, hasMore) = repo.getCallLog(beforeDate = null)
         _uiState.update { state ->
-            state.copy(isLoading = false, callLog = calls, hasMoreCallLog = calls.isNotEmpty())
+            state.copy(isLoading = false, callLog = calls, hasMoreCallLog = hasMore)
         }
     }
 
@@ -51,13 +51,14 @@ class AppViewModel(private val repo: RepoContact): ViewModel() {
         val lastCall = uiState.value.callLog.lastOrNull() ?: return
         isLoadingMore = true
         viewModelScope.launch {
-            val more = repo.getCallLog(beforeDate = lastCall.callDate.timeInMillis)
+            val (more, hasMore) = repo.getCallLog(beforeDate = lastCall.callDate.timeInMillis)
             _uiState.update { state ->
                 state.copy(
                     callLog = state.callLog + more,
-                    hasMoreCallLog = more.isNotEmpty()
+                    hasMoreCallLog = hasMore
                 )
             }
+            isLoadingMore = false
         }
     }
 
@@ -79,7 +80,7 @@ class AppViewModel(private val repo: RepoContact): ViewModel() {
             state.copy(isLoading = true)
         }
         val contacts = repo.getContactNumbers(searchText = searchText)
-        val calls = repo.getCallLog(searchText)
+        val (calls, _) = repo.getCallLog(searchText)
         _uiState.update { state ->
             state.copy(
                 isLoading = false,
